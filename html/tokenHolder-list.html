@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freeverse</title>
+    <link rel="icon" type="image/x-icon" href="../images/icons/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="../images/icons/favicon.ico">
+    <link rel="apple-touch-icon" href="../images/icons/favicon.ico">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="../constants/strings.js"></script>
+    <script src="../modules/api.js"></script>
+</head>
+<body>
+    <main>
+        <div class="title-section">
+            <h2><span data-string-key="tokenHolder">Token Holder</span></h2>
+            <div class="description en" style="display: inline-block;"></div>
+            <div class="description zh" style="display: none;"></div>
+        </div>
+        <section id="tokenHolder-list" class="section active">
+            <div class="table-container">
+                <table id="tokenHolder-table" class="list-table">
+                    <thead>
+                        <tr id="tokenHolder-table-header">
+                            <!-- Headers will be populated by JavaScript -->
+                        </tr>
+                    </thead>
+                    <tbody id="tokenHolder-table-body">
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <button id="prev-btn" disabled data-string-key="previous">...</button>
+                <span id="page-info">...</span>
+                <button id="next-btn" disabled data-string-key="next">...</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>...</p>
+    </footer>
+
+    <script src="../modules/LoadingOverlay.js"></script>
+    <script type="module" src="../entity/TokenHolder.js"></script>
+    <script type="module" src="../modules/tokenHolder-list.js"></script>
+    <script type="module">
+        import Header from '../modules/Header.js';
+        // Wait for DOM content to be loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            Header.init();
+        });
+    </script>
+</body>
+</html> 

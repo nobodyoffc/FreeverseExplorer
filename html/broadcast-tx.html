@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freeverse</title>
+    <link rel="icon" type="image/x-icon" href="../images/icons/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="../images/icons/favicon.ico">
+    <link rel="apple-touch-icon" href="../images/icons/favicon.ico">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="../constants/strings.js"></script>
+    <script src="../modules/api.js"></script>
+    <link rel="stylesheet" href="../css/broadcastTx.css">
+</head>
+<body data-disable-header-search="true">
+    <main>
+        <div class="title-section">
+            <h2><span data-string-key="broadcastTx"></span></h2>
+            <div class="description"></div>
+            <hr class="title-divider">
+        </div>
+
+        <!-- Raw TX Container -->
+        <div class="container raw-tx-container">
+            <h2 class="container-title" data-string-key="rawTx"></h2>
+            <textarea id="raw-tx-input" class="raw-tx-input"></textarea>
+        </div>
+
+        <!-- Result Container -->
+        <div class="container result-container">
+            <h2 class="container-title" data-string-key="result"></h2>
+            <div id="result-content" class="result-content"></div>
+        </div>
+
+        <!-- Button Container -->
+        <div class="container button-container">
+            <button id="clear-btn" class="action-btn" data-string-key="clear"></button>
+            <button id="copy-btn" class="action-btn" data-string-key="copy"></button>
+            <button id="decode-btn" class="action-btn" data-string-key="decode"></button>
+            <button id="broadcast-btn" class="action-btn" data-string-key="broadcast"></button>
+        </div>
+    </main>
+
+    <footer>
+        <p>...</p>
+    </footer>
+
+    <script type="module" src="../modules/broadcastTx.js"></script>
+    <script type="module">
+        import Header from '../modules/Header.js';
+        // Wait for DOM content to be loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            Header.init();
+        });
+    </script>
+</body>
+</html> 

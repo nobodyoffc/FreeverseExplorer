@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Use String Variables - i18n Example</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .example { background: #f5f5f5; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .code { background: #333; color: #fff; padding: 10px; border-radius: 3px; font-family: monospace; }
+        .lang-switcher { margin: 20px 0; }
+        .lang-btn { padding: 10px 20px; margin: 5px; border: none; background: #007bff; color: white; cursor: pointer; }
+        .lang-btn.active { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>How to Use String Variables</h1>
+    
+    <div class="lang-switcher">
+        <button class="lang-btn active" onclick="switchLang('en')">English</button>
+        <button class="lang-btn" onclick="switchLang('zh')">中文</button>
+    </div>
+
+    <div class="example">
+        <h2>Method 1: Direct HTML Update</h2>
+        <p><strong>Current title:</strong> <span id="demo-title">Title will appear here</span></p>
+        <div class="code">
+// In your JavaScript:
+document.getElementById('demo-title').textContent = getString('siteTitle');
+        </div>
+    </div>
+
+    <div class="example">
+        <h2>Method 2: Using Parameters</h2>
+        <p><strong>Page info:</strong> <span id="demo-page">Page info will appear here</span></p>
+        <div class="code">
+// In your JavaScript:
+document.getElementById('demo-page').textContent = getStringWithParams('pageOf', 3, 10);
+        </div>
+    </div>
+
+    <div class="example">
+        <h2>Method 3: Multiple Elements at Once</h2>
+        <ul>
+            <li>Home: <span class="nav-item" data-key="home">Loading...</span></li>
+            <li>Tools: <span class="nav-item" data-key="tools">Loading...</span></li>
+            <li>Developer: <span class="nav-item" data-key="developer">Loading...</span></li>
+        </ul>
+        <div class="code">
+// In your JavaScript:
+document.querySelectorAll('.nav-item').forEach(item => {
+    const key = item.getAttribute('data-key');
+    item.textContent = getString(key);
+});
+        </div>
+    </div>
+
+    <div class="example">
+        <h2>Method 4: Dynamic Content Creation</h2>
+        <div id="dynamic-content">Content will be generated here</div>
+        <div class="code">
+// In your JavaScript:
+const content = `
+    &lt;h3&gt;${getString('blockchain')}&lt;/h3&gt;
+    &lt;p&gt;${getString('block')}: 12345&lt;/p&gt;
+    &lt;p&gt;${getString('tx')}: 67890&lt;/p&gt;
+`;
+document.getElementById('dynamic-content').innerHTML = content;
+        </div>
+    </div>
+
+    <!-- Include the strings.js file -->
+    <script src="../constants/strings.js"></script>
+    
+    <script>
+        // Custom function for this demo
+        function switchLang(lang) {
+            // Update active button
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Switch language
+            switchLanguage(lang);
+            
+            // Update demo content
+            updateDemoContent();
+        }
+        
+        function updateDemoContent() {
+            // Method 1: Direct update
+            document.getElementById('demo-title').textContent = getString('siteTitle');
+            
+            // Method 2: With parameters
+            document.getElementById('demo-page').textContent = getStringWithParams('pageOf', 3, 10);
+            
+            // Method 3: Multiple elements
+            document.querySelectorAll('.nav-item').forEach(item => {
+                const key = item.getAttribute('data-key');
+                item.textContent = getString(key);
+            });
+            
+            // Method 4: Dynamic content
+            const content = `
+                <h3>${getString('blockchain')}</h3>
+                <p>${getString('block')}: 12345</p>
+                <p>${getString('tx')}: 67890</p>
+                <p>${getString('cash')}: $1000</p>
+            `;
+            document.getElementById('dynamic-content').innerHTML = content;
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDemoContent();
+        });
+    </script>
+</body>
+</html> 

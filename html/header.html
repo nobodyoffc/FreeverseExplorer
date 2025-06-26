@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freeverse</title>
+    <link rel="icon" type="image/x-icon" href="../images/icons/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="../images/icons/favicon.ico">
+    <link rel="apple-touch-icon" href="../images/icons/favicon.ico">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <h1 class="site-title">Freeverse</h1>
+        <div class="header-controls">
+            <!-- Language switcher for mobile - will be hidden on desktop -->
+            <div class="language-switcher mobile-lang-switcher">
+                <button id="lang-en-mobile" class="lang-btn active">EN</button>
+                <button id="lang-zh-mobile" class="lang-btn">中文</button>
+            </div>
+        </div>
+        <nav>
+            <ul id="nav-menu">
+                <li><a href="../index.html#home" data-section="home" data-string-key="home">...</a></li>
+                <li><a href="../index.html#tools" data-section="tools" data-string-key="tools">...</a></li>
+                <li><a href="../index.html#developer" data-section="developer" data-string-key="developer">...</a></li>
+                <li><a href="../html/swap.html" data-section="swap" data-string-key="swap">...</a></li>
+                <li><a href="../html/download.html" data-section="downloads" data-string-key="downloads">...</a></li>
+                <!-- Language switcher for desktop - will be hidden on mobile -->
+                <li class="nav-lang-switcher">
+                    <div class="language-switcher desktop-lang-switcher">
+                        <button id="lang-en-desktop" class="lang-btn active">EN</button>
+                        <button id="lang-zh-desktop" class="lang-btn">中文</button>
+                    </div>
+                </li>
+                <!-- Desktop search box - only visible on desktop -->
+                <li class="nav-search-container">
+                    <div class="desktop-search-container">
+                        <input type="text" id="desktop-search-input" placeholder="...">
+                        <button id="desktop-search-btn" class="desktop-search-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Mobile Bottom Bar -->
+    <div class="mobile-bottom-bar">
+        <div class="mobile-search-container">
+            <input type="text" id="mobile-search-input" placeholder="...">
+            <button id="mobile-search-btn" class="mobile-search-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+            </button>
+        </div>
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+            <span class="hamburger"></span>
+            <span class="hamburger"></span>
+            <span class="hamburger"></span>
+        </button>
+    </div>
+</body>
+</html> 

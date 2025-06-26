@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freeverse</title>
+    <link rel="icon" type="image/x-icon" href="images/icons/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="images/icons/favicon.ico">
+    <link rel="apple-touch-icon" href="images/icons/favicon.ico">
+    <link rel="stylesheet" href="css/styles.css?v=1.1">
+    <script src="constants/strings.js?v=1.1"></script>
+    <script src="modules/api.js?v=1.1"></script>
+    <script src="modules/index.js?v=1.1"></script>
+</head>
+<body>
+    <main>
+        <section id="home" class="section active">
+            <div class="section-container">
+                <h2 id="blockchain-title" style="cursor: pointer;" onclick="window.location.href='html/chain-info.html'">...</h2>
+                <div class="stats-grid">
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/cash-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="cash-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/tx-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="tx-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/opreturn-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="opreturn-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/block-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="block-value">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-container">
+                <h2 id="identity-title">...</h2>
+                <div class="stats-grid">
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/cid-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="cid-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/nobody-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="nobody-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/multisign-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="multisign-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/nid-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="nid-value">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-container">
+                <h2 id="construct-title">...</h2>
+                <div class="stats-grid">
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/protocol-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="protocol-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/code-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="code-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/service-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="service-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/app-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="app-value">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-container">
+                <h2 id="organization-title">...</h2>
+                <div class="stats-grid">
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/group-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="group-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/team-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="team-value">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-container">
+                <h2 id="personal-title">...</h2>
+                <div class="stats-grid">
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/mail-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="mail-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/contact-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="contact-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/secret-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="secret-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/box-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="box-value">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-container">
+                <h2 id="publish-title">...</h2>
+                <div class="stats-grid">
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/statement-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="statement-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/essay-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="essay-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/report-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="report-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/paper-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="paper-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/book-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="book-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/artwork-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="artwork-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/remark-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="remark-value">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-container">
+                <h2 id="business-title">...</h2>
+                <div class="stats-grid">
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/proof-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="proof-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/token-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="token-value">0</p>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/tokenHolder-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="tokenHolder-value">0</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tools" class="section">
+            <h2>...</h2>
+            <div class="chart-container">
+                <canvas id="main-chart" width="800" height="400"></canvas>
+            </div>
+            <div class="chart-controls">
+                <button id="line-chart-btn" class="chart-btn active">...</button>
+                <button id="bar-chart-btn" class="chart-btn">...</button>
+                <button id="pie-chart-btn" class="chart-btn">...</button>
+            </div>
+        </section>
+
+        <section id="developer" class="section">
+            <h2>...</h2>
+            <div class="section">
+                <p>...</p>
+            </div>
+        </section>
+
+        <section id="swap" class="section">
+            <h2>...</h2>
+            <div class="section">
+                <p>...</p>
+            </div>
+        </section>
+
+        <section id="downloads" class="section">
+            <h2>...</h2>
+            <div class="section">
+                <p>...</p>
+            </div>
+        </section>
+
+        <section id="tables" class="section">
+            <h2>Data Table</h2>
+            <div class="table-controls">
+                <input type="text" id="search-input" placeholder="Search...">
+                <select id="sort-select">
+                    <option value="default">Default Sort</option>
+                    <option value="name-asc">Name (A-Z)</option>
+                    <option value="name-desc">Name (Z-A)</option>
+                    <option value="value-asc">Value (Low-High)</option>
+                    <option value="value-desc">Value (High-Low)</option>
+                </select>
+            </div>
+            <div class="table-container">
+                <table id="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Value</th>
+                            <th>Category</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <button id="prev-btn" disabled>Previous</button>
+                <span id="page-info">Page 1 of 1</span>
+                <button id="next-btn" disabled>Next</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>...</p>
+    </footer>
+
+    <script type="module">
+        import Header from './modules/Header.js';
+        Header.init();
+    </script>
+    <script>
+        // Scroll to top when page loads
+        window.addEventListener('load', function() {
+            window.scrollTo(0, 0);
+        });
+    </script>
+</body>
+</html> 

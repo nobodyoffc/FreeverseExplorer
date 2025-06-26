@@ -1,0 +1,80 @@
+{
+  "data": [
+    {
+      "id": 11,
+      "name": "Product K",
+      "value": 275,
+      "category": "Electronics",
+      "date": "2024-01-25"
+    },
+    {
+      "id": 12,
+      "name": "Product L",
+      "value": 125,
+      "category": "Books",
+      "date": "2024-01-26"
+    },
+    {
+      "id": 13,
+      "name": "Product M",
+      "value": 350,
+      "category": "Sports",
+      "date": "2024-01-27"
+    },
+    {
+      "id": 14,
+      "name": "Product N",
+      "value": 190,
+      "category": "Clothing",
+      "date": "2024-01-28"
+    },
+    {
+      "id": 15,
+      "name": "Product O",
+      "value": 420,
+      "category": "Home",
+      "date": "2024-01-29"
+    },
+    {
+      "id": 16,
+      "name": "Product P",
+      "value": 85,
+      "category": "Books",
+      "date": "2024-01-30"
+    },
+    {
+      "id": 17,
+      "name": "Product Q",
+      "value": 310,
+      "category": "Electronics",
+      "date": "2024-01-31"
+    },
+    {
+      "id": 18,
+      "name": "Product R",
+      "value": 245,
+      "category": "Sports",
+      "date": "2024-02-01"
+    },
+    {
+      "id": 19,
+      "name": "Product S",
+      "value": 160,
+      "category": "Clothing",
+      "date": "2024-02-02"
+    },
+    {
+      "id": 20,
+      "name": "Product T",
+      "value": 390,
+      "category": "Home",
+      "date": "2024-02-03"
+    }
+  ],
+  "metadata": {
+    "lastUpdated": "2024-02-03",
+    "totalRecords": 10,
+    "source": "Sample Dataset",
+    "version": "1.0"
+  }
+} 

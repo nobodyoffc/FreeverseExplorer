@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freeverse</title>
+    <link rel="icon" type="image/x-icon" href="../images/icons/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="../images/icons/favicon.ico">
+    <link rel="apple-touch-icon" href="../images/icons/favicon.ico">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="../constants/strings.js"></script>
+    <script src="../modules/api.js"></script>
+    <link rel="stylesheet" href="../css/offlineTx.css">
+</head>
+<body data-disable-header-search="true">
+    <main>
+        <div class="title-section">
+            <h2><span data-string-key="offlineTx"></span></h2>
+            <div class="description"></div>
+            <hr class="title-divider">
+        </div>
+
+        <!-- Sender ID Container -->
+        <div class="container sender-id-container">
+            <h2 class="container-title" data-string-key="sender"></h2>
+            <div class="sender-input-group">
+                <input type="text" id="sender-input" placeholder="" data-string-key="enterSenderFid">
+                <button id="sender-confirm-btn" class="confirm-btn" data-string-key="confirm"></button>
+            </div>
+            <div id="fid-dropdown" class="fid-dropdown"></div>
+        </div>
+
+        <!-- Spend Cash Container -->
+        <div class="container spend-cash-container">
+            <h2 class="container-title" data-string-key="spendCash"></h2>
+            <div class="cash-table-container">
+                <table id="cash-table">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="select-all-cash"></th>
+                            <th data-string-key="fieldNames.id"></th>
+                            <th data-string-key="fieldNames.value"></th>
+                            <th data-string-key="fieldNames.cd"></th>
+                            <th data-string-key="fieldNames.birthTime"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="cash-table-body"></tbody>
+                </table>
+                <button id="load-more-btn" class="load-more-btn" data-string-key="loadMore"></button>
+                <div class="cash-summary">
+                    <span class="summary-item">
+                        <span data-string-key="totalValue"></span>: <span id="total-value">0</span> F
+                    </span>
+                    <span class="summary-item">
+                        <span data-string-key="totalCd"></span>: <span id="total-cd">0</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Issue Cash Container -->
+        <div class="container issue-cash-container">
+            <h2 class="container-title" data-string-key="sendTo"></h2>
+            <div class="send-to-wrapper">
+                <div id="send-to-list">
+                    <div class="send-to-row">
+                        <div class="input-group">
+                            <label data-string-key="to"></label>
+                            <div class="fid-input-wrapper">
+                                <input type="text" class="fid-input" placeholder="" data-string-key="enterFid">
+                                <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16">
+                                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="currentColor"/>
+                                </svg>
+                            </div>
+                            <div class="send-to-fid-dropdown fid-dropdown"></div>
+                        </div>
+                        <div class="input-group">
+                            <label data-string-key="amount"></label>
+                            <input type="number" class="amount-input" placeholder="" data-string-key="enterAmount">
+                            <span class="currency">F</span>
+                            <button class="delete-send-to-btn" onclick="deleteSendToRow(this)">×</button>
+                        </div>
+                    </div>
+                </div>
+                <button id="add-send-to-btn" class="add-send-to-btn">+</button>
+            </div>
+        </div>
+
+        <!-- Carving Container -->
+        <div class="container carving-container">
+            <h2 class="container-title" data-string-key="carveText"></h2>
+            <textarea id="carving-input" class="carving-input"></textarea>
+        </div>
+
+        <!-- Raw TX Container -->
+        <div class="container raw-tx-container">
+            <h2 class="container-title" data-string-key="rawTx"></h2>
+            <div id="raw-tx-content" class="raw-tx-content"></div>
+        </div>
+
+        <!-- Button Container -->
+        <div class="container button-container">
+            <button id="clear-btn" class="action-btn" data-string-key="clear"></button>
+            <button id="copy-btn" class="action-btn" data-string-key="copy"></button>
+            <button id="make-tx-btn" class="action-btn" data-string-key="create"></button>
+        </div>
+    </main>
+
+    <footer>
+        <p>...</p>
+    </footer>
+
+    <script type="module" src="../modules/offlineTx.js"></script>
+    <script type="module">
+        import Header from '../modules/Header.js';
+        // Wait for DOM content to be loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            Header.init();
+        });
+    </script>
+</body>
+</html> 

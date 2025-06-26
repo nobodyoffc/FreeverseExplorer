@@ -1,0 +1,239 @@
+/* Swap page specific styles */
+.title-section {
+    margin-bottom: 20px;
+}
+
+.title-section h2 {
+    margin-bottom: 15px;
+}
+
+.title-section .description {
+    color: #CCCCCC;
+    font-size: 1.1em;
+    margin: 0 0 15px 0;
+    display: block;
+}
+
+.title-divider {
+    border: none;
+    border-top: 1px solid #3498db;
+    margin: 0;
+    opacity: 0.5;
+}
+
+.instruction-box {
+    background-color: #000;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.instruction-box h3 {
+    margin-bottom: 15px;
+    color: #CCCCCC;
+}
+
+.instruction-box p {
+    margin: 10px 0;
+}
+
+.highlight {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.section-divider {
+    border: none;
+    border-top: 1px solid #444444;
+    margin: 30px 0;
+}
+
+.service-box {
+    background: #1a1a1a;
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    border: 1px solid #333;
+}
+
+.service-box h3 {
+    color: #2196F3;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    border-bottom: 3px solid #2196F3;
+    padding-bottom: 0.5rem;
+}
+
+.service-box h4 {
+    color: #2196F3;
+    margin: 1.5rem 0 1rem;
+    font-size: 1.5rem;
+}
+
+.service-box hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #333, transparent);
+    margin: 1.5rem 0;
+}
+
+.service-box p {
+    margin: 0.75rem 0;
+}
+
+.service-box .highlight {
+    color: #2196F3;
+    font-weight: 600;
+}
+
+.service-box .copyable {
+    cursor: pointer;
+    color: #2196F3;
+    text-decoration: none;
+}
+
+.service-box .copyable:hover {
+    color: #1976D2;
+}
+
+.service-box input[type="number"] {
+    width: 400px;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background-color: #2a2a2a;
+    color: #fff;
+}
+
+.service-box input[type="number"]:focus {
+    outline: none;
+    border-color: #2196F3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+}
+
+.service-box input[type="number"]::placeholder {
+    color: #666;
+}
+
+.service-box .result-display {
+    margin: 0.5rem 0 1rem;
+    color: #CCCCCC;
+}
+
+.service-box button {
+    background: #2196F3;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    margin: 0.5rem;
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.service-box button:hover {
+    background: #1976D2;
+    transform: translateY(-2px);
+}
+
+.avatar-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.avatar-owner {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin: 0 0px;
+    object-fit: cover;
+}
+
+.avatar-dealer {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .service-box {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .service-box h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .service-box h4 {
+        font-size: 1.2rem;
+        margin: 1rem 0 0.75rem;
+    }
+
+    .service-box input[type="number"] {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .service-box button {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+        margin: 0.25rem;
+    }
+
+    .avatar-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+
+/* Toast notification styles */
+.toast-container {
+    position: fixed;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.toast {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.toast.show {
+    opacity: 1;
+}
+
+.service-box a {
+    color: #64B5F6;  /* 更浅的蓝色 */
+    text-decoration: underline;  /* 添加下划线 */
+    transition: color 0.3s ease;
+}
+
+.service-box a:hover {
+    color: #90CAF9;  /* 悬停时更浅的蓝色 */
+}
+
+.copy-hint {
+    color: #666;
+    font-size: 0.9em;
+    margin-left: 5px;
+} 
