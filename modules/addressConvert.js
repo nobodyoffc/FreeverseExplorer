@@ -2,9 +2,11 @@
 import { PAGE_SIZE, QR_CODE_ICON_SVG } from '../constants/constants.js';
 import { escapeHtmlEntities, decodeHtmlEntities, showToast, showAsQrCodes } from './utils.js';
 import '../modules/api.js';  // Import API module
+import '../modules/LoadingOverlay.js';  // Import LoadingOverlay module
 
 // Global variables
 let pageSize = PAGE_SIZE;
+let loadingOverlay;
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', async () => {
@@ -22,6 +24,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!window.currentLanguage) {
             window.currentLanguage = 'en'; // Default to English
         }
+
+        // Initialize loading overlay
+        loadingOverlay = new LoadingOverlay();
 
         // Set page title
         const headerTitle = window.strings[window.currentLanguage]?.siteTitle || 'Freeverse';
@@ -104,10 +109,12 @@ async function handleAddressConfirm() {
 
     // Check if input is a valid FID
     if (searchString.length === 34 && (searchString[0] === 'F' || searchString[0] === '3')) {
-        // Valid FID format, no need to search
+        // Valid FID format, directly convert
+        handleConvert();
         return;
     } else if (isValidPubkey(searchString)) {
-        // Valid pubkey format, no need to search
+        // Valid pubkey format, directly convert
+        handleConvert();
         return;
     } else {
         // Search for FID
@@ -127,6 +134,10 @@ async function searchFid(searchString) {
             console.error('FID_CID_SEEK endpoint not available');
             return;
         }
+        
+        // Show loading overlay
+        loadingOverlay.show();
+        loadingOverlay.setText(window.strings[window.currentLanguage]?.searchingFid || 'Searching FID...');
         
         // Get the current working server URL
         const currentUrlHead = window.API.getWorkingServer() || window.API.SERVER_URL_HEADS[0];
@@ -152,6 +163,9 @@ async function searchFid(searchString) {
     } catch (error) {
         console.error('Error searching FID:', error);
         showToast(window.strings[window.currentLanguage].error);
+    } finally {
+        // Hide loading overlay
+        loadingOverlay.hide();
     }
 }
 
@@ -159,6 +173,15 @@ async function searchFid(searchString) {
 function displayFidDropdown(fids) {
     const dropdown = document.getElementById('fid-dropdown');
     dropdown.innerHTML = '';
+
+    // If only one result, auto-select it
+    if (fids.length === 1) {
+        document.getElementById('address-input').value = fids[0];
+        dropdown.classList.remove('active');
+        handleConvert();
+        return;
+    }
+
     dropdown.classList.add('active');
 
     fids.forEach(fid => {
@@ -168,6 +191,8 @@ function displayFidDropdown(fids) {
         item.addEventListener('click', () => {
             document.getElementById('address-input').value = fid;
             dropdown.classList.remove('active');
+            // Automatically execute convert after selecting FID
+            handleConvert();
         });
         dropdown.appendChild(item);
     });
@@ -350,12 +375,12 @@ async function handleConvert() {
         if (addrOrPubkey.length === 34 && (addrOrPubkey[0] === 'F' || addrOrPubkey[0] === '3')) {
             // Try to get pubkey for FID
             try {
-                if (!window.API?.URL_TAIL?.CID_INFO_BY_IDS) {
-                    console.error('CID_INFO_BY_IDS endpoint not available');
+                if (!window.API?.URL_TAIL?.FREER_BY_IDS) {
+                    console.error('FREER_BY_IDS endpoint not available');
                 } else {
                     // Get the current working server URL
                     const currentUrlHead = window.API.getWorkingServer() || window.API.SERVER_URL_HEADS[0];
-                    const cidUrl = `${currentUrlHead}${window.API.URL_TAIL.CID_INFO_BY_IDS}?ids=${addrOrPubkey}`;
+                    const cidUrl = `${currentUrlHead}${window.API.URL_TAIL.FREER_BY_IDS}?ids=${addrOrPubkey}`;
                     
                     const cidResponse = await fetch(cidUrl);
                     
@@ -412,7 +437,7 @@ async function handleConvert() {
                     const fieldName = formatFieldName(key);
                     const formattedValue = formatCompressedJson(JSON.stringify(value));
                     const escapedValue = escapeHtmlEntities(JSON.stringify(value));
-                    formattedLines.push(`${fieldName}：${formattedValue}<svg class="qr-icon" data-value="${escapedValue}" viewBox="0 0 24 24" width="16" height="16" style="cursor: pointer; margin-left: 4px; vertical-align: middle;">${QR_CODE_ICON_SVG}</svg>`);
+                    formattedLines.push(`<strong>${fieldName}</strong>：${formattedValue}<svg class="qr-icon" data-value="${escapedValue}" viewBox="0 0 24 24" width="16" height="16" style="cursor: pointer; margin-left: 4px; vertical-align: middle;">${QR_CODE_ICON_SVG}</svg>`);
                 }
                 displayContent = formattedLines.join('<br>');
                 copyValue = JSON.stringify(data.data, null, 2); // Keep original JSON for copying

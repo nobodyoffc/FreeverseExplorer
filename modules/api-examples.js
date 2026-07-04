@@ -155,7 +155,7 @@
 // function updateIdentityUI(data) {
 //     if (data.cid) document.getElementById('cid-value').textContent = data.cid;
 //     if (data.nobody) document.getElementById('nobody-value').textContent = data.nobody;
-//     if (data.multisign) document.getElementById('multisign-value').textContent = data.multisign;
+//     if (data.multisig) document.getElementById('multisig-value').textContent = data.multisig;
 //     if (data.nid) document.getElementById('nid-value').textContent = data.nid;
 // }
 
@@ -167,7 +167,7 @@
 // }
 
 // function updateOrganizationUI(data) {
-//     if (data.group) document.getElementById('group-value').textContent = data.group;
+//     if (data.square) document.getElementById('square-value').textContent = data.square;
 //     if (data.team) document.getElementById('team-value').textContent = data.team;
 // }
 

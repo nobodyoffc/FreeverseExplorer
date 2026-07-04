@@ -1,5 +1,5 @@
 // Import required modules
-import { escapeHtmlEntities, decodeHtmlEntities } from './utils.js';
+import { escapeHtmlEntities, decodeHtmlEntities, showSuccessNotification } from './utils.js';
 import '../modules/api.js';  // Import API module
 
 // Initialize the page
@@ -193,8 +193,18 @@ async function handleBroadcast() {
         // Call broadcast API
         const response = await broadcastTransaction(rawTx);
         
-        // Display result
-        displayResult(response);
+        // Check if broadcast was successful (code === 0)
+        if (response && response.code === 0) {
+            // Show success message at broadcast button position
+            const broadcastBtn = document.getElementById('broadcast-btn');
+            showSuccessNotification(broadcastBtn);
+            
+            // Display only the data field
+            displayResult(response.data);
+        } else {
+            // Display the full response for error cases
+            displayResult(response);
+        }
         
     } catch (error) {
         console.error('Error broadcasting transaction:', error);
@@ -248,11 +258,17 @@ function displayResult(result) {
     // Convert result to JSON string
     const jsonString = JSON.stringify(result, null, 2);
     
+    // Remove surrounding quotes if the result is a simple string
+    let displayText = jsonString;
+    if (typeof result === 'string' && jsonString.startsWith('"') && jsonString.endsWith('"')) {
+        displayText = jsonString.slice(1, -1);
+    }
+    
     // Escape HTML entities to prevent parsing issues
     const escapedJsonString = escapeHtmlEntities(jsonString);
     
     // Create the content with copyable span
-    resultContent.innerHTML = `<span class="copyable" data-value="${escapedJsonString}" style="cursor: pointer;">${jsonString}</span>`;
+    resultContent.innerHTML = `<span class="copyable" data-value="${escapedJsonString}" style="cursor: pointer;">${displayText}</span>`;
     
     // Add click handler for copyable content
     const copyableSpan = resultContent.querySelector('.copyable');
@@ -371,8 +387,14 @@ async function handleDecode() {
         // Call decode API
         const response = await decodeTransaction(rawTx);
         
-        // Display result
-        displayResult(response);
+        // Check if decode was successful (code === 0)
+        if (response && response.code === 0) {
+            // Display only the data field
+            displayResult(response.data);
+        } else {
+            // Display the full response for error cases
+            displayResult(response);
+        }
         
     } catch (error) {
         console.error('Error decoding transaction:', error);

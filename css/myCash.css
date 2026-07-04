@@ -2,8 +2,8 @@
 .container {
     background: #1a1a1a;
     border-radius: 10px;
-    padding: 2rem;
-    margin-bottom: 2rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     border: 1px solid #333;
     width: 100%;
@@ -27,6 +27,7 @@
 .fid-input,
 .amount-input {
     height: 40px;  
+    max-width: 400px;
     background-color: #000000;
     color: #CCCCCC;
 }
@@ -44,14 +45,14 @@
 
 #sender-input {
     flex: 1;
-    padding: 8px 12px;
+    padding: 8px 8px;
     border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 14px;
 }
 
 .confirm-btn {
-    padding: 8px 16px;
+    padding: 8px 8px;
     background-color: #2196F3;
     color: white;
     border: none;
@@ -117,30 +118,32 @@
 /* 设置各列的宽度 */
 .my-cash-container #cash-table th:nth-child(1),
 .my-cash-container #cash-table td:nth-child(1) {
-    width: 3%; /* 复选框列 */
+    width: 1.5%; /* 复选框列 */
     text-align: center;
 }
 
 .my-cash-container #cash-table th:nth-child(2),
 .my-cash-container #cash-table td:nth-child(2) {
-    width: 8%; /* ID列 */
+    width: 4%; /* Value列 - 缩短宽度 */
+    max-width: 60px; /* 设置最大宽度100px */
+    text-align: right;
 }
 
 .my-cash-container #cash-table th:nth-child(3),
 .my-cash-container #cash-table td:nth-child(3) {
-    width: 8%; /* Value列 */
+    width: 4%; /* CD列 - 缩短宽度 */
+    max-width: 60px; /* 设置最大宽度80px */
     text-align: right;
 }
 
 .my-cash-container #cash-table th:nth-child(4),
 .my-cash-container #cash-table td:nth-child(4) {
-    width: 8%; /* CD列 */
-    text-align: right;
+    width: 10%; /* ID列 */
 }
 
 .my-cash-container #cash-table th:nth-child(5),
 .my-cash-container #cash-table td:nth-child(5) {
-    width: 10%; /* Birth Time列 */
+    width: 6%; /* Birth Time列 */
 }
 
 .my-cash-container #cash-table th {
@@ -150,7 +153,7 @@
 }
 
 .load-more-btn {
-    padding: 8px 16px;
+    padding: 8px 8px;
     background-color: #2196F3;
     color: white;
     border: none;
@@ -312,7 +315,7 @@
 
 .add-send-to-btn {
     position: absolute;
-    right: 0;
+    left: 0;
     bottom: 0;
     width: 40px;
     height: 40px;
@@ -395,6 +398,7 @@
     border-radius: 4px;
     cursor: pointer;
     font-weight: 500;
+    font-size: 16px;
 }
 
 #copy-btn {
@@ -507,7 +511,7 @@
         flex: 1;
         min-width: 80px;
         font-size: 14px;
-        padding: 8px 12px;
+        padding: 8px 8px;
     }
 
     /* Cash Summary responsive */
@@ -520,4 +524,8 @@
     .summary-item {
         width: 100%;
     }
+}
+
+input, textarea, select {
+  font-size: 16px !important;
 } 

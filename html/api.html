@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Freeverse</title>
     <link rel="icon" type="image/x-icon" href="../images/icons/favicon.ico">
     <link rel="shortcut icon" type="image/x-icon" href="../images/icons/favicon.ico">
@@ -17,8 +17,8 @@
             <div class="description"></div>
             <hr class="title-divider">
         </div>
-        <div class="instruction-box">
-            <p data-string-key="apiContent">Under testing, will be released when ready...</p>
+        <div class="api-documentation">
+            <div id="markdown-content"></div>
         </div>
         <hr class="section-divider">
     </main>
@@ -29,9 +29,49 @@
 
     <script type="module">
         import Header from '../modules/Header.js';
+        
+        // Function to convert markdown to HTML
+        function markdownToHtml(markdown) {
+            return markdown
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
+                .replace(/^\* (.*$)/gim, '<li>$1</li>')
+                .replace(/^- (.*$)/gim, '<li>$1</li>')
+                .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+                .replace(/\*(.*)\*/gim, '<em>$1</em>')
+                .replace(/`(.*)`/gim, '<code>$1</code>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>')
+                .replace(/^(<li>.*<\/li>)$/gim, '<ul>$1</ul>')
+                .replace(/<\/ul>\s*<ul>/gim, '')
+                .replace(/^(.+)$/gim, '<p>$1</p>')
+                .replace(/<p><h/gim, '<h')
+                .replace(/<\/h([1-6])><\/p>/gim, '</h$1>')
+                .replace(/<p><ul>/gim, '<ul>')
+                .replace(/<\/ul><\/p>/gim, '</ul>')
+                .replace(/<p><li>/gim, '<li>')
+                .replace(/<\/li><\/p>/gim, '</li>');
+        }
+        
+        // Function to load and display markdown content
+        async function loadMarkdownContent() {
+            try {
+                const response = await fetch('../api-doc.md');
+                const markdownText = await response.text();
+                const htmlContent = markdownToHtml(markdownText);
+                document.getElementById('markdown-content').innerHTML = htmlContent;
+            } catch (error) {
+                console.error('Error loading markdown content:', error);
+                document.getElementById('markdown-content').innerHTML = '<p>Error loading API documentation.</p>';
+            }
+        }
+        
         // Wait for DOM content to be loaded
         document.addEventListener('DOMContentLoaded', () => {
             Header.init();
+            loadMarkdownContent();
         });
     </script>
 </body>

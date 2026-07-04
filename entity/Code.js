@@ -1,5 +1,6 @@
 // Constants
 import {
+    ID,
     OWNER,
     BIRTH_TIME,
     BIRTH_HEIGHT,
@@ -16,7 +17,7 @@ import {
     DID,
     DESC,
     LANGS,
-    URLS,
+    HOME,
     PROTOCOLS,
     WAITERS
 } from '../constants/fieldNames.js';
@@ -31,12 +32,13 @@ import {
 class Code {
     constructor() {
         // Basic properties
+        this.id = null;
         this.name = null;
         this.ver = null;
         this.did = null;
         this.desc = null;
         this.langs = null;
-        this.urls = null;
+        this.home = null;
         this.protocols = null;
         this.waiters = null;
 
@@ -62,7 +64,8 @@ class Code {
             [T_CDD]: DEFAULT_AMOUNT_LENGTH,
             [DESC]: DEFAULT_ID_LENGTH,
             [LAST_TIME]: DEFAULT_TIME_LENGTH,
-            [BIRTH_TIME]: DEFAULT_TIME_LENGTH
+            [BIRTH_TIME]: DEFAULT_TIME_LENGTH,
+            [ID]: DEFAULT_ID_LENGTH,
         };
     }
 
@@ -83,12 +86,13 @@ class Code {
         const fieldNames = window.strings?.[currentLang]?.fieldNames || {};
         
         return {
+            [ID]: fieldNames.id || 'ID',
             [OWNER]: fieldNames.owner || 'Owner',
             [NAME]: fieldNames.name || 'Name',
             [DID]: fieldNames.did || 'DID',
             [DESC]: fieldNames.desc || 'Description',
             [LANGS]: fieldNames.langs || 'Languages',
-            [URLS]: fieldNames.urls || 'URLs',
+            [HOME]: fieldNames.home || 'Home',
             [PROTOCOLS]: fieldNames.protocols || 'Protocols',
             [WAITERS]: fieldNames.waiters || 'Waiters',
             [ACTIVE]: fieldNames.active || 'Active',
@@ -112,12 +116,13 @@ class Code {
     static fromMap(map) {
         const code = new Code();
         
+        code.id = map[ID];
         code.name = map[NAME];
         code.ver = map[VER];
         code.did = map[DID];
         code.desc = map[DESC];
         code.langs = map[LANGS]?.split(',');
-        code.urls = map[URLS]?.split(',');
+        code.home = map[HOME];
         code.protocols = map[PROTOCOLS]?.split(',');
         code.waiters = map[WAITERS]?.split(',');
         

@@ -3,17 +3,20 @@ import Cash from '../entity/Cash.js';
 import RawTxInfo from '../entity/RawTxInfo.js';
 import SendTo from '../entity/SendTo.js';
 import { PAGE_SIZE, QR_CODE_ICON_SVG } from '../constants/constants.js';
-import { showAsQrCodes, escapeHtmlEntities, decodeHtmlEntities } from './utils.js';
+import { showAsQrCodes, escapeHtmlEntities, decodeHtmlEntities, getBestHeight, getCachedBestHeight } from './utils.js';
 import '../modules/api.js';  // Import API module
+import '../modules/LoadingOverlay.js';  // Import LoadingOverlay module
 
 // Global variables
-let urlHead = window.API?.urlHead ;
+// Use a getter function to always get the current working server URL
+const getUrlHead = () => window.API?.urlHead;
 let lastValues = null;
 let chosenCashMap = new Map();
 let sendToList = [];
 let currentPage = 1;
 let pageSize = PAGE_SIZE;
 let isCreateTxMode = false;
+let loadingOverlay;
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', async () => {
@@ -30,6 +33,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!window.currentLanguage) {
             window.currentLanguage = 'en'; // Default to English
         }
+
+        // Initialize loading overlay
+        loadingOverlay = new LoadingOverlay();
 
         // Set page title
         const headerTitle = window.strings[window.currentLanguage]?.siteTitle || 'Freeverse';
@@ -191,13 +197,22 @@ async function handleSenderConfirm() {
     const senderInput = document.getElementById('sender-input');
     const searchString = senderInput.value.trim();
 
-    if (!searchString) return;
+    console.log('Handle sender confirm - Search string:', searchString);
+    console.log('Handle sender confirm - Search string length:', searchString.length);
+    console.log('Handle sender confirm - Search string first char:', searchString[0]);
+
+    if (!searchString) {
+        console.log('Handle sender confirm - Empty search string, returning');
+        return;
+    }
 
     // Check if input is a valid FID
     if (searchString.length === 34 && (searchString[0] === 'F' || searchString[0] === '3')) {
+        console.log('Handle sender confirm - Valid FID format, searching cash');
         await searchCash(searchString);
     } else {
         // Search for FID
+        console.log('Handle sender confirm - Not valid FID format, searching FID');
         await searchFid(searchString);
     }
 }
@@ -208,15 +223,20 @@ async function searchCash(searchString) {
         if (!window.API?.URL_TAIL?.CASH_SEARCH) {
             return;
         }
-        const cashUrl = `${urlHead}${window.API.URL_TAIL.CASH_SEARCH}?equals=owner,${searchString}&terms=1,valid,true&sort=lastHeight,desc,birthTxIndex,desc,birthIndex,desc&size=${pageSize}`;
+        
+        // Show loading overlay
+        loadingOverlay.show();
+        loadingOverlay.setText(window.strings[window.currentLanguage]?.loadingCash || 'Loading cash...');
+        
+        const cashUrl = `${getUrlHead()}${window.API.URL_TAIL.CASH_SEARCH}?equals=owner,${searchString}&terms=1,valid,true&sort=lastHeight,desc,birthTxIndex,desc,birthIndex,desc&size=${pageSize}`;
         
         const response = await fetch(cashUrl);
         const data = await response.json();
 
         if (data?.data) {
             lastValues = data.last;
-            displayCashList(data.data);
-            
+            await displayCashList(data.data);
+
             // Check if there are more data available
             const loadMoreBtn = document.getElementById('load-more-btn');
             if (loadMoreBtn) {
@@ -233,6 +253,9 @@ async function searchCash(searchString) {
         }
     } catch (error) {
         showToast(window.strings[window.currentLanguage].error);
+    } finally {
+        // Hide loading overlay
+        loadingOverlay.hide();
     }
 }
 
@@ -240,28 +263,70 @@ async function searchCash(searchString) {
 async function searchFid(searchString) {
     try {
         if (!window.API?.URL_TAIL?.FID_CID_SEEK) {
+            showToast(window.strings[window.currentLanguage]?.apiNotAvailable || 'API not available');
             return;
         }
-        const fidUrl = `${urlHead}${window.API.URL_TAIL.FID_CID_SEEK}?part=id,cid,${searchString}&sort=id,asc&size=${pageSize}`;
         
-        const response = await fetch(fidUrl);
-        const data = await response.json();
+        // Show loading overlay
+        loadingOverlay.show();
+        loadingOverlay.setText(window.strings[window.currentLanguage]?.searchingFid || 'Searching FID...');
+        
+        const fidUrl = `${getUrlHead()}${window.API.URL_TAIL.FID_CID_SEEK}?part=${encodeURIComponent(searchString)}&size=${pageSize}`;
 
-        if (data?.data) {
+        const response = await fetch(fidUrl);
+        console.log('Searching FID - Response status:', response.status);
+        console.log('Searching FID - Response ok:', response.ok);
+        
+        const data = await response.json();
+        console.log('Searching FID - Full response JSON:', JSON.stringify(data, null, 2));
+        console.log('Searching FID - Response data:', data);
+        console.log('Searching FID - Data.data:', data?.data);
+        console.log('Searching FID - Data.data type:', typeof data?.data);
+        console.log('Searching FID - Data.data keys:', data?.data ? Object.keys(data.data) : 'undefined');
+        console.log('Searching FID - Data.data length:', data?.data ? Object.keys(data.data).length : 0);
+
+        if (data?.data && Object.keys(data.data).length > 0) {
+            console.log('Searching FID - Found results, displaying dropdown');
             displayFidDropdown(Object.keys(data.data));
+        } else {
+            // No results found
+            console.log('Searching FID - No results found');
+            showToast(window.strings[window.currentLanguage]?.noFidFound || 'No FID found');
         }
     } catch (error) {
-        showToast(window.strings[window.currentLanguage].error);
+        showToast(window.strings[window.currentLanguage]?.searchFailed || 'Search failed');
+    } finally {
+        // Hide loading overlay
+        loadingOverlay.hide();
     }
 }
 
 // Display FID dropdown
 function displayFidDropdown(fids) {
+    console.log('Display FID dropdown - FIDs to display:', fids);
+    console.log('Display FID dropdown - FIDs length:', fids.length);
+    
     const dropdown = document.getElementById('fid-dropdown');
+    console.log('Display FID dropdown - Dropdown element:', dropdown);
+    
+    if (!dropdown) {
+        console.error('Display FID dropdown - Dropdown element not found');
+        return;
+    }
+    
     dropdown.innerHTML = '';
+
+    // If only one result, auto-select it
+    if (fids.length === 1) {
+        document.getElementById('sender-input').value = fids[0];
+        dropdown.classList.remove('active');
+        searchCash(fids[0]);
+        return;
+    }
+
     dropdown.classList.add('active');
 
-    fids.forEach(fid => {
+    fids.forEach((fid, index) => {
         const item = document.createElement('div');
         item.className = 'fid-dropdown-item';
         item.textContent = fid;
@@ -275,12 +340,24 @@ function displayFidDropdown(fids) {
 }
 
 // Display cash list
-function displayCashList(cashList) {
+async function displayCashList(cashList) {
     const tableBody = document.getElementById('cash-table-body');
     tableBody.innerHTML = '';
 
+    // Current best block height is the spend height for unspent cash (UTXO) CD.
+    const bestHeight = await getBestHeight();
+
     cashList.forEach(cash => {
         const tr = document.createElement('tr');
+
+        // Store the complete cash object as a data attribute
+        tr.setAttribute('data-cash-id', cash.id);
+        tr.setAttribute('data-cash-owner', cash.owner || '');
+        tr.setAttribute('data-cash-birth-tx-id', cash.birthTxId || '');
+        tr.setAttribute('data-cash-birth-index', cash.birthIndex !== null && cash.birthIndex !== undefined ? cash.birthIndex : '');
+        tr.setAttribute('data-cash-value', cash.value || '');
+        tr.setAttribute('data-cash-birth-time', cash.birthTime || '');
+        tr.setAttribute('data-cash-birth-height', cash.birthHeight !== null && cash.birthHeight !== undefined ? cash.birthHeight : '');
         
         // Checkbox cell
         const checkboxTd = document.createElement('td');
@@ -291,11 +368,6 @@ function displayCashList(cashList) {
         checkboxTd.appendChild(checkbox);
         tr.appendChild(checkboxTd);
 
-        // ID cell
-        const idTd = document.createElement('td');
-        idTd.textContent = cash.id;
-        tr.appendChild(idTd);
-
         // Value cell
         const valueTd = document.createElement('td');
         valueTd.textContent = formatNumber(cash.value / 100000000, 8);
@@ -303,9 +375,14 @@ function displayCashList(cashList) {
 
         // CD cell
         const cdTd = document.createElement('td');
-        const cd = Cash.calculateCoinDays(cash.value, cash.birthTime, Math.floor(Date.now() / 1000));
+        const cd = Cash.calculateCoinDays(cash.value, cash.birthHeight, bestHeight);
         cdTd.textContent = formatNumber(cd, 8);
         tr.appendChild(cdTd);
+
+        // ID cell
+        const idTd = document.createElement('td');
+        idTd.textContent = cash.id;
+        tr.appendChild(idTd);
 
         // Birth Time cell
         const birthTimeTd = document.createElement('td');
@@ -344,12 +421,18 @@ function handleSelectAllCash(event) {
         const checkbox = row.querySelector('input[type="checkbox"]');
         checkbox.checked = event.target.checked;
         
-        // Create cash object from row data
+        // Create cash object from row data attributes
         const cash = new Cash();
-        cash.id = row.cells[1].textContent;
-        cash.value = parseFloat(row.cells[2].textContent) * 100000000;
-        cash.birthTime = new Date(row.cells[4].textContent).getTime() / 1000;
-        
+        cash.id = row.getAttribute('data-cash-id');
+        cash.owner = row.getAttribute('data-cash-owner');
+        cash.birthTxId = row.getAttribute('data-cash-birth-tx-id');
+        const birthIndexAttr = row.getAttribute('data-cash-birth-index');
+        cash.birthIndex = birthIndexAttr !== '' ? parseInt(birthIndexAttr) : null;
+        cash.value = parseFloat(row.getAttribute('data-cash-value'));
+        cash.birthTime = parseInt(row.getAttribute('data-cash-birth-time'));
+        const birthHeightAttr = row.getAttribute('data-cash-birth-height');
+        cash.birthHeight = birthHeightAttr !== '' && birthHeightAttr !== null ? parseInt(birthHeightAttr) : null;
+
         // Update chosenCashMap
         if (event.target.checked) {
             chosenCashMap.set(cash.id, cash);
@@ -365,9 +448,10 @@ function updateCashSummary() {
     let totalValue = 0;
     let totalCd = 0;
     
+    const bestHeight = getCachedBestHeight();
     chosenCashMap.forEach(cash => {
         totalValue += cash.value;
-        const cd = Cash.calculateCoinDays(cash.value, cash.birthTime, Math.floor(Date.now() / 1000));
+        const cd = Cash.calculateCoinDays(cash.value, cash.birthHeight, bestHeight);
         totalCd += cd;
     });
     
@@ -389,28 +473,38 @@ async function handleLoadMore() {
     if (!lastValues) return;
 
     try {
+        // Show loading overlay
+        loadingOverlay.show();
+        loadingOverlay.setText(window.strings[window.currentLanguage]?.loadingMore || 'Loading more...');
+        
         const senderInput = document.getElementById('sender-input');
         const searchString = senderInput.value.trim();
-        const cashUrl = `${urlHead}${window.API.URL_TAIL.CASH_SEARCH}?equals=owner,${searchString}&sort=lastHeight,desc,birthTxIndex,desc,birthIndex,desc&size=${pageSize}&after=${lastValues.join(',')}`;
+        const cashUrl = `${getUrlHead()}${window.API.URL_TAIL.CASH_SEARCH}?equals=owner,${searchString}&terms=1,valid,true&sort=lastHeight,desc,birthTxIndex,desc,birthIndex,desc&size=${pageSize}&after=${lastValues.join(',')}`;
         
         const response = await fetch(cashUrl);
         const data = await response.json();
 
         if (data?.data) {
             lastValues = data.last;
-            // Get existing cash list from table
+            // Get existing cash list from table data attributes
             const tableBody = document.getElementById('cash-table-body');
             const existingCashList = Array.from(tableBody.querySelectorAll('tr')).map(row => {
                 const cash = new Cash();
-                cash.id = row.cells[1].textContent;
-                cash.value = parseFloat(row.cells[2].textContent) * 100000000;
-                cash.birthTime = new Date(row.cells[4].textContent).getTime() / 1000;
+                cash.id = row.getAttribute('data-cash-id');
+                cash.owner = row.getAttribute('data-cash-owner');
+                cash.birthTxId = row.getAttribute('data-cash-birth-tx-id');
+                const birthIndexAttr = row.getAttribute('data-cash-birth-index');
+                cash.birthIndex = birthIndexAttr !== '' ? parseInt(birthIndexAttr) : null;
+                cash.value = parseFloat(row.getAttribute('data-cash-value'));
+                cash.birthTime = parseInt(row.getAttribute('data-cash-birth-time'));
+                const birthHeightAttr = row.getAttribute('data-cash-birth-height');
+                cash.birthHeight = birthHeightAttr !== '' && birthHeightAttr !== null ? parseInt(birthHeightAttr) : null;
                 return cash;
             });
             
             // Combine existing and new cash list
             const combinedCashList = existingCashList.concat(data.data);
-            displayCashList(combinedCashList);
+            await displayCashList(combinedCashList);
             
             // Check if there are more data available
             const loadMoreBtn = document.getElementById('load-more-btn');
@@ -428,6 +522,9 @@ async function handleLoadMore() {
         }
     } catch (error) {
         showToast(window.strings[window.currentLanguage].error);
+    } finally {
+        // Hide loading overlay
+        loadingOverlay.hide();
     }
 }
 
@@ -478,146 +575,22 @@ async function handleQrCode(event) {
     }
     
     try {
-        // Convert each cash object to JSON string
-        const jsonStrings = cashList.map(cash => JSON.stringify(cash));
+        // Show loading overlay
+        loadingOverlay.show();
+        loadingOverlay.setText(window.strings[window.currentLanguage]?.loadingQrCode || 'Loading QR code...');
         
-        // Load QR code library if not already loaded
-        if (typeof QRCode === 'undefined') {
-            await new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
-            });
-        }
+        // Convert cash list to JSON string, then to bytes for chunked QR display
+        const fullText = cashList.map(cash => JSON.stringify(cash)).join('\n');
+        const bytes = new TextEncoder().encode(fullText);
 
-        // Create modal container
-        const modal = document.createElement('div');
-        modal.className = 'qr-modal';
-        
-        // Create modal content
-        const modalContent = document.createElement('div');
-        modalContent.className = 'qr-modal-content';
-        
-        // Create QR code container
-        const qrContainer = document.createElement('div');
-        qrContainer.className = 'qr-container';
-        
-        // Create navigation buttons
-        const prevBtn = document.createElement('button');
-        prevBtn.className = 'qr-nav-btn prev-btn';
-        prevBtn.innerHTML = '&lt;';
-        
-        const nextBtn = document.createElement('button');
-        nextBtn.className = 'qr-nav-btn next-btn';
-        nextBtn.innerHTML = '&gt;';
-        
-        // Create page indicator
-        const pageIndicator = document.createElement('div');
-        pageIndicator.className = 'qr-page-indicator';
-        
-        // Create close button
-        const closeBtn = document.createElement('button');
-        closeBtn.className = 'qr-close-btn';
-        closeBtn.textContent = window.currentLanguage === 'en' ? 'OK' : '返回';
-        
-        let currentCashIndex = 0;
-        
-        // Function to update QR code display
-        const updateQRCode = () => {
-            qrContainer.innerHTML = '';
-            const qrDiv = document.createElement('div');
-            qrDiv.style.width = '300px';
-            qrDiv.style.height = '300px';
-            qrContainer.appendChild(qrDiv);
-            
-            // Get current JSON string
-            const jsonString = jsonStrings[currentCashIndex];
-            
-            // Create QR code
-            new QRCode(qrDiv, {
-                text: jsonString,
-                width: 300,
-                height: 300,
-                colorDark: '#000000',
-                colorLight: '#ffffff',
-                correctLevel: QRCode.CorrectLevel.L
-            });
-            
-            // Update page indicator to show current cash
-            const currentLang = window.currentLanguage || 'en';
-            const cashText = currentLang === 'zh' ? '钞票' : 'Cash';
-            pageIndicator.textContent = `${cashText} ${currentCashIndex + 1}/${jsonStrings.length}`;
-            
-            // Update button states
-            prevBtn.disabled = currentCashIndex === 0;
-            nextBtn.disabled = currentCashIndex === jsonStrings.length - 1;
-        };
-        
-        // Add event listeners
-        prevBtn.addEventListener('click', () => {
-            if (currentCashIndex > 0) {
-                currentCashIndex--;
-                updateQRCode();
-            }
-        });
-        
-        nextBtn.addEventListener('click', () => {
-            if (currentCashIndex < jsonStrings.length - 1) {
-                currentCashIndex++;
-                updateQRCode();
-            }
-        });
-        
-        closeBtn.addEventListener('click', () => {
-            modal.remove();
-        });
-        
-        // Add touch swipe support
-        let touchStartX = 0;
-        let touchEndX = 0;
-        
-        qrContainer.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-        });
-        
-        qrContainer.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        });
-        
-        const handleSwipe = () => {
-            const swipeThreshold = 50;
-            if (touchEndX < touchStartX - swipeThreshold) {
-                // Swipe left - next cash
-                if (currentCashIndex < jsonStrings.length - 1) {
-                    currentCashIndex++;
-                    updateQRCode();
-                }
-            } else if (touchEndX > touchStartX + swipeThreshold) {
-                // Swipe right - previous cash
-                if (currentCashIndex > 0) {
-                    currentCashIndex--;
-                    updateQRCode();
-                }
-            }
-        };
-        
-        // Assemble modal
-        modalContent.appendChild(qrContainer);
-        modalContent.appendChild(prevBtn);
-        modalContent.appendChild(nextBtn);
-        modalContent.appendChild(pageIndicator);
-        modalContent.appendChild(closeBtn);
-        modal.appendChild(modalContent);
-        
-        // Add to document and show first QR code
-        document.body.appendChild(modal);
-        updateQRCode();
+        // Show QR codes using the shared chunked QR code utility
+        await showAsQrCodes(bytes);
         
     } catch (error) {
         showToast('Error showing QR code');
+    } finally {
+        // Hide loading overlay
+        loadingOverlay.hide();
     }
 }
 
@@ -716,14 +689,24 @@ function deleteSendToRow(button) {
 async function handleSendToFidSearch(fidInput) {
     const searchString = fidInput.value.trim();
 
-    if (!searchString) return;
+    console.log('Handle Send To FID search - Search string:', searchString);
+    console.log('Handle Send To FID search - Search string length:', searchString.length);
+    console.log('Handle Send To FID search - Search string first char:', searchString[0]);
+    console.log('Handle Send To FID search - FID input element:', fidInput);
+
+    if (!searchString) {
+        console.log('Handle Send To FID search - Empty search string, returning');
+        return;
+    }
 
     // Check if input is a valid FID
     if (searchString.length === 34 && (searchString[0] === 'F' || searchString[0] === '3')) {
         // Valid FID format, no need to search
+        console.log('Handle Send To FID search - Valid FID format, no need to search');
         return;
     } else {
         // Search for FID
+        console.log('Handle Send To FID search - Not valid FID format, searching FID');
         await searchSendToFid(fidInput, searchString);
     }
 }
@@ -732,41 +715,76 @@ async function handleSendToFidSearch(fidInput) {
 async function searchSendToFid(fidInput, searchString) {
     try {
         if (!window.API?.URL_TAIL?.FID_CID_SEEK) {
+            showToast(window.strings[window.currentLanguage]?.apiNotAvailable || 'API not available');
             return;
         }
-        const fidUrl = `${urlHead}${window.API.URL_TAIL.FID_CID_SEEK}?part=id,cid,${searchString}&sort=id,asc&size=${pageSize}`;
         
+        // Show loading overlay
+        loadingOverlay.show();
+        loadingOverlay.setText(window.strings[window.currentLanguage]?.searchingFid || 'Searching FID...');
+        
+        const fidUrl = `${getUrlHead()}${window.API.URL_TAIL.FID_CID_SEEK}?part=${encodeURIComponent(searchString)}&size=${pageSize}`;
+
         const response = await fetch(fidUrl);
         const data = await response.json();
+        console.log('Searching Send To FID - Full response JSON:', JSON.stringify(data, null, 2));
+        console.log('Searching Send To FID - Response data:', data);
+        console.log('Searching Send To FID - Data.data:', data?.data);
+        console.log('Searching Send To FID - Data.data type:', typeof data?.data);
+        console.log('Searching Send To FID - Data.data keys:', data?.data ? Object.keys(data.data) : 'undefined');
+        console.log('Searching Send To FID - Data.data length:', data?.data ? Object.keys(data.data).length : 0);
 
-        if (data?.data) {
+        if (data?.data && Object.keys(data.data).length > 0) {
+            console.log('Searching Send To FID - Found results, displaying dropdown');
             displaySendToFidDropdown(fidInput, Object.keys(data.data));
+        } else {
+            // No results found
+            console.log('Searching Send To FID - No results found');
+            showToast(window.strings[window.currentLanguage]?.noFidFound || 'No FID found');
         }
     } catch (error) {
-        showToast(window.strings[window.currentLanguage].error);
+        showToast(window.strings[window.currentLanguage]?.searchFailed || 'Search failed');
+    } finally {
+        // Hide loading overlay
+        loadingOverlay.hide();
     }
 }
 
 // Display Send To FID dropdown
 function displaySendToFidDropdown(fidInput, fids) {
-    const inputGroup = fidInput.closest('.input-group');
-    const dropdown = inputGroup.querySelector('.send-to-fid-dropdown');
+    console.log('Display Send To FID dropdown - FIDs to display:', fids);
+    console.log('Display Send To FID dropdown - FIDs length:', fids.length);
+    console.log('Display Send To FID dropdown - FID input element:', fidInput);
     
-    if (!dropdown) return;
+    const inputGroup = fidInput.closest('.input-group');
+    console.log('Display Send To FID dropdown - Input group:', inputGroup);
+    
+    const dropdown = inputGroup.querySelector('.send-to-fid-dropdown');
+    console.log('Display Send To FID dropdown - Dropdown element:', dropdown);
+    
+    if (!dropdown) {
+        console.error('Display Send To FID dropdown - Dropdown element not found');
+        return;
+    }
     
     dropdown.innerHTML = '';
     dropdown.classList.add('active');
+    console.log('Display Send To FID dropdown - Dropdown activated');
 
-    fids.forEach(fid => {
+    fids.forEach((fid, index) => {
+        console.log(`Display Send To FID dropdown - Creating item ${index + 1}:`, fid);
         const item = document.createElement('div');
         item.className = 'fid-dropdown-item';
         item.textContent = fid;
         item.addEventListener('click', () => {
+            console.log('Display Send To FID dropdown - Item clicked:', fid);
             fidInput.value = fid;
             dropdown.classList.remove('active');
         });
         dropdown.appendChild(item);
     });
+    
+    console.log('Display Send To FID dropdown - Total items created:', fids.length);
 }
 
 // Handle copy TX
@@ -1008,6 +1026,10 @@ function handleMakeTx() {
                     
                     if (value) {
                         try {
+                            // Show loading overlay
+                            loadingOverlay.show();
+                            loadingOverlay.setText(window.strings[window.currentLanguage]?.loadingQrCode || 'Loading QR code...');
+                            
                             // Decode HTML entities to get the original value
                             const decodedValue = decodeHtmlEntities(value);
                             
@@ -1019,6 +1041,9 @@ function handleMakeTx() {
                             await showAsQrCodes(bytes);
                         } catch (error) {
                             showToast('Error showing QR code');
+                        } finally {
+                            // Hide loading overlay
+                            loadingOverlay.hide();
                         }
                     }
                 });
@@ -1032,6 +1057,36 @@ function handleMakeTx() {
 
 // Handle clear
 function handleClear() {
+    // Reset create TX mode
+    isCreateTxMode = false;
+    
+    // Show Copy, QR Code, Create TX buttons
+    const copyBtn = document.getElementById('copy-btn');
+    const qrCodeBtn = document.getElementById('qr-code-btn');
+    const createTxBtn = document.getElementById('create-tx-btn');
+    
+    if (copyBtn) copyBtn.style.display = 'inline-block';
+    if (qrCodeBtn) qrCodeBtn.style.display = 'inline-block';
+    if (createTxBtn) createTxBtn.style.display = 'inline-block';
+    
+    // Hide Clear, Copy TX, Make TX buttons
+    const clearBtn = document.getElementById('clear-btn');
+    const copyTxBtn = document.getElementById('copy-tx-btn');
+    const makeTxBtn = document.getElementById('make-tx-btn');
+    
+    if (clearBtn) clearBtn.style.display = 'none';
+    if (copyTxBtn) copyTxBtn.style.display = 'none';
+    if (makeTxBtn) makeTxBtn.style.display = 'none';
+    
+    // Hide create TX containers
+    const issueCashContainer = document.querySelector('.issue-cash-container');
+    const carvingContainer = document.querySelector('.carving-container');
+    const rawTxContainer = document.querySelector('.raw-tx-container');
+    
+    if (issueCashContainer) issueCashContainer.style.display = 'none';
+    if (carvingContainer) carvingContainer.style.display = 'none';
+    if (rawTxContainer) rawTxContainer.style.display = 'none';
+
     // Clear sender input
     const senderInput = document.getElementById('sender-input');
     if (senderInput) {

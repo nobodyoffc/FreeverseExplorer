@@ -5,13 +5,16 @@ import './utils.js';
 import { getSearchConfig } from './search-config.js';
 
 // Get the URL head from global API
-let urlHead = window.API.urlHead;
+// Use a getter function to always get the current working server URL
+const getUrlHead = () => window.API.urlHead;
 let loadingOverlay;
 let currentPage = 1;
 let pageSize = PAGE_SIZE;
 let pageTokenListMap = new Map();
 let lastValues = null;
 let currentSearchString = '';
+let cacheTimestamp = null;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache duration
 
 // Event listener configurations
 const EVENT_LISTENERS = {
@@ -47,6 +50,9 @@ const EVENT_LISTENERS = {
 document.addEventListener('DOMContentLoaded', async () => {
     // Wait for strings to be loaded
     await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Flag to prevent duplicate language change handling
+    let languageChangeHandled = false;
 
     // Set page title
     const headerTitle = window.strings[window.currentLanguage].siteTitle;
@@ -54,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.title = `${headerTitle} - ${pageTitle}`;
 
     // Check if API.urlHead is available
-    if (!urlHead) {
+    if (!getUrlHead()) {
         console.error('API.urlHead not available');
         return;
     }
@@ -71,12 +77,63 @@ document.addEventListener('DOMContentLoaded', async () => {
         handleSearch();
     });
     
-    // Load Token list
-    loadTokenList();
+    // Check if this is a page refresh or navigation
+    const isPageRefresh = performance.navigation.type === 1 || 
+                         (performance.getEntriesByType('navigation')[0] && 
+                          performance.getEntriesByType('navigation')[0].type === 'reload');
+    
+    // Check for search parameter in URL (from homepage)
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get('search');
+    
+    if (searchParam) {
+        currentSearchString = searchParam;
+        // Set the search input value
+        const desktopSearchInput = document.getElementById('desktop-search-input');
+        const mobileSearchInput = document.getElementById('mobile-search-input');
+        if (desktopSearchInput) desktopSearchInput.value = searchParam;
+        if (mobileSearchInput) mobileSearchInput.value = searchParam;
+        
+        // Check if we have cached data for this search
+        if (!isPageRefresh && pageTokenListMap.has(1) && isCacheValid()) {
+            // Use cached data if available, not a page refresh, and cache is still valid
+            const currentPageData = pageTokenListMap.get(currentPage);
+            if (currentPageData) {
+                displayTokenList(currentPageData);
+                updatePaginationButtons();
+                return;
+            }
+        }
+        
+        // Load new data (either no cache or page refresh)
+        const config = getSearchConfig();
+        pageTokenListMap.clear();
+        lastValues = null;
+        currentPage = 1;
+        loadTokenList(1, false, {
+            searchString: searchParam,
+            searchableFields: config.searchableFields
+        });
+    } else {
+        // Check if we have cached data for default list
+        if (!isPageRefresh && pageTokenListMap.has(1) && isCacheValid()) {
+            // Use cached data if available, not a page refresh, and cache is still valid
+            const currentPageData = pageTokenListMap.get(currentPage);
+            if (currentPageData) {
+                displayTokenList(currentPageData);
+                updatePaginationButtons();
+                return;
+            }
+        }
+        
+        // Load new data (either no cache or page refresh)
+        loadTokenList();
+    }
 
     // Add language change listener
     window.addEventListener('languageChanged', (event) => {
-        if (event.detail && event.detail.lang) {
+        if (event.detail && event.detail.lang && !languageChangeHandled) {
+            languageChangeHandled = true;
             // Update description
             updateDescription();
             // Re-render the table with new field names
@@ -84,6 +141,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (currentPageData) {
                 displayTokenList(currentPageData);
                 // Update pagination when language changes
+                updatePaginationButtons();
+            }
+            // Reset flag after a short delay to allow future language changes
+            setTimeout(() => {
+                languageChangeHandled = false;
+            }, 100);
+        }
+    });
+
+    // Add page visibility change listener to handle back navigation
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && pageTokenListMap.has(currentPage) && isCacheValid()) {
+            // Page became visible and we have valid cached data, just display it
+            const currentPageData = pageTokenListMap.get(currentPage);
+            if (currentPageData) {
+                displayTokenList(currentPageData);
                 updatePaginationButtons();
             }
         }
@@ -104,11 +177,17 @@ function initializeEventListeners() {
     });
 }
 
+// Check if cache is still valid
+function isCacheValid() {
+    if (!cacheTimestamp) return false;
+    return (Date.now() - cacheTimestamp) < CACHE_DURATION;
+}
+
 // Load token list
 async function loadTokenList(page = 1, useCache = true, config = null) {
     try {
         // Check if we have cached data for this page
-        if (useCache && pageTokenListMap.has(page)) {
+        if (useCache && pageTokenListMap.has(page) && isCacheValid()) {
             displayTokenList(pageTokenListMap.get(page));
             updatePaginationButtons();
             return;
@@ -117,10 +196,10 @@ async function loadTokenList(page = 1, useCache = true, config = null) {
         loadingOverlay.show();
         loadingOverlay.setText('Loading token list...');
         
-        let url = `${urlHead}${window.API.URL_TAIL.TOKEN_SEARCH}?`;
+        let url = `${getUrlHead()}${window.API.URL_TAIL.TOKEN_SEARCH}?`;
         
         if (config && config.searchString) {
-            url += `part=${config.searchableFields.join(',')},${config.searchString}&`;
+            url += `part=${config.searchableFields.join(',')},${encodeURIComponent(config.searchString)}&`;
         } else {
             url += 'terms=1,closed,false&';
         }
@@ -138,6 +217,9 @@ async function loadTokenList(page = 1, useCache = true, config = null) {
         if (data?.data) {
             // Save the token list to our map
             pageTokenListMap.set(page, data.data);
+            
+            // Update cache timestamp
+            cacheTimestamp = Date.now();
             
             // Update last values for next page
             if (data.last) {
@@ -166,7 +248,7 @@ function handleSearch() {
     // Get search configuration
     const config = getSearchConfig();
     
-    // Clear existing data
+    // Always clear cache and load fresh data for any search
     pageTokenListMap.clear();
     lastValues = null;
     currentPage = 1;
@@ -300,7 +382,7 @@ function displayTokenList(tokenList) {
                             year: '2-digit',
                             month: '2-digit',
                             day: '2-digit'
-                        }).replace(/\//g, '/');
+                        }).replace(/\//g, '-');
                         const timeStr = date.toLocaleTimeString(undefined, {
                             hour: '2-digit',
                             minute: '2-digit',

@@ -4,6 +4,7 @@ export const OUT_COUNT = 'outCount';
 export const IN_COUNT = 'inCount';
 export const IN_VALUE_T = 'inValueT';
 export const OUT_VALUE_T = 'outValueT';
+export const PAID = 'paid';
 
 export const FEE = 'fee';
 export const CDD = 'cdd';
@@ -46,7 +47,6 @@ export const USED_CIDS = 'usedCids';
 export const PUBKEY = 'pubkey';
 export const IS_NOBODY = 'isNobody';
 export const FID = 'fid';
-export const HOMEPAGE = 'homepage';
 export const GUIDE = 'guide';
 export const MASTER = 'master';
 export const BALANCE = 'balance';
@@ -57,6 +57,7 @@ export const REPUTATION = 'reputation';
 export const HOT = 'hot';
 export const WEIGHT = 'weight';
 export const NOTICE_FEE = 'noticeFee';
+export const HOME = 'home';
 export const BIRTH_HEIGHT = 'birthHeight';
 export const NAME_TIME = 'nameTime';
 export const LAST_HEIGHT = 'lastHeight';
@@ -80,11 +81,11 @@ export const LEAK_TX_ID = 'leakTxId';
 export const LEAK_TX_INDEX = 'leakTxIndex';
 export const PRIKEY = 'prikey';
 
-// Multisign fields
+// Multisig fields
 export const FIDS = 'fids';
 export const PUBKEYS = 'pubkeys';
 export const REDEEM_SCRIPT = 'redeemScript';
-export const MULTISIGN_DETAIL = 'multisignDetail';
+export const MULTISIG_DETAIL = 'multisigDetail';
 
 // Protocol, Code, Service and App related fields
 export const LAST_TX_ID = 'lastTxId';
@@ -96,6 +97,8 @@ export const CLOSE_STATEMENT = 'closeStatement';
 export const TYPE = 'type';
 export const SN = 'sn';
 export const VER = 'ver';
+export const DEALER = 'dealer';
+export const DEALER_PUBKEY = 'dealerPubkey';
 export const DID = 'did';
 export const LANG = 'lang';
 export const PRE_PID = 'prePid';
@@ -125,6 +128,7 @@ export const AUTHORS = 'authors';
 export const DELETED = 'deleted';
 export const SUMMARY = 'summary';
 export const KEYWORDS = 'keywords';
+export const FORMAT = 'format';
 export const ON_DID = 'onDid';
 export const COSIGNERS_INVITED = 'cosignersInvited';
 export const COSIGNERS_SIGNED = 'cosignersSigned';
@@ -144,6 +148,8 @@ export const SPENT_CASHES = 'spentCashes';
 export const ISSUED_CASHES = 'issuedCashes';
 export const OUT_VALUE = 'outValue';
 export const SENDER = 'sender';
+export const FROM = 'from';
+export const TO = 'to';
 export const CIPHER_SEND = 'cipherSend';
 export const CIPHER_RECI = 'cipherReci';
 export const TEXT_ID = 'textId';
@@ -151,3 +157,24 @@ export const SECRET_DETAIL = 'secretDetail';
 export const CONTACT_DETAIL = 'contactDetail';
 export const CONTACT_LIST = 'contactList';
 export const CONTACT = 'contact';
+
+// News fields
+export const DOER = 'doer';
+export const ACT = 'act';
+export const OBJECT_TYPE = 'objectType';
+export const OBJECT_ID = 'objectId';
+export const OBJECT_NAME = 'objectName';
+export const OBJECT_BRIEF = 'objectBrief';
+
+// Service pricing fields
+export const PRICE_PER_KB = 'pricePerKB';
+export const PRICE_PER_KB_IN = 'pricePerKBIn';
+export const PRICE_PER_KB_OUT = 'pricePerKBOut';
+export const PRICE_PER_DAY_KB = 'pricePerDayKB';
+export const MIN_PAYMENT = 'minPayment';
+export const PRICE_PER_REQUEST = 'pricePerRequest';
+export const SESSION_DAYS = 'sessionDays';
+export const CONSUME_VIA_SHARE = 'consumeViaShare';
+export const ORDER_VIA_SHARE = 'orderViaShare';
+export const CURRENCY = 'currency';
+export const COMPONENTS = 'components';

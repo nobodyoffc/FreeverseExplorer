@@ -1,3 +1,8 @@
+/* Prevent zoom on input focus in mobile devices */
+input, textarea, select {
+  font-size: 16px !important;
+}
+
 /* Reset and base styles */
 * {
     margin: 0;
@@ -93,8 +98,7 @@ header h1 {
 .nav-search-container .desktop-search-container {
     margin: 0;
     flex: none;
-    min-width: 300px;
-    max-width: 350px;
+    min-width: 350px;
 }
 
 /* Desktop search container - hidden by default (mobile first) */
@@ -106,8 +110,7 @@ header h1 {
     border-radius: 20px;
     padding: 0.25rem;
     margin: 0 1rem;
-    min-width: 300px;
-    max-width: 350px;
+    min-width: 350px;
     flex: 1;
 }
 
@@ -790,6 +793,15 @@ footer {
         font-size: 0.9rem;
     }
     
+    /* Detail table adjustments for mobile */
+    .detail-table-unified th {
+        font-size: 1.1rem; /* 更大的字段名字体 */
+        font-weight: 600;
+    }
+    .detail-table-unified td {
+        font-size: 0.75rem; /* 更小的值字体 */
+    }
+    
     .pagination {
         flex-wrap: wrap;
         gap: 0.5rem;
@@ -1063,6 +1075,17 @@ footer {
     .stat-value {
         font-size: 0.75rem;
     }
+    
+    /* Detail table adjustments for extra small screens */
+    .detail-table-unified th {
+        font-size: 1.2rem; /* 更大的字段名字体 */
+        font-weight: 600;
+        padding: 10px;
+    }
+    .detail-table-unified td {
+        font-size: 0.7rem; /* 更小的值字体 */
+        padding: 10px;
+    }
 }
 
 /* Utility classes */
@@ -1198,6 +1221,16 @@ footer {
     font-weight: bold;
 }
 
+.complex-object {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    line-height: 1.4;
+    white-space: pre-line;
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
 /* Unified style for all list page table headers */
 .list-table th {
     color: #2196F3;
@@ -1208,10 +1241,14 @@ footer {
     .detail-table-unified th,
     .detail-table-unified td {
         padding: 12px;
-        font-size: 0.85rem;
     }
     .detail-table-unified th {
         width: 120px;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    .detail-table-unified td {
+        font-size: 0.8rem;
     }
 }
 

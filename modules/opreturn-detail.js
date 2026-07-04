@@ -5,7 +5,8 @@ import { escapeHtmlEntities, decodeHtmlEntities, showAsQrCodes, showToast } from
 import { QR_CODE_ICON_SVG } from '../constants/constants.js';
 
 // Get the URL head from global API
-let urlHead = window.API.urlHead;
+// Use a getter function to always get the current working server URL
+const getUrlHead = () => window.API.urlHead;
 const urlTail = window.API.URL_TAIL.OPRETURN_BY_IDS;
 let loadingOverlay;
 
@@ -151,7 +152,7 @@ function displayOpReturnDetails(opReturnInstance) {
                 minute: '2-digit',
                 second: '2-digit',
                 hour12: false
-            });
+            }).replace(/\//g, '-');
         }
 
         // Ensure originalValue is a string for copying

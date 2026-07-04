@@ -2,10 +2,12 @@
 import { PAGE_SIZE, QR_CODE_ICON_SVG } from '../constants/constants.js';
 import { escapeHtmlEntities, decodeHtmlEntities, showToast, showAsQrCodes } from './utils.js';
 import '../modules/api.js';  // Import API module
+import '../modules/LoadingOverlay.js';  // Import LoadingOverlay module
 
 // Global variables
 let pageSize = PAGE_SIZE;
 let currentPubkey = '';
+let loadingOverlay;
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', async () => {
@@ -23,6 +25,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!window.currentLanguage) {
             window.currentLanguage = 'en'; // Default to English
         }
+
+        // Initialize loading overlay
+        loadingOverlay = new LoadingOverlay();
 
         // Set page title
         const headerTitle = window.strings[window.currentLanguage]?.siteTitle || 'Freeverse';
@@ -141,18 +146,27 @@ function formatCompressedJson(jsonString) {
     return formatted;
 }
 
+// Show chosen FID below the pubkey input
+function showChosenFid(fid) {
+    const chosenFidEl = document.getElementById('chosen-fid');
+    if (chosenFidEl) {
+        chosenFidEl.textContent = `FID: ${fid}`;
+        chosenFidEl.classList.add('active');
+    }
+}
+
 // Get pubkey from FID
 async function getPubkeyFromFid(fid) {
     try {
-        if (!window.API?.URL_TAIL?.CID_INFO_BY_IDS) {
-            console.error('CID_INFO_BY_IDS endpoint not available');
+        if (!window.API?.URL_TAIL?.FREER_BY_IDS) {
+            console.error('FREER_BY_IDS endpoint not available');
             showEncryptError(window.strings[window.currentLanguage]?.error || 'Error');
             return;
         }
 
         // Get the current working server URL
         const currentUrlHead = window.API.getWorkingServer() || window.API.SERVER_URL_HEADS[0];
-        const cidUrl = `${currentUrlHead}${window.API.URL_TAIL.CID_INFO_BY_IDS}?ids=${fid}`;
+        const cidUrl = `${currentUrlHead}${window.API.URL_TAIL.FREER_BY_IDS}?ids=${fid}`;
         
         const cidResponse = await fetch(cidUrl);
         
@@ -165,6 +179,7 @@ async function getPubkeyFromFid(fid) {
                 if (cidData.code === 0 && cidData.data && cidData.data[fid] && cidData.data[fid].pubkey) {
                     currentPubkey = cidData.data[fid].pubkey;
                     document.getElementById('pubkey-input').value = currentPubkey;
+                    showChosenFid(fid);
                 } else {
                     showEncryptError(window.strings[window.currentLanguage]?.error || 'Error');
                 }
@@ -185,6 +200,10 @@ async function searchFid(searchString) {
             console.error('FID_CID_SEEK endpoint not available');
             return;
         }
+        
+        // Show loading overlay
+        loadingOverlay.show();
+        loadingOverlay.setText(window.strings[window.currentLanguage]?.searchingFid || 'Searching FID...');
         
         // Get the current working server URL
         const currentUrlHead = window.API.getWorkingServer() || window.API.SERVER_URL_HEADS[0];
@@ -210,13 +229,25 @@ async function searchFid(searchString) {
     } catch (error) {
         console.error('Error searching FID:', error);
         showToast(window.strings[window.currentLanguage].error);
+    } finally {
+        // Hide loading overlay
+        loadingOverlay.hide();
     }
 }
 
 // Display FID dropdown
-function displayFidDropdown(fids) {
+async function displayFidDropdown(fids) {
     const dropdown = document.getElementById('fid-dropdown');
     dropdown.innerHTML = '';
+
+    // If only one result, auto-select it
+    if (fids.length === 1) {
+        document.getElementById('pubkey-input').value = fids[0];
+        dropdown.classList.remove('active');
+        await getPubkeyFromFid(fids[0]);
+        return;
+    }
+
     dropdown.classList.add('active');
 
     fids.forEach(fid => {
@@ -556,6 +587,13 @@ function handleClear() {
     if (fidDropdown) {
         fidDropdown.classList.remove('active');
         fidDropdown.innerHTML = '';
+    }
+
+    // Clear chosen FID display
+    const chosenFidEl = document.getElementById('chosen-fid');
+    if (chosenFidEl) {
+        chosenFidEl.textContent = '';
+        chosenFidEl.classList.remove('active');
     }
 
     // Clear any error messages

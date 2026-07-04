@@ -14,7 +14,7 @@ import {
     DEFAULT_BOOLEAN_LENGTH
 } from '../constants/constants.js';
 
-class Multisign {
+class Multisig {
     constructor() {
         this.id = null;
 
@@ -73,4 +73,4 @@ class Multisign {
 
 }
 
-export default Multisign; 
+export default Multisig;

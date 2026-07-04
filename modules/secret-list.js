@@ -6,7 +6,8 @@ import { getSearchConfig } from './search-config.js';
 import { showAsQrCodes } from './utils.js';
 
 // Get the URL head from global API
-let urlHead = window.API.urlHead;
+// Use a getter function to always get the current working server URL
+const getUrlHead = () => window.API.urlHead;
 let loadingOverlay;
 let currentPage = 1;
 let pageSize = PAGE_SIZE;
@@ -55,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.title = `${headerTitle} - ${pageTitle}`;
 
     // Check if API.urlHead is available
-    if (!urlHead) {
+    if (!getUrlHead()) {
         console.error('API.urlHead not available');
         return;
     }
@@ -118,7 +119,7 @@ async function loadSecretList(page = 1, useCache = true, config = null) {
         loadingOverlay.show();
         loadingOverlay.setText('Loading secret list...');
         
-        let url = `${urlHead}${window.API.URL_TAIL.SECRET_SEARCH}?`;
+        let url = `${getUrlHead()}${window.API.URL_TAIL.SECRET_SEARCH}?`;
         
         if (config && config.searchString) {
             url += `part=${config.searchableFields.join(',')},${config.searchString}&`;
@@ -301,7 +302,7 @@ function displaySecretList(secretList) {
                             year: '2-digit',
                             month: '2-digit',
                             day: '2-digit'
-                        }).replace(/\//g, '/');
+                        }).replace(/\//g, '-');
                         const timeStr = date.toLocaleTimeString(undefined, {
                             hour: '2-digit',
                             minute: '2-digit',

@@ -8,6 +8,15 @@ const searchConfig = {
         disabledPlaceholder: 'searchPlaceholderDetail'  // Use detail placeholder when disabled
     },
     
+    // Homepage configuration
+    home: {
+        placeholder: 'searchPlaceholderHome',
+        searchableFields: ['id'],
+        enabled: true,
+        disabledPlaceholder: 'searchPlaceholderDetail',
+        isHomepage: true  // Special flag for homepage
+    },
+    
     // Page specific configurations
     pages: {
         'cash-list': {
@@ -18,7 +27,7 @@ const searchConfig = {
         },
         'tx-list': {
             placeholder: 'searchPlaceholderTx',
-            searchableFields: ['id', 'blockId'],
+            searchableFields: ['id', 'blockId','spentCashes.owner','issuedCashes.owner'],
             enabled: true,
             disabledPlaceholder: 'searchPlaceholderDetail'
         },
@@ -58,8 +67,8 @@ const searchConfig = {
             enabled: true,
             disabledPlaceholder: 'searchPlaceholderDetail'
         },
-        'multisign-list': {
-            placeholder: 'searchPlaceholderMultisign',
+        'multisig-list': {
+            placeholder: 'searchPlaceholderMultisig',
             searchableFields: ['id', 'fids', 'pubkeys'],
             enabled: true,
             disabledPlaceholder: 'searchPlaceholderDetail'
@@ -88,8 +97,8 @@ const searchConfig = {
             enabled: true,
             disabledPlaceholder: 'searchPlaceholderDetail'
         },
-        'group-list': {
-            placeholder: 'searchPlaceholderGroup',
+        'square-list': {
+            placeholder: 'searchPlaceholderSquare',
             searchableFields: ['name','desc', 'members', 'id'],
             enabled: true,
             disabledPlaceholder: 'searchPlaceholderDetail'
@@ -154,6 +163,30 @@ const searchConfig = {
             enabled: true,
             disabledPlaceholder: 'searchPlaceholderDetail'
         },
+        'sound-list': {
+            placeholder: 'searchPlaceholderSound',
+            searchableFields: ['publisher', 'title', 'summary', 'authors', 'did', 'id'],
+            enabled: true,
+            disabledPlaceholder: 'searchPlaceholderDetail'
+        },
+        'image-list': {
+            placeholder: 'searchPlaceholderImage',
+            searchableFields: ['publisher', 'title', 'summary', 'authors', 'did', 'id'],
+            enabled: true,
+            disabledPlaceholder: 'searchPlaceholderDetail'
+        },
+        'video-list': {
+            placeholder: 'searchPlaceholderVideo',
+            searchableFields: ['publisher', 'title', 'summary', 'authors', 'did', 'id'],
+            enabled: true,
+            disabledPlaceholder: 'searchPlaceholderDetail'
+        },
+        'news-list': {
+            placeholder: 'searchPlaceholderNews',
+            searchableFields: ['doer', 'act', 'objectType', 'objectName','objectBrief', 'id'],
+            enabled: true,
+            disabledPlaceholder: 'searchPlaceholderDetail'
+        },
         'proof-list': {
             placeholder: 'searchPlaceholderProof',
             searchableFields: ['issuer', 'owner', 'title', 'content', 'id'],
@@ -190,6 +223,11 @@ const searchConfig = {
 // Get search configuration for current page
 function getSearchConfig() {
     const path = window.location.pathname;
+    
+    // Check if it's homepage (root path or index.html)
+    if (path === '/' || path === '/index.html' || path.endsWith('/')) {
+        return searchConfig.home;
+    }
     
     // Find matching page configuration
     for (const [pageKey, config] of Object.entries(searchConfig.pages)) {

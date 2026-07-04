@@ -33,7 +33,7 @@ I want to create a website to show the data from some APIs.
 	2. Identity
 		1. cid
 		2. nobody
-		3. multisign
+		3. multisig
 		4. nid
 	3. Construct
 		1. protocol
@@ -41,7 +41,7 @@ I want to create a website to show the data from some APIs.
 		3. service
 		4. app
 	4. Organization
-		1. group
+		1. square
 		2. team
 	5. Personal
 		1. mail

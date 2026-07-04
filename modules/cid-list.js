@@ -5,13 +5,21 @@ import './utils.js';
 import { getSearchConfig } from './search-config.js';
 
 // Get the URL head from global API
-let urlHead = window.API.urlHead;
+// Use a getter function to always get the current working server URL
+const getUrlHead = () => window.API.urlHead;
 let loadingOverlay;
 let currentPage = 1;
 let pageSize = PAGE_SIZE;
 let pageCidListMap = new Map();
 let lastValues = null;
 let currentSearchString = '';
+let cacheTimestamp = null;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache duration
+
+// Add avatar cache
+let avatarCache = new Map();
+let avatarCacheTimestamp = null;
+const AVATAR_CACHE_DURATION = 10 * 60 * 1000; // 10 minutes avatar cache duration
 
 // Event listener configurations
 const EVENT_LISTENERS = {
@@ -47,14 +55,17 @@ const EVENT_LISTENERS = {
 document.addEventListener('DOMContentLoaded', async () => {
     // Wait for strings to be loaded
     await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Flag to prevent duplicate language change handling
+    let languageChangeHandled = false;
 
     // Set page title
     const headerTitle = window.strings[window.currentLanguage].siteTitle;
-    const pageTitle = window.strings[window.currentLanguage].cid;
+    const pageTitle = window.strings[window.currentLanguage].freer;
     document.title = `${headerTitle} - ${pageTitle}`;
 
     // Check if API.urlHead is available
-    if (!urlHead) {
+    if (!getUrlHead()) {
         return;
     }
 
@@ -70,19 +81,97 @@ document.addEventListener('DOMContentLoaded', async () => {
         handleSearch();
     });
     
-    // Load CID list
-    loadCidList();
-
-    // Add language change listener
-    window.addEventListener('languageChanged', (event) => {
-        if (event.detail && event.detail.lang) {
-            // Update description
-            updateDescription();
-            // Re-render the table with new field names
+    // Check if this is a page refresh or navigation
+    const isPageRefresh = performance.navigation.type === 1 || 
+                         (performance.getEntriesByType('navigation')[0] && 
+                          performance.getEntriesByType('navigation')[0].type === 'reload');
+    
+    // Check for search parameter in URL (from homepage)
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get('search');
+    
+    if (searchParam) {
+        currentSearchString = searchParam;
+        // Set the search input value
+        const desktopSearchInput = document.getElementById('desktop-search-input');
+        const mobileSearchInput = document.getElementById('mobile-search-input');
+        if (desktopSearchInput) desktopSearchInput.value = searchParam;
+        if (mobileSearchInput) mobileSearchInput.value = searchParam;
+        
+        // Check if we have cached data for this search
+        if (!isPageRefresh && pageCidListMap.has(1) && isCacheValid()) {
+            // Use cached data if available, not a page refresh, and cache is still valid
             const currentPageData = pageCidListMap.get(currentPage);
             if (currentPageData) {
                 displayCidList(currentPageData);
+                updatePaginationButtons();
+                return;
+            }
+        }
+        
+        // Load new data (either no cache or page refresh)
+        const config = getSearchConfig();
+        pageCidListMap.clear();
+        lastValues = null;
+        currentPage = 1;
+        // Clear avatar cache on page refresh
+        if (isPageRefresh) {
+            avatarCache.clear();
+            avatarCacheTimestamp = null;
+        }
+        loadCidList(1, false, {
+            searchString: searchParam,
+            searchableFields: config.searchableFields
+        });
+    } else {
+        // Check if we have cached data for default list
+        if (!isPageRefresh && pageCidListMap.has(1) && isCacheValid()) {
+            // Use cached data if available, not a page refresh, and cache is still valid
+            const currentPageData = pageCidListMap.get(currentPage);
+            if (currentPageData) {
+                displayCidList(currentPageData);
+                updatePaginationButtons();
+                return;
+            }
+        }
+        
+        // Load new data (either no cache or page refresh)
+        // Clear avatar cache on page refresh
+        if (isPageRefresh) {
+            avatarCache.clear();
+            avatarCacheTimestamp = null;
+        }
+        loadCidList();
+    }
+
+    // Add language change listener
+    window.addEventListener('languageChanged', (event) => {
+        if (event.detail && event.detail.lang && !languageChangeHandled) {
+            languageChangeHandled = true;
+            // Update description
+            updateDescription();
+            // Re-render the table with new field names (skip avatar fetch for faster rendering)
+            const currentPageData = pageCidListMap.get(currentPage);
+            if (currentPageData) {
+                displayCidList(currentPageData, true);
                 // Update pagination when language changes
+                updatePaginationButtons();
+            }
+            // Reset flag after a short delay to allow future language changes
+            setTimeout(() => {
+                languageChangeHandled = false;
+            }, 100);
+        }
+    });
+
+    // Add page visibility change listener to handle back navigation
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && pageCidListMap.has(currentPage) && isCacheValid()) {
+            // Page became visible and we have valid cached data, just display it
+            // Skip avatar fetch for faster mobile back navigation
+            const currentPageData = pageCidListMap.get(currentPage);
+            if (currentPageData) {
+                displayCidList(currentPageData, true);
                 updatePaginationButtons();
             }
         }
@@ -103,11 +192,28 @@ function initializeEventListeners() {
     });
 }
 
+// Check if cache is still valid
+function isCacheValid() {
+    // For CID list, we consider cache valid if we have data, even without timestamp
+    // This ensures mobile back navigation works properly
+    if (!cacheTimestamp) {
+        // If no timestamp but we have cached data, consider it valid
+        return pageCidListMap.has(currentPage);
+    }
+    return (Date.now() - cacheTimestamp) < CACHE_DURATION;
+}
+
+// Check if avatar cache is still valid
+function isAvatarCacheValid() {
+    if (!avatarCacheTimestamp) return false;
+    return (Date.now() - avatarCacheTimestamp) < AVATAR_CACHE_DURATION;
+}
+
 // Load CID list
 async function loadCidList(page = 1, useCache = true, config = null) {
     try {
         // Check if we have cached data for this page
-        if (useCache && pageCidListMap.has(page)) {
+        if (useCache && pageCidListMap.has(page) && isCacheValid()) {
             await displayCidList(pageCidListMap.get(page));
             updatePaginationButtons();
             return;
@@ -116,7 +222,7 @@ async function loadCidList(page = 1, useCache = true, config = null) {
         loadingOverlay.show();
         loadingOverlay.setText('Loading CID list...');
         
-        let url = `${urlHead}${window.API.URL_TAIL.CID_SEARCH}?`;
+        let url = `${getUrlHead()}${window.API.URL_TAIL.FREER_SEARCH}?`;
         
         if (config && config.searchString) {
             url += `part=${config.searchableFields.join(',')},${encodeURIComponent(config.searchString)}&`;
@@ -138,6 +244,9 @@ async function loadCidList(page = 1, useCache = true, config = null) {
             // Save the CID list to our map
             pageCidListMap.set(page, data.data);
             
+            // Update cache timestamp
+            cacheTimestamp = Date.now();
+            
             // Update last values for next page
             if (data.last) {
                 lastValues = data.last;
@@ -151,6 +260,7 @@ async function loadCidList(page = 1, useCache = true, config = null) {
         }
     } catch (error) {
         // Handle error silently
+        console.error('Error loading CID list:', error);
     } finally {
         loadingOverlay.hide();
     }
@@ -165,11 +275,13 @@ function handleSearch() {
     // Get search configuration
     const config = getSearchConfig();
     
-    // Clear existing data
+    // Always clear cache and load fresh data for any search
     pageCidListMap.clear();
     lastValues = null;
     currentPage = 1;
     currentSearchString = searchString;
+    // Keep avatar cache as avatars don't change with search
+    // Only clear avatar cache on page refresh or when explicitly needed
     
     // Load new data with search configuration
     loadCidList(1, false, {
@@ -234,16 +346,63 @@ function truncateTextWithEllipsis(text, maxLength) {
     return `${start}...${end}`;
 }
 
-// Function to fetch CID avatars
+// Function to fetch CID avatars with global cache support
 async function fetchCidAvatars(ids) {
+    if (window.avatarCacheManager) {
+        return await window.avatarCacheManager.fetchAvatars(ids);
+    }
+    
+    // Fallback to local cache if global cache manager is not available
     try {
-        const url = `${urlHead}${window.API.URL_TAIL.AVATARS}?ids=${ids.join(',')}`;
+        // Check if we have cached avatars for these IDs
+        if (isAvatarCacheValid()) {
+            const cachedAvatars = {};
+            const missingIds = [];
+            
+            // Check which IDs we have cached
+            ids.forEach(id => {
+                if (avatarCache.has(id)) {
+                    cachedAvatars[id] = avatarCache.get(id);
+                } else {
+                    missingIds.push(id);
+                }
+            });
+            
+            // If we have all avatars cached, return them
+            if (missingIds.length === 0) {
+                return cachedAvatars;
+            }
+            
+            // If we have some cached, only fetch the missing ones
+            if (missingIds.length > 0) {
+                const url = `${getUrlHead()}${window.API.URL_TAIL.AVATARS}?ids=${missingIds.join(',')}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data?.data) {
+                    // Cache the new avatars
+                    Object.entries(data.data).forEach(([id, avatar]) => {
+                        avatarCache.set(id, avatar);
+                    });
+                    avatarCacheTimestamp = Date.now();
+                    
+                    // Return combined cached and new avatars
+                    return { ...cachedAvatars, ...data.data };
+                }
+            }
+        }
+        
+        // If no cache or cache invalid, fetch all avatars
+        const url = `${getUrlHead()}${window.API.URL_TAIL.AVATARS}?ids=${ids.join(',')}`;
         const response = await fetch(url);
         const data = await response.json();
         
-        // Convert the response data to a Map
         if (data?.data) {
-            // The data is already a Map-like object, just return it
+            // Cache all avatars
+            Object.entries(data.data).forEach(([id, avatar]) => {
+                avatarCache.set(id, avatar);
+            });
+            avatarCacheTimestamp = Date.now();
             return data.data;
         }
         return {};
@@ -253,7 +412,7 @@ async function fetchCidAvatars(ids) {
 }
 
 // Display CID list
-async function displayCidList(cidList) {
+async function displayCidList(cidList, skipAvatarFetch = false) {
     const tableHeader = document.getElementById('cid-table-header');
     const tableBody = document.getElementById('cid-table-body');
     
@@ -294,9 +453,18 @@ async function displayCidList(cidList) {
         const timestampFields = Cid.getTimestampFieldList();
         const satoshiFields = Cid.getSatoshiFieldList();
         
-        // Fetch CID avatars for all IDs
-        const ids = [...new Set(cidList.map(cid => cid.id).filter(Boolean))];
-        const cidAvatarMap = await fetchCidAvatars(ids);
+        // Fetch CID avatars for all IDs (skip if requested)
+        let cidAvatarMap = {};
+        if (!skipAvatarFetch) {
+            const ids = [...new Set(cidList.map(cid => cid.id).filter(Boolean))];
+            cidAvatarMap = await fetchCidAvatars(ids);
+        } else {
+            // When skipping avatar fetch, try to get avatars from global cache
+            if (window.avatarCacheManager) {
+                const ids = [...new Set(cidList.map(cid => cid.id).filter(Boolean))];
+                cidAvatarMap = await window.avatarCacheManager.getCachedAvatars(ids);
+            }
+        }
         
         cidList.forEach(cid => {
             const tr = document.createElement('tr');
@@ -347,7 +515,7 @@ async function displayCidList(cidList) {
                             year: '2-digit',
                             month: '2-digit',
                             day: '2-digit'
-                        }).replace(/\//g, '/');
+                        }).replace(/\//g, '-');
                         const timeStr = date.toLocaleTimeString(undefined, {
                             hour: '2-digit',
                             minute: '2-digit',
@@ -372,22 +540,26 @@ async function displayCidList(cidList) {
                     const textSpan = document.createElement('span');
                     // Truncate text if it's too long
                     textSpan.textContent = value.length > TEXT_TRUNCATE_LENGTH ? truncateTextWithEllipsis(value, TEXT_TRUNCATE_LENGTH) : value;
-                    // Add link color for owner field
-                    if (field === 'owner') {
-                        textSpan.style.color = '#0066cc';  // Standard link blue color
+                    // Add link color for owner and cash fields
+                    if ( field === 'cash') {
+                        textSpan.style.color = 'var(--link-color)';  // Use CSS variable for link color
                     }
                     td.appendChild(textSpan);
                 }
                 
-                // Add click to copy functionality for all fields
+                // Add click functionality for all fields
                 td.style.cursor = 'pointer';
-                td.title = field === 'owner' ? 'Click to view CID details' : 'Click to copy';
+                let titleText = 'Click to copy';
+                if (field === 'cash') {
+                    titleText = 'Click to view My Cash';
+                }
+                td.title = titleText;
                 td.addEventListener('click', async (event) => {
                     // If clicking on text content
                     if (event.target.nodeType === Node.TEXT_NODE || event.target.tagName === 'SPAN') {
-                        if (field === 'owner') {
-                            // Navigate to CID detail page with owner as id
-                            window.location.href = `/html/cid-detail.html?id=${value}`;
+                        if (field === 'cash') {
+                            // Navigate to My Cash page with the CID's id as fid parameter
+                            window.location.href = `/html/myCash.html?fid=${cid.id}`;
                         } else {
                             try {
                                 await navigator.clipboard.writeText(event.target.textContent);

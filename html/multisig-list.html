@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Freeverse</title>
     <link rel="icon" type="image/x-icon" href="../images/icons/favicon.ico">
     <link rel="shortcut icon" type="image/x-icon" href="../images/icons/favicon.ico">
@@ -14,19 +14,19 @@
 <body>
     <main>
         <div class="title-section">
-            <h2><span data-string-key="book">Book</span></h2>
+            <h2><span data-string-key="multisig">Multisig</span></h2>
             <div class="description en" style="display: inline-block;"></div>
             <div class="description zh" style="display: none;"></div>
         </div>
-        <section id="book-list" class="section active">
+        <section id="multisig-list" class="section active">
             <div class="table-container">
-                <table id="book-table" class="list-table">
+                <table id="multisig-table" class="list-table">
                     <thead>
-                        <tr id="book-table-header">
+                        <tr id="multisig-table-header">
                             <!-- Headers will be populated by JavaScript -->
                         </tr>
                     </thead>
-                    <tbody id="book-table-body">
+                    <tbody id="multisig-table-body">
                         <!-- Data will be populated by JavaScript -->
                     </tbody>
                 </table>
@@ -44,8 +44,8 @@
     </footer>
 
     <script src="../modules/LoadingOverlay.js"></script>
-    <script type="module" src="../entity/Book.js"></script>
-    <script type="module" src="../modules/book-list.js"></script>
+    <script type="module" src="../entity/Multisig"></script>
+    <script type="module" src="../modules/multisig-list.js"></script>
     <script type="module">
         import Header from '../modules/Header.js';
         // Wait for DOM content to be loaded

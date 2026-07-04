@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Freeverse</title>
     <link rel="icon" type="image/x-icon" href="images/icons/favicon.ico">
     <link rel="shortcut icon" type="image/x-icon" href="images/icons/favicon.ico">
@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="css/styles.css?v=1.1">
     <script src="constants/strings.js?v=1.1"></script>
     <script src="modules/api.js?v=1.1"></script>
+    <script src="modules/LoadingOverlay.js?v=1.1"></script>
     <script src="modules/index.js?v=1.1"></script>
 </head>
 <body>
@@ -48,9 +49,9 @@
                         <h3>...</h3>
                         <p class="stat-value" id="nobody-value">0</p>
                     </div>
-                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/multisign-list.html'">
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/multisig-list.html'">
                         <h3>...</h3>
-                        <p class="stat-value" id="multisign-value">0</p>
+                        <p class="stat-value" id="multisig-value">0</p>
                     </div>
                     <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/nid-list.html'">
                         <h3>...</h3>
@@ -84,9 +85,9 @@
             <div class="section-container">
                 <h2 id="organization-title">...</h2>
                 <div class="stats-grid">
-                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/group-list.html'">
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/square-list.html'">
                         <h3>...</h3>
-                        <p class="stat-value" id="group-value">0</p>
+                        <p class="stat-value" id="square-value">0</p>
                     </div>
                     <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/team-list.html'">
                         <h3>...</h3>
@@ -120,29 +121,25 @@
             <div class="section-container">
                 <h2 id="publish-title">...</h2>
                 <div class="stats-grid">
-                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/statement-list.html'">
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/news-list.html'">
                         <h3>...</h3>
-                        <p class="stat-value" id="statement-value">0</p>
+                        <p class="stat-value" id="news-value">0</p>
                     </div>
-                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/essay-list.html'">
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/text-list.html'">
                         <h3>...</h3>
-                        <p class="stat-value" id="essay-value">0</p>
+                        <p class="stat-value" id="text-value">0</p>
                     </div>
-                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/report-list.html'">
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/sound-list.html'">
                         <h3>...</h3>
-                        <p class="stat-value" id="report-value">0</p>
+                        <p class="stat-value" id="sound-value">0</p>
                     </div>
-                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/paper-list.html'">
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/image-list.html'">
                         <h3>...</h3>
-                        <p class="stat-value" id="paper-value">0</p>
+                        <p class="stat-value" id="image-value">0</p>
                     </div>
-                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/book-list.html'">
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/video-list.html'">
                         <h3>...</h3>
-                        <p class="stat-value" id="book-value">0</p>
-                    </div>
-                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/artwork-list.html'">
-                        <h3>...</h3>
-                        <p class="stat-value" id="artwork-value">0</p>
+                        <p class="stat-value" id="video-value">0</p>
                     </div>
                     <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/remark-list.html'">
                         <h3>...</h3>
@@ -150,10 +147,14 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="section-container">
                 <h2 id="business-title">...</h2>
                 <div class="stats-grid">
+                    <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/statement-list.html'">
+                        <h3>...</h3>
+                        <p class="stat-value" id="statement-value">0</p>
+                    </div>
                     <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='html/proof-list.html'">
                         <h3>...</h3>
                         <p class="stat-value" id="proof-value">0</p>

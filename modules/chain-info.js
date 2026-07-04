@@ -5,7 +5,8 @@ import { showAsQrCodes } from './utils.js';
 import { QR_CODE_ICON_SVG } from '../constants/constants.js';
 
 // Get the URL head from global API
-let urlHead = window.API.urlHead;
+// Use a getter function to always get the current working server URL
+const getUrlHead = () => window.API.urlHead;
 const urlTail = window.API.URL_TAIL.CHAIN_INFO;
 let loadingOverlay;
 
@@ -71,7 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Function to fetch Chain Info
 async function fetchChainInfo() {
     try {
-        const url = urlHead + urlTail;
+        const url = getUrlHead() + urlTail;
 
         const response = await fetch(url, {
             method: 'GET',

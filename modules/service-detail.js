@@ -3,8 +3,9 @@ import Service from '../entity/Service.js';
 import { getSearchConfig } from './search-config.js';
 
 // Get the URL head from global API
-let urlHead = window.API.urlHead;
-const urlTail = window.API.URL_TAIL.SERVICE_BY_IDS;
+// Use a getter function to always get the current working server URL
+const getUrlHead = () => window.API.urlHead;
+const getUrlTail = () => window.API.URL_TAIL.SERVICE_BY_IDS;
 let loadingOverlay;
 
 // Initialize the page
@@ -86,7 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function fetchServiceById(id) {
     try {
         const parameters = `?ids=${id}`;
-        const url = urlHead + urlTail + parameters;
+        const url = getUrlHead() + getUrlTail() + parameters;
 
         const response = await fetch(url, {
             method: 'GET',
@@ -129,12 +130,56 @@ function displayServiceDetails(serviceInstance) {
     // Get fields from Service constructor
     const service = new Service();
     const orderedFields = Object.keys(service);
-
+    
     // Add rows for all properties of the service instance in the defined order
     orderedFields.forEach(field => {
         const value = serviceInstance[field];
-        // Skip if field is null or undefined
+        
+        // Skip if field is null or undefined (hide all null fields)
         if (value === null || value === undefined) return;
+        
+        // For array fields, check if it's a valid array
+        if (Array.isArray(value)) {
+            // Process array value
+            const originalValue = value;
+            let valueClass = '';
+            let displayValue;
+            
+            if (value.length === 0) {
+                displayValue = '(empty)';
+            } else {
+                // Check if array contains objects
+                const hasObjects = value.some(item => typeof item === 'object' && item !== null);
+                if (hasObjects) {
+                    displayValue = JSON.stringify(value, null, 2);
+                    valueClass = 'complex-object';
+                } else {
+                    displayValue = value.join(', ');
+                }
+            }
+            
+            // Copy value handling
+            let copyValue = JSON.stringify(originalValue, null, 2);
+            copyValue = copyValue.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            
+            // Get localized field name
+            const currentLang = window.currentLanguage || 'en';
+            const fieldName = window.strings[currentLang]?.fieldNames?.[field] || 
+                             showFieldNameMap[field] || 
+                             field.replace(/([A-Z])/g, ' $1').trim();
+            
+            detailHTML += `
+                <tr>
+                    <th>${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}</th>
+                    <td>
+                        <span class="copyable ${valueClass}" data-value="${copyValue}" style="cursor: pointer;">
+                            ${valueClass === 'complex-object' ? `<div style="white-space: pre-line;">${displayValue}</div>` : displayValue}
+                        </span>
+                    </td>
+                </tr>
+            `;
+            return; // Skip the rest of the loop for array fields
+        }
 
         const originalValue = value; // Store original value for copying
         let valueClass = ''; // For styling boolean values
@@ -152,17 +197,34 @@ function displayServiceDetails(serviceInstance) {
                     minute: '2-digit',
                     second: '2-digit',
                     hour12: false
-                });
+                }).replace(/\//g, '-');
             }
         } else if (satoshiFields.includes(field)) {
             displayValue = formatNumber(value / 100000000, 8);
         } else if (typeof value === 'boolean') {
             displayValue = value ? '✓' : '✗';
             valueClass = value ? 'boolean-true' : 'boolean-false';
+        } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+            // Handle complex objects - display as formatted key-value pairs
+            const formattedObject = formatComplexObject(value);
+            displayValue = formattedObject;
+            valueClass = 'complex-object';
         }
 
         // Ensure originalValue is a string for copying
-        const copyValue = originalValue === null ? '' : String(originalValue);
+        let copyValue;
+        if (Array.isArray(originalValue)) {
+            // For arrays, copy the JSON string
+            copyValue = JSON.stringify(originalValue, null, 2);
+        } else if (typeof originalValue === 'object' && originalValue !== null && !Array.isArray(originalValue)) {
+            // For complex objects, copy the JSON string
+            copyValue = JSON.stringify(originalValue, null, 2);
+        } else {
+            copyValue = originalValue === null ? '' : String(originalValue);
+        }
+        
+        // HTML encode the copyValue to prevent issues with special characters
+        copyValue = copyValue.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
         // Get localized field name from strings object
         const currentLang = window.currentLanguage || 'en';
@@ -175,7 +237,7 @@ function displayServiceDetails(serviceInstance) {
                 <th>${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}</th>
                 <td>
                     <span class="copyable ${valueClass}" data-value="${copyValue}" style="cursor: pointer;">
-                        ${displayValue}
+                        ${valueClass === 'complex-object' ? `<div style="white-space: pre-line;">${displayValue}</div>` : displayValue}
                     </span>
                 </td>
             </tr>
@@ -192,11 +254,14 @@ function displayServiceDetails(serviceInstance) {
             e.stopPropagation();
             
             try {
-                const valueToCopy = span.getAttribute('data-value');
+                let valueToCopy = span.getAttribute('data-value');
                 if (!valueToCopy) {
                     console.warn('No value to copy');
                     return;
                 }
+                
+                // Decode HTML entities
+                valueToCopy = valueToCopy.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
                 
                 await navigator.clipboard.writeText(String(valueToCopy));
                 
@@ -230,6 +295,33 @@ function displayServiceDetails(serviceInstance) {
 // Format number to remove redundant trailing zeros
 function formatNumber(value, decimals) {
     return Number(value).toFixed(decimals).replace(/\.?0+$/, '');
+}
+
+// Format complex object for display
+function formatComplexObject(obj) {
+    if (!obj || typeof obj !== 'object') {
+        return String(obj);
+    }
+    
+    const lines = [];
+    for (const [key, value] of Object.entries(obj)) {
+        let displayValue = value;
+        
+        // Handle nested objects
+        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+            displayValue = JSON.stringify(value);
+        } else if (Array.isArray(value)) {
+            displayValue = value.join(', ');
+        } else if (typeof value === 'boolean') {
+            displayValue = value ? '✓' : '✗';
+        } else if (value === null || value === undefined) {
+            displayValue = '';
+        }
+        
+        lines.push(`<strong>${key}</strong>: ${displayValue}`);
+    }
+    
+    return lines.join('<br>');
 }
 
 // Export functions for Header.js to use

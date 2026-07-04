@@ -3,7 +3,8 @@ import App from '../entity/App.js';
 import { getSearchConfig } from './search-config.js';
 
 // Get the URL head from global API
-let urlHead = window.API.urlHead;
+// Use a getter function to always get the current working server URL
+const getUrlHead = () => window.API.urlHead;
 const urlTail = window.API.URL_TAIL.APP_BY_IDS;
 let loadingOverlay;
 
@@ -152,22 +153,38 @@ function displayAppDetails(appInstance) {
                     minute: '2-digit',
                     second: '2-digit',
                     hour12: false
-                });
+                }).replace(/\//g, '-');
             }
         } else if (satoshiFields.includes(field)) {
             displayValue = formatNumber(value / 100000000, 8);
         } else if (typeof value === 'boolean') {
             displayValue = value ? '✓' : '✗';
             valueClass = value ? 'boolean-true' : 'boolean-false';
+        } else if (Array.isArray(value)) {
+            if (value.some(item => typeof item === 'object' && item !== null)) {
+                displayValue = value.map(item => formatComplexObject(item)).join('<br><br>');
+                valueClass = 'complex-object';
+            } else {
+                displayValue = value.join(', ');
+            }
+        } else if (typeof value === 'object' && value !== null) {
+            displayValue = formatComplexObject(value);
+            valueClass = 'complex-object';
         }
 
         // Ensure originalValue is a string for copying
-        const copyValue = originalValue === null ? '' : String(originalValue);
+        let copyValue;
+        if (typeof originalValue === 'object' && originalValue !== null) {
+            copyValue = JSON.stringify(originalValue, null, 2);
+        } else {
+            copyValue = originalValue === null ? '' : String(originalValue);
+        }
+        copyValue = copyValue.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
         // Get localized field name from strings object
         const currentLang = window.currentLanguage || 'en';
-        const fieldName = window.strings[currentLang]?.fieldNames?.[field] || 
-                         showFieldNameMap[field] || 
+        const fieldName = window.strings[currentLang]?.fieldNames?.[field] ||
+                         showFieldNameMap[field] ||
                          field.replace(/([A-Z])/g, ' $1').trim();
 
         detailHTML += `
@@ -175,7 +192,7 @@ function displayAppDetails(appInstance) {
                 <th>${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}</th>
                 <td>
                     <span class="copyable ${valueClass}" data-value="${copyValue}" style="cursor: pointer;">
-                        ${displayValue}
+                        ${valueClass === 'complex-object' ? `<div style="white-space: pre-line;">${displayValue}</div>` : displayValue}
                     </span>
                 </td>
             </tr>
@@ -228,6 +245,25 @@ function displayAppDetails(appInstance) {
 }
 
 // Format number to remove redundant trailing zeros
+function formatComplexObject(obj) {
+    if (!obj || typeof obj !== 'object') return String(obj);
+    const lines = [];
+    for (const [key, value] of Object.entries(obj)) {
+        let displayValue = value;
+        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+            displayValue = JSON.stringify(value);
+        } else if (Array.isArray(value)) {
+            displayValue = value.join(', ');
+        } else if (typeof value === 'boolean') {
+            displayValue = value ? '✓' : '✗';
+        } else if (value === null || value === undefined) {
+            displayValue = '';
+        }
+        lines.push(`<strong>${key}</strong>: ${displayValue}`);
+    }
+    return lines.join('<br>');
+}
+
 function formatNumber(value, decimals) {
     return Number(value).toFixed(decimals).replace(/\.?0+$/, '');
 }

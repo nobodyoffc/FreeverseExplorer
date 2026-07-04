@@ -4,7 +4,8 @@ import CashMark from '../entity/CashMark.js';
 import { getSearchConfig } from './search-config.js';
 
 // Get the URL head from global API
-let urlHead = window.API.urlHead;
+// Use a getter function to always get the current working server URL
+const getUrlHead = () => window.API.urlHead;
 const urlTail = window.API.URL_TAIL.TX_BY_IDS;
 let loadingOverlay;
 
@@ -72,7 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function fetchTxById(id) {
     try {
         const parameters = `?ids=${id}`;
-        const url = urlHead + urlTail + parameters;
+        const url = getUrlHead() + urlTail + parameters;
 
         const response = await fetch(url, {
             method: 'GET',
@@ -136,7 +137,7 @@ function displayTxDetails(txInfo) {
                 minute: '2-digit',
                 second: '2-digit',
                 hour12: false
-            });
+            }).replace(/\//g, '-');
         } else if (field === 'inValueT' || field === 'outValueT') {
             displayValue = formatNumber(value / 100000000, 8);
         } else if (field === 'fee') {

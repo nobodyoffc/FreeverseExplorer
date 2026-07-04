@@ -9,7 +9,7 @@ class RawTxInfo {
         this.changeTo = null;
         this.lockTime = null;
         this.cd = null;
-        this.multisign = null;
+        this.multisig = null;
         this.ver = null;
         this.senderInfo = null;
         this.cdd = null;
@@ -26,7 +26,7 @@ class RawTxInfo {
     private String changeTo;
     private Long lockTime;
     private Long cd;
-    private Multisign multisign;
+    private Multisig multisig;
     private String ver;
     private CidInfo senderInfo;
     private Long cdd;

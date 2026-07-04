@@ -2,8 +2,8 @@
 .container {
     background: #1a1a1a;
     border-radius: 10px;
-    padding: 2rem;
-    margin-bottom: 2rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     border: 1px solid #333;
     width: 100%;
@@ -25,6 +25,7 @@
 /* Input styles */
 #address-input {
     height: 40px;  
+    max-width: 400px;
     background-color: #000000;
     color: #CCCCCC;
 }
@@ -42,7 +43,7 @@
 
 #address-input {
     flex: 1;
-    padding: 8px 12px;
+    padding: 4px 8px;
     border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 14px;
@@ -117,6 +118,7 @@
     border-radius: 4px;
     cursor: pointer;
     font-weight: 500;
+    font-size: 18px;
 }
 
 #clear-btn {
@@ -159,8 +161,17 @@
 /* Responsive Design */
 @media (max-width: 768px) {
     .address-input-group {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+    }
+
+    #address-input {
+        flex: 1;
+    }
+
+    .confirm-btn {
+        flex-shrink: 0;
     }
 
     .button-container {
@@ -173,7 +184,7 @@
         flex: 1;
         min-width: 80px;
         font-size: 14px;
-        padding: 8px 12px;
+        padding: 4px 8px;
     }
 }
 

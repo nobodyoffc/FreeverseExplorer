@@ -12,6 +12,7 @@ import {
     ACTIVE,
     STD_NAME,
     LOCAL_NAMES,
+    HOME,
     DESC,
     MEMBERS,
     MEMBER_NUM,
@@ -31,6 +32,7 @@ class Team {
         this.owner = null;
         this.stdName = null;
         this.localNames = null;
+        this.home = null;
         this.waiters = null;
         this.accounts = null;
         this.consensusId = null;

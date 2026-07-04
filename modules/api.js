@@ -1,86 +1,91 @@
 // Global constant array for server URL heads (base URLs) with fallback functionality
 const SERVER_URL_HEADS = [
-    'https://apip.cash/APIP',
-    'http://127.0.0.1:8080/APIP',
-    'https://help.cash/APIP',
-    'https://cid.cash/APIP'
+    // 'http://127.0.0.1:8081/APIP',
+	'https://freecash.info/APIP',
+	'https://info.freecash.org/APIP',
+    'https://cid.cash/APIP',
+	'https://apip.cash/APIP'
 ];
 
-// Global urlHead variable
-let urlHead = SERVER_URL_HEADS[0];
+// Global urlHead variable - load from localStorage if available
+let urlHead = localStorage.getItem('workingServerUrlHead') || SERVER_URL_HEADS[0];
 
 // URL tail constants for different API endpoints
 const URL_TAIL = {
     // API version 1 endpoints
-    TOTALS: '/v1/totals',
-    PING: '/v1/ping',
-    APP_SEARCH: '/sn7/v1/appSearch',
-    APP_BY_IDS: '/sn7/v1/appByIds',
-    BOX_SEARCH: '/sn10/v1/boxSearch',
-    BOX_BY_IDS: '/sn10/v1/boxByIds',
-    BOOK_SEARCH: '/sn24/v1/bookSearch',
-    BOOK_BY_IDS: '/sn24/v1/bookByIds',
-    CASH_SEARCH: '/sn2/v1/cashSearch',
-    CASH_BY_IDS: '/sn2/v1/cashByIds',
-    BLOCK_SEARCH: '/sn2/v1/blockSearch',
-    BLOCK_BY_IDS: '/sn2/v1/blockByIds',
-    TX_SEARCH: '/sn2/v1/txSearch',
-    TX_BY_IDS: '/sn2/v1/txByIds',
-    CID_SEARCH: '/sn3/v1/cidSearch',
-    CID_INFO_BY_IDS: '/sn3/v1/cidInfoByIds',
-    AVATARS: '/sn3/v1/avatars',
-    CODE_SEARCH: '/sn5/v1/codeSearch',
-    CODE_BY_IDS: '/sn5/v1/codeByIds',
-    ESSAY_SEARCH: '/sn21/v1/essaySearch',
-    ESSAY_BY_IDS: '/sn21/v1/essayByIds',
-    GROUP_SEARCH: '/sn8/v1/groupSearch',
-    GROUP_BY_IDS: '/sn8/v1/groupByIds',
-    MAIL_SEARCH: '/sn13/v1/mailSearch',
-    MAIL_BY_IDS: '/sn13/v1/mailByIds',
-    MULTISIGN_SEARCH: '/sn2/v1/multisignSearch',
-    MULTISIGN_BY_IDS: '/sn2/v1/multisignByIds',
-    NOBODY_SEARCH: '/sn3/v1/nobodySearch',
-    NOBODY_BY_IDS: '/sn3/v1/nobodyByIds',
-    OPRETURN_SEARCH: '/sn2/v1/opReturnSearch',
-    OPRETURN_BY_IDS: '/sn2/v1/opReturnByIds',
-    PAPER_SEARCH: '/sn23/v1/paperSearch',
-    PAPER_BY_IDS: '/sn23/v1/paperByIds',
-    PROOF_SEARCH: '/sn14/v1/proofSearch',
-    PROOF_BY_IDS: '/sn14/v1/proofByIds',
-    PROTOCOL_SEARCH: '/sn4/v1/protocolSearch',
-    PROTOCOL_BY_IDS: '/sn4/v1/protocolByIds',
-    REPORT_SEARCH: '/sn22/v1/reportSearch',
-    REPORT_BY_IDS: '/sn22/v1/reportByIds',
-    REMARK_SEARCH: '/sn26/v1/remarkSearch',
-    REMARK_BY_IDS: '/sn26/v1/remarkByIds',
-    SECRET_SEARCH: '/sn12/v1/secretSearch',
-    SECRET_BY_IDS: '/sn12/v1/secretByIds',
-    SERVICE_SEARCH: '/sn6/v1/serviceSearch',
-    SERVICE_BY_IDS: '/sn6/v1/serviceByIds',
-    STATEMENT_SEARCH: '/sn15/v1/statementSearch',
-    STATEMENT_BY_IDS: '/sn15/v1/statementByIds',
-    TEAM_SEARCH: '/sn9/v1/teamSearch',
-    TEAM_BY_IDS: '/sn9/v1/teamByIds',
-    TOKEN_SEARCH: '/sn16/v1/tokenSearch',
-    TOKEN_BY_IDS: '/sn16/v1/tokenByIds',
-    TOKEN_HOLDER_SEARCH: '/sn16/v1/tokenHolderSearch',
-    TOKEN_HOLDER_BY_IDS: '/sn16/v1/tokenHolderByIds',
-    CONTACT_SEARCH: '/sn11/v1/contactSearch',
-    CONTACT_DETAIL: '/sn11/v1/contactByIds',
-    CHAIN_INFO: '/sn2/v1/chainInfo',
+    TOTALS: '/totals/v1',
+    PING: '/ping/v1',
+    APP_SEARCH: '/sn7/appSearch/v1',
+    APP_BY_IDS: '/sn7/appByIds/v1',
+    BOX_SEARCH: '/sn10/boxSearch/v1',
+    BOX_BY_IDS: '/sn10/boxByIds/v1',
+    CASH_SEARCH: '/sn2/cashSearch/v1',
+    CASH_BY_IDS: '/sn2/cashByIds/v1',
+    BLOCK_SEARCH: '/sn2/blockSearch/v1',
+    BLOCK_BY_IDS: '/sn2/blockByIds/v1',
+    TX_SEARCH: '/sn2/txSearch/v1',
+    TX_BY_IDS: '/sn2/txByIds/v1',
+    FREER_SEARCH: '/sn3/freerSearch/v1',
+    FREER_BY_IDS: '/sn3/freerByIds/v1',
+    AVATARS: '/sn3/avatars/v1',
+    CODE_SEARCH: '/sn5/codeSearch/v1',
+    CODE_BY_IDS: '/sn5/codeByIds/v1',
+    SQUARE_SEARCH: '/sn8/squareSearch/v1',
+    SQUARE_BY_IDS: '/sn8/squareByIds/v1',
+    MAIL_SEARCH: '/sn13/mailSearch/v1',
+    MAIL_BY_IDS: '/sn13/mailByIds/v1',
+    MULTISIG_SEARCH: '/sn2/multisigSearch/v1',
+    MULTISIG_BY_IDS: '/sn2/multisigByIds/v1',
+    NOBODY_SEARCH: '/sn3/nobodySearch/v1',
+    NOBODY_BY_IDS: '/sn3/nobodyByIds/v1',
+    OPRETURN_SEARCH: '/sn2/opReturnSearch/v1',
+    OPRETURN_BY_IDS: '/sn2/opReturnByIds/v1',
 
-    ARTWORK_SEARCH: '/sn25/v1/artworkSearch',
-    ARTWORK_BY_IDS: '/sn25/v1/artworkByIds',
-    NID_SEARCH: '/sn19/v1/nidSearch',
-    NID_BY_IDS: '/sn19/v1/nidByIds',
-    CID_AVATAR_BY_IDS: '/sn3/v1/cidAvatarByIds',
-    AVATARS: '/sn3/v1/avatars',
-    FID_CID_SEEK: '/sn3/v1/fidCidSeek',
-    BROADCAST_TX: '/sn18/v1/broadcastTx',
-    DECODE_TX: '/sn18/v1/decodeTx',
-    ADDRESSES: '/sn17/v1/addresses',
-    ENCRYPT: '/sn17/v1/encrypt',
-    VERIFY: '/sn17/v1/verify'
+    PROOF_SEARCH: '/sn14/proofSearch/v1',
+    PROOF_BY_IDS: '/sn14/proofByIds/v1',
+    PROTOCOL_SEARCH: '/sn4/protocolSearch/v1',
+    PROTOCOL_BY_IDS: '/sn4/protocolByIds/v1',
+
+    NEWS_SEARCH: '/sn21/newsSearch/v1',
+    NEWS_BY_IDS: '/sn21/newsByIds/v1',
+    
+    TEXT_SEARCH: '/sn22/textSearch/v1',
+    TEXT_BY_IDS: '/sn22/textByIds/v1',
+    REMARK_SEARCH: '/sn23/remarkSearch/v1',
+    REMARK_BY_IDS: '/sn23/remarkByIds/v1',
+    SOUND_SEARCH: '/sn24/soundSearch/v1',
+    SOUND_BY_IDS: '/sn24/soundByIds/v1',
+    IMAGE_SEARCH: '/sn25/imageSearch/v1',
+    IMAGE_BY_IDS: '/sn25/imageByIds/v1',
+    VIDEO_SEARCH: '/sn26/videoSearch/v1',
+    VIDEO_BY_IDS: '/sn26/videoByIds/v1',
+
+    SECRET_SEARCH: '/sn12/secretSearch/v1',
+    SECRET_BY_IDS: '/sn12/secretByIds/v1',
+    SERVICE_SEARCH: '/sn6/serviceSearch/v1',
+    SERVICE_BY_IDS: '/sn6/serviceByIds/v1',
+    STATEMENT_SEARCH: '/sn15/statementSearch/v1',
+    STATEMENT_BY_IDS: '/sn15/statementByIds/v1',
+    TEAM_SEARCH: '/sn9/teamSearch/v1',
+    TEAM_BY_IDS: '/sn9/teamByIds/v1',
+    TOKEN_SEARCH: '/sn16/tokenSearch/v1',
+    TOKEN_BY_IDS: '/sn16/tokenByIds/v1',
+    TOKEN_HOLDER_SEARCH: '/sn16/tokenHolderSearch/v1',
+    TOKEN_HOLDER_BY_IDS: '/sn16/tokenHolderByIds/v1',
+    CONTACT_SEARCH: '/sn11/contactSearch/v1',
+    CONTACT_DETAIL: '/sn11/contactByIds/v1',
+    CHAIN_INFO: '/sn2/chainInfo/v1',
+
+    NID_SEARCH: '/sn19/nidSearch/v1',
+    NID_BY_IDS: '/sn19/nidByIds/v1',
+    CID_AVATAR_BY_IDS: '/sn3/cidAvatarByIds/v1',
+    FID_CID_SEEK: '/sn3/fidCidSeek/v1',
+    BROADCAST_TX: '/sn18/broadcastTx/v1',
+    DECODE_TX: '/sn18/decodeTx/v1',
+    ADDRESSES: '/sn17/addresses/v1',
+    ENCRYPT: '/sn17/encrypt/v1',
+    VERIFY: '/sn17/verify',
+    NODE_LIST: '/nodeList'
 };
 
 // API configuration
@@ -90,8 +95,8 @@ const API_CONFIG = {
     retryDelay: 1000 // 1 second delay between retries
 };
 
-// Track the working server URL head for optimization
-let workingServerUrlHead = null;
+// Track the working server URL head for optimization - load from localStorage if available
+let workingServerUrlHead = localStorage.getItem('workingServerUrlHead') || null;
 
 /**
  * Sleep function for delays
@@ -141,8 +146,7 @@ async function makeRequestWithRetries(url, options = {}) {
     for (let attempt = 1; attempt <= API_CONFIG.retryAttempts; attempt++) {
         try {
             const response = await makeRequest(url, options);
-            const data = await response.json();
-            return data;
+            return await response.json();
         } catch (error) {
             if (attempt < API_CONFIG.retryAttempts) {
                 await sleep(API_CONFIG.retryDelay);
@@ -179,6 +183,8 @@ async function apiRequest(endpoint, options = {}) {
             const data = await makeRequestWithRetries(fullUrl, options);
             // Set workingServerUrlHead to the full base URL, not just the domain
             workingServerUrlHead = baseUrl;
+            // Persist to localStorage so it survives page navigations
+            localStorage.setItem('workingServerUrlHead', baseUrl);
             return data;
         } catch (error) {
             // Continue to next server
@@ -285,6 +291,12 @@ function getWorkingServer() {
 function resetWorkingServer(newServer = null) {
     const oldServer = workingServerUrlHead;
     workingServerUrlHead = newServer;
+    // Persist to localStorage so it survives page navigations
+    if (newServer) {
+        localStorage.setItem('workingServerUrlHead', newServer);
+    } else {
+        localStorage.removeItem('workingServerUrlHead');
+    }
 }
 
 /**
@@ -296,6 +308,7 @@ function resetWorkingServer(newServer = null) {
 async function testServer(serverUrlHead, endpoint = URL_TAIL.PING) {
     try {
         const fullUrl = `${serverUrlHead}${endpoint}`;
+        console.log(`🔍 Testing URL: ${fullUrl}`);
         
         const response = await makeRequest(fullUrl, {
             method: 'GET',
@@ -303,9 +316,11 @@ async function testServer(serverUrlHead, endpoint = URL_TAIL.PING) {
         });
         
         await response.json(); // Try to parse JSON to ensure it's a valid response
+        console.log(`✅ Server ${serverUrlHead} is working`);
         return true;
         
     } catch (error) {
+        console.log(`❌ Server ${serverUrlHead} failed: ${error.message}`);
         return false;
     }
 }
@@ -315,7 +330,18 @@ window.API = {
     SERVER_URL_HEADS,
     URL_TAIL,
     API_CONFIG,
-    urlHead,
+    // Use getter to always return the current value (either from workingServerUrlHead or urlHead)
+    get urlHead() {
+        return workingServerUrlHead || urlHead;
+    },
+    // Allow setting urlHead which also persists to localStorage
+    set urlHead(value) {
+        urlHead = value;
+        workingServerUrlHead = value;
+        if (value) {
+            localStorage.setItem('workingServerUrlHead', value);
+        }
+    },
     apiGet,
     apiPost,
     apiPut,

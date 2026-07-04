@@ -43,7 +43,7 @@ const strings = {
             code1032: "No such operation.",
             code1033: "Miss private key",
             code2001: "Free API is not active now.",
-            code2002: "CID not found.",
+            code2002: "Freer not found.",
             code2003: "Illegal FID.",
             code2004: "Raw TX must be in HEX.",
             code2005: "Send TX failed.",
@@ -94,7 +94,7 @@ const strings = {
         apiContent: "Under testing, will be released when ready...",
         docsContent: "Under testing, will be released when ready...",
         chainInfo: "Chain Info",
-
+        nodeList: "Node List",
 
         // Tools Menu Items
         myCash: "My Cash",
@@ -103,39 +103,59 @@ const strings = {
         addressConvert: "Convert address",
         encrypt: "Encrypt",
         verifySignature: "Verify Signature",
+        hash: "Hash",
         
         // My Cash Page
         myFid: "My FID",
         qrCode: "QR Code",
         createTx: "Create TX",
 
+        // Loading messages
+        loadingCash: "Loading cash...",
+        searchingFid: "Searching FID...",
+        loadingMore: "Loading more...",
+        loadingQrCode: "Loading QR code...",
+        noMoreData: "No More Data",
+        loadMore: "Load More",
+        noContentToCopy: "No content to copy",
+        failedToCopy: "Failed to copy",
+        error: "Error",
+        apiNotAvailable: "API not available",
+        noFidFound: "No FID found",
+        searchFailed: "Search failed",
+
         // Description
         cashDescription: "The basic entity of the Satoshi framework. Live ones are also called UTXO.",
         txDescription: "The basic transaction of Freecash that spends cash and issues new cash",
         opReturnDescription: "Carve up to 4k bytes of anything you want on the Freecash blockchain",
         blockDescription: "Freecash block information",
-        cidDescription: "CID (Crypto Identity) is the identity of the subject of Freeverse",
+        cidDescription: "Subject living in Freeverse",
         nidDescription: "NID (Named Identity) is named by a subject ID for a object ID",
-        nobodyDescription: "Nobody is an identity whose prikey has been made public",
-        multisignDescription: "An identity consisting of multiple FIDs, which requires multiple signatures to create a TX",
+        nobodyDescription: "The identity whose prikey has been made public",
+        multisigDescription: "An identity consisting of multiple FIDs, which requires multiple signatures to create a TX",
         protocolDescription: "An open protocol market on chain",
         codeDescription: 'An open code market on chain',
         secretDescription: "Encrypted personal secrets stored on chain",
         mailDescription: "Encrypted mail which will always be delivered and permanently stored on chain",
         serviceDescription: "An open service market on chain",
         appDescription: "An open app market on chain",
-        groupDescription: "An unmanaged organization type",
+        squareDescription: "An unmanaged organization type",
         teamDescription: "A managed organization type",
         boxDescription: "Encrypted personal containers stored on chain",
         essayDescription: 'Publish the DID of an essay on chain',
         reportDescription: "Publish the DID of a report on chain",
         paperDescription: 'Publish the DID of a paper on chain',
         bookDescription: 'Publish the DID of a book on chain',
+        textDescription: 'Publish the DID of a text on chain',
         artworkDescription: 'Publish the DID of an artwork on chain',
         remarkDescription: 'Publish the DID of a remark on chain',
+        soundDescription: 'Publish the DID of a sound on chain',
+        imageDescription: 'Publish the DID of an image on chain',
+        videoDescription: 'Publish the DID of a video on chain',
+        newsDescription: 'On-chain news from blockchain activities',
         proofDescription: 'On-chain proof issuing and managing system',
         tokenDescription: 'Open token system',
-        groupDescription: 'An open, ownerless group that anyone can freely create, join, leave, and name',
+        squareDescription: 'An open, ownerless square that anyone can freely create, join, leave, and name',
         contactDescription: "Encrypted contacts saved on the chain",
         
         // Field Names
@@ -164,8 +184,11 @@ const strings = {
             unlockScript: "Unlock Script",
             sigHash: "Sig Hash",
             sequence: "Sequence",
+            from:"From",
+            to:"To",
             cd: "CD",
             cashDetail: "Cash Detail",
+            blockDetail: "Block Detail",
             issuer: "Issuer",
             txDetail: "TX Detail",
             fee: "Fee",
@@ -192,14 +215,14 @@ const strings = {
             lockTime: "Lock Time",
             time: "Time",
             cid: "CID",
-            cidDetail: "CID Detail",
+            freerDetail: "Freer Detail",
             income: "Income",
             expend: "Expend",
             usedCids: "Used CIDs",
             pubkey: "Public Key",
             isNobody: "Is Nobody",
             fid: "FID",
-            homepage: "Homepage",
+            home: "home",
             guide: "Guide",
             master: "Master",
             balance: "Balance",
@@ -227,7 +250,7 @@ const strings = {
             leakHeight: "Leak Height",
             leakTxId: "Leak Transaction ID",
             leakTxIndex: "Leak Transaction Index",
-            multisignDetail: "Multisign Detail",
+            multisigDetail: "Multisig Detail",
             required: "Required",
             members: "Members",
             fids: "FIDs",
@@ -254,6 +277,7 @@ const strings = {
             // Code specific fields
             code: 'Code',
             codeDetail: 'Code Detail',
+            protocolDetail: 'Protocol Detail',
             langs: 'Languages',
             urls: 'URLs',
             protocols: 'Protocols',
@@ -267,9 +291,20 @@ const strings = {
             codes: 'Codes',
             params: 'Parameters',
             serviceDetail: 'Service Detail',
+            pricePerKB: 'Price Per KB',
+            pricePerKBIn: 'Price Per KB In',
+            pricePerKBOut: 'Price Per KB Out',
+            pricePerDayKB: 'Price Per KB Day',
+            minPayment: 'Min Payment',
+            pricePerRequest: 'Price Per Request',
+            sessionDays: 'Session Days',
+            consumeViaShare: 'Consume Via Share',
+            orderViaShare: 'Order Via Share',
+            currency: 'Currency',
+            components: 'Components',
             appDetail: 'App Detail',
             downloads: 'Downloads',
-            groupDetail: 'Group Detail',
+            squareDetail: 'Square Detail',
             namers: 'Namers',
             memberNum: 'Member Number',
             cddToUpdate: 'CDD To Update',
@@ -287,10 +322,19 @@ const strings = {
             summary: 'Summary',
             paper: 'Paper',
             paperDetail: 'Paper Detail',
+            text: 'Text',
+            textDetail: 'Text Detail',
             keywords: 'Keywords',
             artworkDetail: 'Artwork Detail',
             remarkDetail: 'Remark Detail',
             onDid: 'On DID',
+            doer: 'Doer',
+            act: 'Act',
+            objectType: 'Object Type',
+            objectId: 'Object ID',
+            objectName: 'Object Name',
+            objectBrief: 'Object Brief',
+            newsDetail: 'News Detail',
             proof: 'Proof',
             proofDetail: 'Proof Detail',
             content: 'Content',
@@ -347,7 +391,14 @@ const strings = {
             startTime: "Start Time",
             year: "Year",
             daysToNextYear: "Days To Next Year",
-            heightOfNextYear: "Height Of Next Year"
+            heightOfNextYear: "Height Of Next Year",
+            freer:"Freer",
+            // Node List fields
+            nodeList: "Some nodes",
+            addr: "Address",
+            subver: "Sub Version",
+            pingtime: "Ping Time",
+            lastrecv: "Last Received"
         },
 
         // Overview Section
@@ -360,8 +411,9 @@ const strings = {
         // Identity Section
         identity: "Identity",
         cid: "CID",
+        freer:"Freer",
         nobody: "Nobody",
-        multisign: "Multisign",
+        multisig: "Multisig",
         nid: "NID",
         
         // Construct Section
@@ -373,7 +425,7 @@ const strings = {
         
         // Organization Section
         organization: "Organization",
-        group: "Group",
+        square: "Square",
         team: "Team",
         
         // Personal Section
@@ -392,9 +444,14 @@ const strings = {
         report: "Report",
         paper: "Paper",
         book: "Book",
+        text: "Text",
         artwork: "Artwork",
         remark: "Remark",
-        
+        sound: "Sound",
+        image: "Image",
+        video: "Video",
+        news: "News",
+
         // Business Section
         business: "Business",
         proof: "Proof",
@@ -427,20 +484,21 @@ const strings = {
         sortValueDesc: "Value (High to Low)",
 
         // Search Placeholders
-        searchPlaceholderCash: "By Owner, CashID, Birth TxID, Spend TxID",
-        searchPlaceholderTx: "By ID, Block TxID",
+        searchPlaceholderHome: "By CID,FID,TxID,CashID,BlockID,Height",
+        searchPlaceholderCash: "By Owner,CashID,Birth TxID,Spend TxID",
+        searchPlaceholderTx: "By ID, Block TxID, Sender, Receiver",
         searchPlaceholderOpReturn: "By text, signer, ID",
         searchPlaceholderBlock: "By height,ID",
         searchPlaceholderDetail: "Unavailable",
         searchPlaceholderCid: 'By CID, FID, used CIDs, pubkey',
         searchPlaceholderNid: 'By name, description, object ID, namer',
-        searchPlaceholderMultisign: 'By FID, member, pubkey of member',
+        searchPlaceholderMultisig: 'By FID, member, pubkey of member',
         searchPlaceholderProtocol: 'By owner, title, DID, or description',
         searchPlaceholderCode: 'By owner, name, DID, or description',
         searchPlaceholderService: 'By owner, name, description, or DID',
         searchPlaceholderApp: 'By owner, name, description, DID, SID, PID, or CodeId',
         searchPlaceholderTeam: "By owner, name, description, members, ID",
-        searchPlaceholderGroup: "By name, description, members, ID",
+        searchPlaceholderSquare: "By name, description, members, ID",
         searchPlaceholderSecret: "By owner, ID",
         searchPlaceholderMail: "By Sender, Recipient, ID",
         searchPlaceholderStatement: "By publisher, title, content, ID",
@@ -451,6 +509,10 @@ const strings = {
         searchPlaceholderBook: 'By publisher, title, summary,author, DID,ID',
         searchPlaceholderArtwork: 'By publisher, title, summary,author, DID,ID',
         searchPlaceholderRemark: 'By publisher, title, summary, author, DID, remarked Did, ID',
+        searchPlaceholderSound: 'By publisher, title, summary, author, DID, ID',
+        searchPlaceholderImage: 'By publisher, title, summary, author, DID, ID',
+        searchPlaceholderVideo: 'By publisher, title, summary, author, DID, ID',
+        searchPlaceholderNews: 'By doer, act, object type, object name, ID',
         searchPlaceholderProof: 'By issuer,owner,title,content,ID',
         searchPlaceholderTokenHolder: 'By holder, tokenId',
         searchPlaceholderContact: 'By Owner,ID',
@@ -501,7 +563,8 @@ const strings = {
         amount: "Amount",
         add: "Add",
         carveText: "Carve text",
-        rawTx: "Raw TX",
+        rawTx: "待签名交易",
+        broadcastSignedTx: "已签名交易",
         clear: "Clear",
         copy: "Copy",
         create: "Create",
@@ -516,8 +579,8 @@ const strings = {
         totalValue: "Total Value",
         totalCd: "Total CD",
         // Add placeholder translations
-        enterSenderFid: "Enter sender FID, CID or part of them",
-        enterFid: "Enter receiver FID, CID or part of them",
+        enterSenderFid: "Sender FID, CID or part of them",
+        enterFid: "Receiver FID, CID or part of them",
         enterAmount: "0.00",
         carveInputPlaceholder: "Input what you want to carve on chain",
         addMore: "More",
@@ -537,7 +600,7 @@ const strings = {
         // Address Convert Page
         addressConvert: "Convert address",
         addressOrPubkey: "Address or pubkey",
-        enterAddressOrPubkey: "Enter address or pubkey",
+        enterAddressOrPubkey: "Input address or pubkey",
         convert: "Convert",
         converting: "Converting...",
         convertFailed: "Convert failed",
@@ -546,9 +609,9 @@ const strings = {
         encrypt: "Encrypt",
         encryptButton: "Encrypt",
         pubkey: "Pubkey",
-        enterPubkey: "Enter pubkey, FID or part of them",
+        enterPubkey: "Pubkey, FID or part of them",
         plaintext: "Plaintext",
-        enterPlaintext: "Enter text to encrypt",
+        enterPlaintext: "Input text to encrypt",
         cipher: "Cipher",
         encrypting: "Encrypting...",
         encryptFailed: "Encrypt failed",
@@ -557,9 +620,33 @@ const strings = {
         verifySignature: "Verify Signature",
         verifyButton: "Verify",
         signature: "Signature",
-        enterSignature: "Enter signature to verify",
+        enterSignature: "Input signature to verify",
         verifying: "Verifying...",
-        verifyFailed: "Verify failed"
+        verifyFailed: "Verify failed",
+
+        // Hash Page
+        hashTitle: "Hash",
+        hashDescription: "SHA-256 hash calculator. All hashing is done locally in your browser - no data is sent to any server.",
+        hashAlgorithmTitle: "Hash Algorithm",
+        hashAlgorithmSHA256: "SHA-256",
+        hashAlgorithmSHA256x2: "SHA-256x2 (Double SHA-256)",
+        hashTextTitle: "Hash Text",
+        hashTextLabel: "Text Input",
+        hashTextPlaceholder: "Enter text to hash...",
+        hashTextButton: "Hash Text",
+        hashFileTitle: "Hash File",
+        hashFileLabel: "File Input",
+        hashFileButton: "Hash File",
+        hashResultTitle: "Hash Result",
+        hashResultLabel: "Hash:",
+        noFileSelected: "Please select or drag file here",
+        hashTextEmpty: "Please enter text to hash",
+        hashFileEmpty: "Please select a file to hash",
+        hashSuccess: "Hash calculated successfully",
+        hashError: "Failed to calculate hash",
+        copyFailed: "Failed to copy to clipboard",
+        fileSelected: "File selected",
+        footer: "2025 No1_NrC7. Built with Freecash and Freeconsensus."
     },
     
     zh: {
@@ -648,6 +735,7 @@ const strings = {
 
         // Developer Menu
         chainInfo: "链信息",
+        nodeList: "部分节点",
         nodeOfFCH: "FCH全节点",
         sdk: "SDK",
         api: "API",
@@ -664,36 +752,56 @@ const strings = {
         addressConvert: "地址转换",
         encrypt: "加密",
         verifySignature: "验证签名",
+        hash: "哈希",
     
         // My Cash Page
         myFid: "我的FID",
         qrCode: "二维码",
         createTx: "创建交易",
 
+        // Loading messages
+        loadingCash: "正在加载钞票...",
+        searchingFid: "正在搜索FID...",
+        loadingMore: "正在加载更多...",
+        loadingQrCode: "正在加载二维码...",
+        noMoreData: "没有更多数据",
+        loadMore: "加载更多",
+        noContentToCopy: "没有内容可复制",
+        failedToCopy: "复制失败",
+        error: "错误",
+        apiNotAvailable: "API不可用",
+        noFidFound: "未找到FID",
+        searchFailed: "搜索失败",
+
         // Description
         cashDescription: "中本聪框架的基本实体，被使用前也被称为UTXO",
         txDescription: "自由现金生态中花费钞票、发行新钞票的基础事务",
         opReturnDescription: "在自由现金区块链上刻4k字节以内的任何内容",
         blockDescription: "自由现金区块信息",
-        cidDescription: "CID(Crypto Identity)是自由宇宙主体的身份",
+        cidDescription: "生活在自由宇宙中的人",
         nidDescription: "NID (Named Identity) 是主体对客体ID的命名",
-        nobodyDescription: "Nobody是已公开私钥的身份",
-        multisignDescription: "由多个FID构成，需多个签名才能创建事务的主体身份",
+        nobodyDescription: "已公开私钥的身份",
+        multisigDescription: "由多个FID构成，需多个签名才能创建事务的主体身份",
         protocolDescription: "链上的开放协议市场",
         codeDescription: '链上的开放代码市场',
         secretDescription: "链上加密保存的个人秘密",
         mailDescription: "一定送达，永久保存的链上加密信件",
         serviceDescription: "链上的开放服务市场",
         appDescription: "链上的开放应用市场",
-        groupDescription: "无管理的组织类型",
+        squareDescription: "无管理的组织类型",
         teamDescription: "有管理的组织类型",
         boxDescription: "链上加密保存的个人容器",
         essayDescription: '链上发布一篇短文的DID',
         reportDescription: "链上发布一篇报告的DID",
         paperDescription: '链上发布一篇论文的DID',
         bookDescription: '链上发布一本书的DID',
+        textDescription: '链上发布一段文本的DID',
         artworkDescription: '链上发布一件艺术品的DID',
         remarkDescription: '链上发布一篇评论的DID',
+        soundDescription: '链上发布一段声音的DID',
+        imageDescription: '链上发布一张图像的DID',
+        videoDescription: '链上发布一段视频的DID',
+        newsDescription: '来自区块链活动的链上动态',
         proofDescription: '链上的凭据签发和管理系统',
         tokenDescription: '开放的代币发行系统',
         contactDescription: "永久加密保存在链上的联系人",
@@ -723,9 +831,12 @@ const strings = {
             spendIndex: "花费索引",
             unlockScript: "解锁脚本",
             sigHash: "签名哈希",
+            from:"发送者",
+            to:"接受者",
             sequence: "序列号",
             cd: "币天",
             cashDetail: "钞票详情",
+            blockDetail: "区块详情",
             issuer: "发行者",
             txDetail: "交易详情",
             txIndex: "交易索引",
@@ -733,6 +844,8 @@ const strings = {
             lockTime: "锁定时间",
             fee: "手续费",
             version: "版本",
+            dealer: "掌柜",
+            dealerPubkey: "掌柜公钥",
             signer: "签名者",
             sender: "发送人",
             recipient: "接收者",
@@ -750,7 +863,7 @@ const strings = {
             inCount: "输入数",
             inValueT: "输入金额",
             outValueT: "输出金额",
-            height: "区块高度",
+            height: "高度",
             cipherSend: "发送密文",
             cipherReci: "接收密文",
             textId: "文本ID",
@@ -758,16 +871,16 @@ const strings = {
             blockId: "区块ID",
             time: "时间",
             cid: "CID",
-            cidDetail: "CID详情",
+            freerDetail: "飞人详情",
             income: "收入",
             expend: "支出",
             usedCids: "曾用CID",
             pubkey: "公钥",
             isNobody: "是否明人",
             fid: "身份",
-            homepage: "主页",
+            home: "家",
             guide: "向导",
-            master: "人",
+            master: "主人",
             balance: "余额",
             cash: "钞票",
             reputation: "声誉",
@@ -793,7 +906,7 @@ const strings = {
             leakHeight: "泄露高度",
             leakTxId: "泄露交易ID",
             leakTxIndex: "泄露交易索引",
-            multisignDetail: "多重签名详情",
+            multisigDetail: "多重签名详情",
             required: "所需签名数",
             members: "成员数",
             fids: "成员FID",
@@ -816,6 +929,7 @@ const strings = {
             // Code specific fields
             code: '代码',
             codeDetail: '代码详情',
+            protocolDetail: '协议详情',
             langs: '编程语言',
             urls: '链接',
             protocols: '协议',
@@ -830,15 +944,26 @@ const strings = {
             codes: '代码',
             params: '参数',
             serviceDetail: '服务详情',
+            pricePerKB: '每KB价格',
+            pricePerKBIn: '每KB输入价格',
+            pricePerKBOut: '每KB输出价格',
+            pricePerDayKB: '每日每KB价格',
+            minPayment: '最低支付',
+            pricePerRequest: '每次请求价格',
+            sessionDays: '会话天数',
+            consumeViaShare: '消费分成',
+            orderViaShare: '订单分成',
+            currency: '货币',
+            components: '组件',
             appDetail: '应用详情',
             downloads: '下载',
-            groupDetail: '群详情',
+            squareDetail: '广场详情',
             namers: '命名者',
             memberNum: '成员数量',
             cddToUpdate: '更新所需CDD',
             tCdd: '总CDD',
-            teamDetail: "组详情",
-            teamList: "组列表",
+            teamDetail: "团队详情",
+            teamList: "团队列表",
             box: "盒子",
             cipher: "密文",
             alg: "算法",
@@ -846,16 +971,25 @@ const strings = {
             essayList: '短文列表',
             essayDetail: '短文详情',
             authors: '作者',
-            publisher: '发布者',         
+            publisher: '发布者',
             summary: "摘要",
             paper: '论文',
             paperDetail: '论文详情',
+            text: '文本',
+            textDetail: '文本详情',
             keywords: '关键词',
             artworkDetail: '艺术品详情',
             remark: '评论',
             remarkDetail: '评论详情',
             deleted: '已删除',
             onDid: '评论对象',
+            doer: '执行者',
+            act: '动作',
+            objectType: '对象类型',
+            objectId: '对象ID',
+            objectName: '对象名称',
+            objectBrief: '对象简介',
+            newsDetail: '动态详情',
             proof: '凭据',
             proofDetail: '凭据详情',
             content: '内容',
@@ -912,7 +1046,13 @@ const strings = {
             startTime: "开始时间",
             year: "当前年份",
             daysToNextYear: "到下一年的天数",
-            heightOfNextYear: "下一年高度"
+            heightOfNextYear: "下一年高度",
+            // Node List fields
+            nodeList: "节点列表",
+            addr: "地址",
+            subver: "子版本",
+            pingtime: "延迟",
+            lastrecv: "最后接收"
         },
 
         //Blockchain Section
@@ -925,8 +1065,9 @@ const strings = {
         // Identity Section
         identity: "身份",
         cid: "CID",
+        freer:"飞人",
         nobody: "明人", 
-        multisign: "多签",
+        multisig: "多签",
         nid: "NID",
         
         // Construct Section
@@ -938,8 +1079,8 @@ const strings = {
         
         // Organization Section
         organization: "组织",
-        group: "群",
-        team: "组",
+        square: "广场",
+        team: "团队",
         
         // Personal Section
         personal: "个人",
@@ -957,9 +1098,14 @@ const strings = {
         report: "报告",
         paper: "论文",
         book: "书籍",
+        text: "文本",
         artwork: "艺术品",
         remark: "评论",
-        
+        sound: "声音",
+        image: "图像",
+        video: "视频",
+        news: "动态",
+
         // Business Section
         business: "商务",
         proof: "凭据",
@@ -990,33 +1136,38 @@ const strings = {
         sortValueDesc: "数值 (从高到低)",
 
         // Search Placeholders
-        searchPlaceholderCash: "可搜所有者、CashID、发行交易ID、花费交易ID",
-        searchPlaceholderTx: "可搜ID、区块交易ID",
-        searchPlaceholderOpReturn: "可搜文本、签名者、ID",
-        searchPlaceholderBlock: "可搜高度,ID",
-        searchPlaceholderNid: '可搜名称、描述、对象ID、命名者',
+        searchPlaceholderHome: "搜CID,FID,交易ID,钞票ID,区块ID,高度",
+        searchPlaceholderCash: "搜所有者,钞票ID,发行交易ID,花费交易ID",
+        searchPlaceholderTx: "搜ID,区块交易ID",
+        searchPlaceholderOpReturn: "搜文本,签名者,ID",
+        searchPlaceholderBlock: "搜高度,ID",
+        searchPlaceholderNid: '搜名称,描述,对象ID,命名者',
         searchPlaceholderDetail: "不可用",
-        searchPlaceholderCid: '可搜CID、FID、已用CID、公钥',
-        searchPlaceholderMultisign: '可搜FID，成员，或成员公钥',
-        searchPlaceholderProtocol: '可搜发布者，标题，DID，描述',
-        searchPlaceholderCode: '可搜发布者，名称，DID，描述',
-        searchPlaceholderService: '可搜发布者，名称，描述，或 DID',
-        searchPlaceholderApp: '可搜发布者，名称，描述，DID, SID, PID, CodeId',
-        searchPlaceholderTeam: "可搜所有者、名称、描述、成员数、ID",
-        searchPlaceholderGroup: "可搜名称、描述、成员数、ID",
-        searchPlaceholderSecret: "可搜所有者、ID",
-        searchPlaceholderMail: "可搜发信人，收信人，ID",
-        searchPlaceholderStatement: "可搜发布者、标题、内容、ID",
-        searchPlaceholderBox: "可搜所有者，名称，描述，ID",
-        searchPlaceholderEssay: '可搜发布者，标题，DID, ID',
-        searchPlaceholderReport: "可搜发布者，标题，摘要，作者，DID,ID",
-        searchPlaceholderPaper: '可搜发布者，标题，关键词，摘要，作者，DID,ID',
-        searchPlaceholderBook: '可搜发布者，标题，摘要，作者，DID,ID',
-        searchPlaceholderArtwork: '可搜发布者，标题，摘要，作者，DID,ID',
-        searchPlaceholderRemark: '可搜发布者，标题，摘要，作者，DID, 被评DID，ID',
-        searchPlaceholderProof: '可搜发行者，所有者，标题，内容,ID',
-        searchPlaceholderTokenHolder: '可搜持有者，代币ID',
-        searchPlaceholderContact: '可搜所有者，ID',
+        searchPlaceholderCid: '搜CID,FID,已用CID,公钥',
+        searchPlaceholderMultisig: '搜FID,成员,或成员公钥',
+        searchPlaceholderProtocol: '搜发布者,标题,DID,描述',
+        searchPlaceholderCode: '搜发布者,名称,DID,描述',
+        searchPlaceholderService: '搜发布者,名称,描述,或 DID',
+        searchPlaceholderApp: '搜发布者,名称,描述,DID, SID, PID, CodeId',
+        searchPlaceholderTeam: "搜所有者,名称,描述,成员数,ID",
+        searchPlaceholderSquare: "搜名称,描述,成员数,ID",
+        searchPlaceholderSecret: "搜所有者,ID",
+        searchPlaceholderMail: "搜发信人,收信人,ID",
+        searchPlaceholderStatement: "搜发布者,标题,内容,ID",
+        searchPlaceholderBox: "搜所有者,名称,描述,ID",
+        searchPlaceholderEssay: '搜发布者,标题,DID, ID',
+        searchPlaceholderReport: "搜发布者,标题,摘要,作者,DID,ID",
+        searchPlaceholderPaper: '搜发布者,标题,关键词,摘要,作者,DID,ID',
+        searchPlaceholderBook: '搜发布者,标题,摘要,作者,DID,ID',
+        searchPlaceholderArtwork: '搜发布者,标题,摘要,作者,DID,ID',
+        searchPlaceholderRemark: '搜发布者,标题,摘要,作者,DID, 被评DID,ID',
+        searchPlaceholderSound: '搜发布者,标题,摘要,作者,DID,ID',
+        searchPlaceholderImage: '搜发布者,标题,摘要,作者,DID,ID',
+        searchPlaceholderVideo: '搜发布者,标题,摘要,作者,DID,ID',
+        searchPlaceholderNews: '搜执行者,动作,对象类型,对象名称,ID',
+        searchPlaceholderProof: '搜发行者,所有者,标题,内容,ID',
+        searchPlaceholderTokenHolder: '搜持有者,代币ID',
+        searchPlaceholderContact: '搜所有者,ID',
 
         
         // Table Headers
@@ -1047,6 +1198,7 @@ const strings = {
         add: "添加",
         carveText: "上链信息",
         rawTx: "待签名交易",
+        broadcastSignedTx: "已签名交易",
         clear: "清除",
         copy: "复制",
         create: "创建",
@@ -1061,8 +1213,8 @@ const strings = {
         totalValue: "总金额",
         totalCd: "总币天",
         // Add placeholder translations
-        enterSenderFid: "输入发送者FID、CID或其中一部分",
-        enterFid: "输入接收者FID、CID或其中一部分",
+        enterSenderFid: "发送者FID、CID或其中一部分",
+        enterFid: "接收者FID、CID或其中一部分",
         enterAmount: "0.00",
         carveInputPlaceholder: "输入上链信息",
         addMore: "更多",
@@ -1104,13 +1256,51 @@ const strings = {
         signature: "签名",
         enterSignature: "输入要验证的签名",
         verifying: "正在验证...",
-        verifyFailed: "验证失败"
+        verifyFailed: "验证失败",
+
+        // Hash Page
+        hashTitle: "哈希",
+        hashDescription: "SHA-256哈希计算器。所有哈希计算都在您的浏览器本地完成 - 不会将任何数据发送到服务器。",
+        hashAlgorithmTitle: "哈希算法",
+        hashAlgorithmSHA256: "SHA-256",
+        hashAlgorithmSHA256x2: "SHA-256x2 (双重SHA-256)",
+        hashTextTitle: "文本哈希",
+        hashTextLabel: "文本输入",
+        hashTextPlaceholder: "输入要哈希的文本...",
+        hashTextButton: "哈希文本",
+        hashFileTitle: "文件哈希",
+        hashFileLabel: "文件输入",
+        hashFileButton: "哈希文件",
+        hashResultTitle: "哈希结果",
+        hashResultLabel: "哈希:",
+        noFileSelected: "请选择或拖拽文件到这里",
+        hashTextEmpty: "请输入要哈希的文本",
+        hashFileEmpty: "请选择要哈希的文件",
+        hashSuccess: "哈希计算成功",
+        hashError: "哈希计算失败",
+        copyFailed: "复制到剪贴板失败",
+        fileSelected: "文件已选择",
+        footer: "2025 No1_NrC7 基于自由现金和自由共识构建。"
     },
 
 };
 
 // Expose strings to window object
 window.strings = strings;
+
+// Homepage card configuration - single source of truth
+const HOMEPAGE_CARD_CONFIG = [
+    { section: 1, keys: ['cash', 'tx', 'opreturn', 'block'] },
+    { section: 2, keys: ['freer', 'nobody', 'multisig', 'nid'] },
+    { section: 3, keys: ['protocol', 'code', 'service', 'app'] },
+    { section: 4, keys: ['square', 'team'] },
+    { section: 5, keys: ['mail', 'contact', 'secret', 'box'] },
+    { section: 6, keys: ['news', 'text', 'sound', 'image', 'video', 'remark'] },
+    { section: 7, keys: ['statement', 'proof', 'token', 'tokenHolder'] }
+];
+
+// Expose card config to window object
+window.HOMEPAGE_CARD_CONFIG = HOMEPAGE_CARD_CONFIG;
 
 // Current language (default to English)
 let currentLanguage = 'en';
@@ -1248,75 +1438,18 @@ function updateAllStrings() {
     const downloadsContent = document.querySelector('#downloads p');
     if (downloadsContent) downloadsContent.textContent = getString('downloadsContent');
     
-    // Update stat cards with new blockchain terms
-    const statCards = document.querySelectorAll('#home .section-container:nth-child(1) .stats-grid .stat-card h3');
-    const statKeys = ['cash', 'tx', 'opreturn', 'block'];
-    statCards.forEach((card, index) => {
-        if (statKeys[index]) {
-            const value = getString(statKeys[index]);
-            card.textContent = value;
-        }
-    });
-    
-    // Update Identity stat cards
-    const identityStatCards = document.querySelectorAll('#home .section-container:nth-child(2) .stats-grid .stat-card h3');
-    const identityStatKeys = ['cid', 'nobody', 'multisign', 'nid'];
-    identityStatCards.forEach((card, index) => {
-        if (identityStatKeys[index]) {
-            const value = getString(identityStatKeys[index]);
-            card.textContent = value;
-        }
-    });
-    
-    // Update Construct stat cards
-    const constructStatCards = document.querySelectorAll('#home .section-container:nth-child(3) .stats-grid .stat-card h3');
-    const constructStatKeys = ['protocol', 'code', 'service', 'app'];
-    constructStatCards.forEach((card, index) => {
-        if (constructStatKeys[index]) {
-            const value = getString(constructStatKeys[index]);
-            card.textContent = value;
-        }
-    });
-    
-    // Update Organization stat cards
-    const organizationStatCards = document.querySelectorAll('#home .section-container:nth-child(4) .stats-grid .stat-card h3');
-    const organizationStatKeys = ['group', 'team'];
-    organizationStatCards.forEach((card, index) => {
-        if (organizationStatKeys[index]) {
-            const value = getString(organizationStatKeys[index]);
-            card.textContent = value;
-        }
-    });
-    
-    // Update Personal stat cards
-    const personalStatCards = document.querySelectorAll('#home .section-container:nth-child(5) .stats-grid .stat-card h3');
-    const personalStatKeys = ['mail', 'contact', 'secret', 'box'];
-    personalStatCards.forEach((card, index) => {
-        if (personalStatKeys[index]) {
-            const value = getString(personalStatKeys[index]);
-            card.textContent = value;
-        }
-    });
-    
-    // Update Publish stat cards
-    const publishStatCards = document.querySelectorAll('#home .section-container:nth-child(6) .stats-grid .stat-card h3');
-    const publishStatKeys = ['statement', 'essay', 'report', 'paper', 'book', 'artwork', 'remark'];
-    publishStatCards.forEach((card, index) => {
-        if (publishStatKeys[index]) {
-            const value = getString(publishStatKeys[index]);
-            card.textContent = value;
-        }
-    });
-    
-    // Update Business stat cards
-    const businessStatCards = document.querySelectorAll('#home .section-container:nth-child(7) .stats-grid .stat-card h3');
-    const businessStatKeys = ['proof', 'token', 'tokenHolder'];
-    businessStatCards.forEach((card, index) => {
-        if (businessStatKeys[index]) {
-            const value = getString(businessStatKeys[index]);
-            card.textContent = value;
-        }
-    });
+    // Update stat cards using the global configuration
+    if (window.HOMEPAGE_CARD_CONFIG) {
+        window.HOMEPAGE_CARD_CONFIG.forEach(config => {
+            const cards = document.querySelectorAll(`#home .section-container:nth-child(${config.section}) .stats-grid .stat-card h3`);
+            cards.forEach((card, index) => {
+                if (config.keys[index]) {
+                    const value = getString(config.keys[index]);
+                    card.textContent = value;
+                }
+            });
+        });
+    }
     
     // Update chart buttons
     const chartButtons = document.querySelectorAll('.chart-btn');
@@ -1328,14 +1461,15 @@ function updateAllStrings() {
     });
     
     // Update table controls
-    const searchInput = document.getElementById('search-input');
-    if (searchInput) searchInput.placeholder = getString('searchPlaceholder');
+    // Note: Search input placeholders are managed by updateSearchInputs function in search-config.js
+    // const searchInput = document.getElementById('search-input');
+    // if (searchInput) searchInput.placeholder = getString('searchPlaceholder');
     
-    const mobileSearchInput = document.getElementById('mobile-search-input');
-    if (mobileSearchInput) mobileSearchInput.placeholder = getString('searchPlaceholder');
+    // const mobileSearchInput = document.getElementById('mobile-search-input');
+    // if (mobileSearchInput) mobileSearchInput.placeholder = getString('searchPlaceholder');
     
-    const desktopSearchInput = document.getElementById('desktop-search-input');
-    if (desktopSearchInput) desktopSearchInput.placeholder = getString('searchPlaceholder');
+    // const desktopSearchInput = document.getElementById('desktop-search-input');
+    // if (desktopSearchInput) desktopSearchInput.placeholder = getString('searchPlaceholder');
     
     const sortOptions = document.querySelectorAll('#sort-select option');
     const sortKeys = ['sortBy', 'sortNameAsc', 'sortNameDesc', 'sortValueAsc', 'sortValueDesc'];

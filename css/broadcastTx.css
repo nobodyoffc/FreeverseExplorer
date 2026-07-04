@@ -2,8 +2,8 @@
 .container {
     background: #1a1a1a;
     border-radius: 10px;
-    padding: 2rem;
-    margin-bottom: 2rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     border: 1px solid #333;
     width: 100%;
@@ -67,11 +67,12 @@
 }
 
 .action-btn {
-    padding: 10px 20px;
+    padding: 4px 8px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-weight: 500;
+    font-size: 18px;
 }
 
 #clear-btn {
@@ -122,6 +123,6 @@
         flex: 1;
         min-width: 80px;
         font-size: 14px;
-        padding: 8px 12px;
+        padding: 4px 0px;
     }
 } 

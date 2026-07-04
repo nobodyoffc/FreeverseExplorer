@@ -1,5 +1,6 @@
 // Constants
 import {
+    ID,
     OWNER,
     BIRTH_TIME,
     BIRTH_HEIGHT,
@@ -16,7 +17,7 @@ import {
     DESC,
     VER,
     TYPES,
-    URLS,
+    HOME,
     WAITERS,
     PROTOCOLS,
     CODES,
@@ -35,12 +36,13 @@ import {
 class App {
     constructor() {
         // Basic properties
+        this.id = null;
         this.stdName = null;
         this.localNames = null;
         this.types = null;
         this.desc = null;
         this.ver = null;
-        this.urls = null;
+        this.home = null;
         this.downloads = null;
         this.waiters = null;
         this.protocols = null;
@@ -70,7 +72,8 @@ class App {
             [T_CDD]: DEFAULT_AMOUNT_LENGTH,
             [DESC]: DEFAULT_ID_LENGTH,
             [LAST_TIME]: DEFAULT_TIME_LENGTH,
-            [BIRTH_TIME]: DEFAULT_TIME_LENGTH
+            [BIRTH_TIME]: DEFAULT_TIME_LENGTH,
+            [ID]: DEFAULT_ID_LENGTH,
         };
     }
 
@@ -91,13 +94,14 @@ class App {
         const fieldNames = window.strings?.[currentLang]?.fieldNames || {};
         
         return {
+            [ID]: fieldNames.id || 'ID',
             [OWNER]: fieldNames.owner || 'Owner',
             [STD_NAME]: fieldNames.stdName || 'Standard Name',
             [LOCAL_NAMES]: fieldNames.localNames || 'Local Names',
             [DESC]: fieldNames.desc || 'Description',
             [VER]: fieldNames.ver || 'Version',
             [TYPES]: fieldNames.types || 'Types',
-            [URLS]: fieldNames.urls || 'URLs',
+            [HOME]: fieldNames.home || 'Home',
             [ACTIVE]: fieldNames.active || 'Active',
             [CLOSED]: fieldNames.closed || 'Closed',
             [T_CDD]: fieldNames.tCdd || 'Total CDD',
@@ -128,12 +132,13 @@ class App {
     static fromMap(map) {
         const app = new App();
         
+        app.id = map[ID];
         app.stdName = map[STD_NAME];
-        app.localNames = map[LOCAL_NAMES]?.split(',');
+        app.localNames = map[LOCAL_NAMES];
         app.types = map[TYPES]?.split(',');
         app.desc = map[DESC];
         app.ver = map[VER];
-        app.urls = map[URLS]?.split(',');
+        app.home = map[HOME];
         app.downloads = map[DOWNLOADS] ? JSON.parse(map[DOWNLOADS]) : null;
         app.waiters = map[WAITERS]?.split(',');
         app.protocols = map[PROTOCOLS]?.split(',');

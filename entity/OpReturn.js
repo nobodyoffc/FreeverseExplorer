@@ -4,6 +4,7 @@ import {
     SIGNER,
     OP_RETURN,
     CDD,
+    PAID,
     TIME,
     HEIGHT,
     OP_RETURN_ID
@@ -25,6 +26,7 @@ class OpReturn {
         this.recipient = null; // address of the first output, but the first input address and opReturn output
         this.height = null; // block height
         this.txIndex = null; // tx index in the block
+        this.paid = null; // paid
     }
 
     static getFieldWidthMap() {
@@ -59,6 +61,7 @@ class OpReturn {
             [OP_RETURN]: fieldNames.opReturn || 'OP_RETURN',
             [CDD]: fieldNames.cdd || 'CDD',
             [TIME]: fieldNames.time || 'Time',
+            [PAID]: fieldNames.paid || 'Paid',
             [ID]: fieldNames.id || OP_RETURN_ID
         };
     }

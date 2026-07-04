@@ -1,11 +1,49 @@
-// Import Group class
-import Group from '../entity/Group.js';
+// Import Multisig class
+import Multisig from '../entity/Multisig.js';
 import { getSearchConfig } from './search-config.js';
+import { showAsQrCodes } from './utils.js';
+import { QR_CODE_ICON_SVG } from '../constants/constants.js';
 
 // Get the URL head from global API
-let urlHead = window.API.urlHead;
-const urlTail = window.API.URL_TAIL.GROUP_BY_IDS;
+// Use a getter function to always get the current working server URL
+const getUrlHead = () => window.API.urlHead;
+const urlTail = window.API.URL_TAIL.MULTISIG_BY_IDS;
 let loadingOverlay;
+
+// Add download function to global scope
+window.downloadAvatar = function(dataUrl, filename) {
+    // Create a temporary link element
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = filename;
+    
+    // Append to body, click and remove
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
+
+// Function to fetch CID avatar with global cache support
+async function fetchCidAvatar(id) {
+    if (window.avatarCacheManager) {
+        return await window.avatarCacheManager.fetchAvatar(id);
+    }
+    
+    // Fallback to direct fetch if cache manager is not available
+    try {
+        const url = `${getUrlHead()}${window.API.URL_TAIL.AVATARS}?ids=${id}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data?.data && data.data[id]) {
+            return data.data[id];
+        }
+        return null;
+    } catch (error) {
+        console.error('Error fetching CID avatar:', error);
+        return null;
+    }
+}
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', async () => {
@@ -16,7 +54,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');
 
-    let groupInstance;
+    let multisigInstance;
+    let avatar = null;
 
     if (id) {
         // Load LoadingOverlay script if not already loaded
@@ -32,49 +71,58 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Initialize loading overlay
         loadingOverlay = new LoadingOverlay();
-        
+
         // Show loading overlay
         loadingOverlay.show();
-        loadingOverlay.setText('Loading Group details...');
-        
-        // Fetch Group by ID
-        groupInstance = await fetchGroupById(id);
-        
+        loadingOverlay.setText('Loading Multisig details...');
+
+        // Fetch Multisig by ID
+        multisigInstance = await fetchMultisigById(id);
+
+        // Fetch avatar if we have an ID
+        if (multisigInstance) {
+            avatar = await fetchCidAvatar(multisigInstance.id);
+        }
+
         // Hide loading overlay
         loadingOverlay.hide();
     } else {
-        // Get the group instance data from sessionStorage
-        const groupDetailData = sessionStorage.getItem('groupDetail');
-        if (!groupDetailData) {
-            console.error('No group detail data found');
+        // Get the multisig instance data from sessionStorage
+        const multisigDetailData = sessionStorage.getItem('multisigDetail');
+        if (!multisigDetailData) {
+            console.error('No multisig detail data found');
             return;
         }
-        groupInstance = JSON.parse(groupDetailData);
+        multisigInstance = JSON.parse(multisigDetailData);
+        // Fetch avatar for the stored ID
+        if (multisigInstance.id) {
+            avatar = await fetchCidAvatar(multisigInstance.id);
+        }
     }
 
-    if (!groupInstance) {
-        console.error('Failed to get Group data');
+    if (!multisigInstance) {
+        console.error('Failed to get Multisig data');
         return;
     }
 
     // Set page title
     const headerTitle = window.strings[window.currentLanguage].siteTitle;
-    const pageTitle = window.strings[window.currentLanguage].fieldNames.groupDetail;
+    const pageTitle = window.strings[window.currentLanguage].fieldNames.multisigDetail;
     document.title = `${headerTitle} - ${pageTitle}`;
     
-    // Display group details
-    displayGroupDetails(groupInstance);
+    // Display multisig details
+    displayMultisigDetails(multisigInstance, avatar);
 
     // Add language change listener
     window.addEventListener('languageChanged', (event) => {
         if (event.detail && event.detail.lang) {
             // Update page title
             const currentLang = event.detail.lang;
-            const title = window.strings[currentLang]?.fieldNames?.groupDetail || 'Group Detail';
+            const title = window.strings[currentLang]?.fieldNames?.multisigDetail || 'Multisig Detail';
             document.title = `${window.strings[currentLang].siteTitle} - ${title}`;
-            
+
             // Re-render the details with new field names
-            displayGroupDetails(groupInstance);
+            displayMultisigDetails(multisigInstance, avatar);
         }
     });
 
@@ -82,10 +130,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.body.setAttribute('data-disable-header-search', 'true');
 });
 
-// Function to fetch Group by ID
-async function fetchGroupById(id) {
-    try {
-        
+// Function to fetch Multisig by ID
+async function fetchMultisigById(id) {
+    try { 
         const parameters = `?ids=${id}`;
         const url = urlHead + urlTail + parameters;
 
@@ -109,31 +156,43 @@ async function fetchGroupById(id) {
         }
         return null;
     } catch (error) {
-        console.error('Error fetching Group by ID:', error);
+        console.error('Error fetching Multisig by ID:', error);
         return null;
     }
 }
 
-// Display group details
-function displayGroupDetails(groupInstance) {
-    const detailContent = document.getElementById('group-detail-content');
+// Display multisig details
+function displayMultisigDetails(multisigInstance, avatar) {
+    const detailContent = document.getElementById('multisig-detail-content');
     if (!detailContent) return;
 
+    // Create avatar container if avatar exists
+    let avatarHTML = '';
+    if (avatar) {
+        avatarHTML = `
+            <div class="avatar-container" style="margin: 20px 0 20px 20px;">
+                <img src="data:image/png;base64,${avatar}"
+                     style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; cursor: pointer;"
+                     alt="CID Avatar"
+                     onclick="window.downloadAvatar(this.src, '${multisigInstance.id}.png')">
+            </div>
+        `;
+    }
+
     // Get field name map and field types for formatting
-    const showFieldNameMap = Group.getShowFieldNameAsMap();
-    const timestampFields = Group.getTimestampFieldList();
-    const satoshiFields = Group.getSatoshiFieldList();
+    const showFieldNameMap = Multisig.getShowFieldNameAsMap();
+    const timestampFields = Multisig.getTimestampFieldList();
 
     // Create detail table
-    let detailHTML = '<table class="detail-table-unified">';
+    let detailHTML = avatarHTML + '<table class="detail-table-unified">';
 
-    // Get fields from Group constructor
-    const group = new Group();
-    const orderedFields = Object.keys(group);
+    // Get fields from Multisig constructor
+    const multisig = new Multisig();
+    const orderedFields = Object.keys(multisig);
 
-    // Add rows for all properties of the group instance in the defined order
+    // Add rows for all properties of the multisig instance in the defined order
     orderedFields.forEach(field => {
-        const value = groupInstance[field];
+        const value = multisigInstance[field];
         // Skip if field is null or undefined
         if (value === null || value === undefined) return;
 
@@ -153,10 +212,10 @@ function displayGroupDetails(groupInstance) {
                     minute: '2-digit',
                     second: '2-digit',
                     hour12: false
-                });
+                }).replace(/\//g, '-');
+            } else {
+                displayValue = '';
             }
-        } else if (satoshiFields.includes(field)) {
-            displayValue = formatNumber(value / 100000000, 8);
         } else if (typeof value === 'boolean') {
             displayValue = value ? '✓' : '✗';
             valueClass = value ? 'boolean-true' : 'boolean-false';
@@ -171,6 +230,13 @@ function displayGroupDetails(groupInstance) {
                          showFieldNameMap[field] || 
                          field.replace(/([A-Z])/g, ' $1').trim();
 
+        // Add QR code icon for fields that should show QR code
+        const qrIcon = Multisig.getShowQrCodeFieldList().includes(field) ? `
+            <svg class="qr-icon" viewBox="0 0 24 24" width="24" height="24">
+                ${QR_CODE_ICON_SVG}
+            </svg>
+        ` : '';
+
         detailHTML += `
             <tr>
                 <th>${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}</th>
@@ -178,6 +244,7 @@ function displayGroupDetails(groupInstance) {
                     <span class="copyable ${valueClass}" data-value="${copyValue}" style="cursor: pointer;">
                         ${displayValue}
                     </span>
+                    ${qrIcon}
                 </td>
             </tr>
         `;
@@ -226,20 +293,40 @@ function displayGroupDetails(groupInstance) {
             }
         });
     });
-}
 
-// Format number to remove redundant trailing zeros
-function formatNumber(value, decimals) {
-    return Number(value).toFixed(decimals).replace(/\.?0+$/, '');
+    // Add click handler for QR code icon
+    document.querySelectorAll('.qr-icon').forEach(icon => {
+        icon.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const row = e.target.closest('tr');
+            const value = row.querySelector('.copyable').getAttribute('data-value');
+            
+            if (value) {
+                try {
+                    // Convert string to UTF-8 bytes
+                    const encoder = new TextEncoder();
+                    const bytes = encoder.encode(value);
+                    
+                    // Show QR codes
+                    await showAsQrCodes(bytes);
+                } catch (error) {
+                    console.error('Error showing QR code:', error);
+                    showToast('Error showing QR code', 'error');
+                }
+            }
+        });
+    });
 }
 
 // Export functions for Header.js to use
-window.GroupDetail = {
+window.MultisigDetail = {
     updateStrings: () => {
-        const groupDetailData = sessionStorage.getItem('groupDetail');
-        if (groupDetailData) {
-            const groupInstance = JSON.parse(groupDetailData);
-            displayGroupDetails(groupInstance);
+        const multisigDetailData = sessionStorage.getItem('multisigDetail');
+        if (multisigDetailData) {
+            const multisigInstance = JSON.parse(multisigDetailData);
+            displayMultisigDetails(multisigInstance);
         }
     }
 };
@@ -284,15 +371,4 @@ function showToast(message, x, y) {
         toast.classList.remove('show');
         setTimeout(() => toast.remove(), 300);
     }, 2000);
-}
-
-// Add to each page's initialization code
-window.addEventListener('load', function() {
-    const savedLang = localStorage.getItem('preferredLanguage');
-    if (savedLang && window.strings[savedLang]) {
-        window.currentLanguage = savedLang;
-        if (typeof window.updateAllStrings === 'function') {
-            window.updateAllStrings();
-        }
-    }
-}); 
+} 

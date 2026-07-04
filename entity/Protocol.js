@@ -1,5 +1,6 @@
 // Constants
 import {
+    ID,
     OWNER,
     BIRTH_TIME,
     BIRTH_HEIGHT,
@@ -19,7 +20,7 @@ import {
     LANG,
     DESC,
     PRE_PID,
-    FILE_URLS,
+    HOME,
     TITLE,
     WAITERS,
     PROTOCOLS
@@ -35,6 +36,7 @@ import {
 class Protocol {
     constructor() {
         // Basic properties
+        this.id = null;
         this.type = null;
         this.sn = null;
         this.ver = null;
@@ -43,7 +45,7 @@ class Protocol {
         this.lang = null;
         this.desc = null;
         this.prePid = null;
-        this.fileUrls = null;
+        this.home = null;
         this.title = null;
         this.owner = null;
         this.waiters = null;
@@ -70,7 +72,8 @@ class Protocol {
             [TYPE]: DEFAULT_AMOUNT_LENGTH,
             [DESC]: DEFAULT_ID_LENGTH,
             [LAST_TIME]: DEFAULT_TIME_LENGTH,
-            [BIRTH_TIME]: DEFAULT_TIME_LENGTH
+            [BIRTH_TIME]: DEFAULT_TIME_LENGTH,
+            [ID]: DEFAULT_ID_LENGTH,
         };
     }
 
@@ -91,6 +94,7 @@ class Protocol {
         const fieldNames = window.strings?.[currentLang]?.fieldNames || {};
         
         return {
+            [ID]: fieldNames.id || 'ID',
             [OWNER]: fieldNames.owner || 'Owner',
             [TITLE]: fieldNames.title || 'Title',
             [DID]: fieldNames.did || 'DID',
@@ -120,6 +124,7 @@ class Protocol {
     static fromMap(map) {
         const protocol = new Protocol();
         
+        protocol.id = map[ID];
         protocol.type = map[TYPE];
         protocol.sn = map[SN];
         protocol.ver = map[VER];
@@ -128,7 +133,7 @@ class Protocol {
         protocol.lang = map[LANG];
         protocol.desc = map[DESC];
         protocol.prePid = map[PRE_PID];
-        protocol.fileUrls = map[FILE_URLS]?.split(',');
+        protocol.home = map[HOME];
         protocol.title = map[TITLE];
         protocol.owner = map[OWNER];
         protocol.waiters = map[WAITERS]?.split(',');

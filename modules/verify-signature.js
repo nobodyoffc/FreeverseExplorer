@@ -52,12 +52,6 @@ function initializeEventListeners() {
         clearBtn.addEventListener('click', handleClear);
     }
 
-    // Copy button
-    const copyBtn = document.getElementById('copy-btn');
-    if (copyBtn) {
-        copyBtn.addEventListener('click', handleCopy);
-    }
-
     // Verify button
     const verifyBtn = document.getElementById('verify-btn');
     if (verifyBtn) {
@@ -65,85 +59,7 @@ function initializeEventListeners() {
     }
 }
 
-// Handle copy
-function handleCopy(event) {
-    const resultContent = document.getElementById('result-content');
-    const copyableSpan = resultContent.querySelector('.copyable');
-    
-    if (!copyableSpan) {
-        console.warn('No copyable content found');
-        return;
-    }
-    
-    const content = copyableSpan.getAttribute('data-value');
-    
-    if (!content) {
-        console.warn('No content to copy');
-        return;
-    }
-    
-    // Use clipboard API if available
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(content).then(() => {
-            showCopyNotification(event);
-        }).catch(err => {
-            console.error('Failed to copy: ', err);
-            fallbackCopyTextToClipboard(content, event);
-        });
-    } else {
-        fallbackCopyTextToClipboard(content, event);
-    }
-}
 
-// Fallback copy function for older browsers
-function fallbackCopyTextToClipboard(text, event) {
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    textArea.style.position = 'fixed';
-    textArea.style.left = '-999999px';
-    textArea.style.top = '-999999px';
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    
-    try {
-        document.execCommand('copy');
-        showCopyNotification(event);
-    } catch (err) {
-        console.error('Fallback: Oops, unable to copy', err);
-        showToast(window.strings[window.currentLanguage]?.failedToCopy || 'Failed to copy');
-    }
-    
-    document.body.removeChild(textArea);
-}
-
-// Show copy notification at button position
-function showCopyNotification(event) {
-    // Show copy confirmation message at button position
-    const copyMessage = document.createElement('div');
-    copyMessage.style.position = 'fixed';
-    copyMessage.style.left = `${event.clientX}px`;
-    copyMessage.style.top = `${event.clientY - 30}px`; // Position above the click
-    copyMessage.style.transform = 'translateX(-50%)';
-    copyMessage.style.padding = '4px 8px';
-    copyMessage.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-    copyMessage.style.color = 'white';
-    copyMessage.style.borderRadius = '4px';
-    copyMessage.style.zIndex = '1000';
-    copyMessage.style.fontSize = '12px';
-    copyMessage.style.pointerEvents = 'none'; // Prevent message from interfering with clicks
-    
-    // Set message text based on current language
-    const currentLang = window.currentLanguage || 'en';
-    copyMessage.textContent = currentLang === 'zh' ? '已复制' : 'Copied';
-    
-    document.body.appendChild(copyMessage);
-    
-    // Remove message after 1 second
-    setTimeout(() => {
-        copyMessage.remove();
-    }, 1000);
-}
 
 // Show error message above verify button
 function showVerifyError(message) {

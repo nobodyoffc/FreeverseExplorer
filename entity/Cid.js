@@ -15,7 +15,7 @@ import {
     USED_CIDS,
     PUBKEY,
     IS_NOBODY,
-    HOMEPAGE,
+    HOME,
     GUIDE,
     MASTER,
     BTC_ADDR,
@@ -56,7 +56,7 @@ class Cid {
         this.master = null;
         this.guide = null;    // the address of the address which sent the first fch to this address
         this.noticeFee = null;
-        this.homepages = null;
+        this.home = null;
 
         this.btcAddr = null;    // the btc address
         this.ethAddr = null;    // the eth address
@@ -109,7 +109,7 @@ class Cid {
     }
 
     static getShowQrCodeFieldList() {
-        return [ID, PUBKEY,GUIDE,MASTER,HOMEPAGE,BTC_ADDR,ETH_ADDR,LTC_ADDR,DOGE_ADDR,TRX_ADDR,BCH_ADDR];
+        return [ID, PUBKEY,GUIDE,MASTER,HOME,BTC_ADDR,ETH_ADDR,LTC_ADDR,DOGE_ADDR,TRX_ADDR,BCH_ADDR];
     }
 
     static getInputFieldDefaultValueMap() {

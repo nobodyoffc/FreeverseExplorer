@@ -12,6 +12,7 @@ import {
     AUTHORS,
     LANG,
     SUMMARY,
+    FORMAT,
     PUBLISHER,
     T_CDD,
     T_RATE,
@@ -34,6 +35,7 @@ class Remark {
         this.authors = null;
         this.lang = null;
         this.summary = null;
+        this.format = null;
         this.publisher = null;
         this.birthTime = null;
         this.birthHeight = null;

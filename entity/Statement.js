@@ -15,6 +15,7 @@ import {
 
 class Statement {
     constructor() {
+        // Basic properties
         this.id = null;
         this.title = null;
         this.content = null;

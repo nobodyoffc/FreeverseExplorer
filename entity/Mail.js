@@ -1,6 +1,6 @@
 import { 
     ID, BIRTH_TIME, BIRTH_HEIGHT, LAST_HEIGHT, ACTIVE,
-    ALG, CIPHER, CIPHER_RECI,CIPHER_SEND, SENDER, RECIPIENT
+    ALG, CIPHER, CIPHER_RECI,CIPHER_SEND, FROM, TO
 } from '../constants/fieldNames.js';
 import {DEFAULT_ID_LENGTH, DEFAULT_TIME_LENGTH } from '../constants/constants.js';
 
@@ -22,8 +22,8 @@ class Mail {
 
     static getFieldWidthMap() {
         return {
-            [SENDER]: DEFAULT_ID_LENGTH,
-            [RECIPIENT]: DEFAULT_ID_LENGTH,
+            [FROM]: DEFAULT_ID_LENGTH,
+            [TO]: DEFAULT_ID_LENGTH,
             [BIRTH_TIME]: DEFAULT_TIME_LENGTH,
             [CIPHER]: DEFAULT_ID_LENGTH,
             [CIPHER_RECI]: DEFAULT_ID_LENGTH,
@@ -35,8 +35,8 @@ class Mail {
         return {
             [ID]: 'ID',
             [ALG]: 'Algorithm',
-            [SENDER]: 'Sender',
-            [RECIPIENT]: 'Recipient',
+            [FROM]: 'From',
+            [TO]: 'To',
             [BIRTH_TIME]: 'Birth Time',
             [CIPHER]: 'Cipher',
             [BIRTH_HEIGHT]: 'Birth Height',
@@ -60,8 +60,8 @@ class Mail {
         
         return {
             [ID]: fieldNames.id || 'ID',
-            [SENDER]: fieldNames.sender || 'Sender',
-            [RECIPIENT]: fieldNames.recipient || 'Recipient',
+            [FROM]: fieldNames.from || 'From',
+            [TO]: fieldNames.to || 'To',
             [CIPHER]: fieldNames.cipher || 'Cipher',
             [BIRTH_TIME]: fieldNames.birthTime || 'Birth Time',
             [BIRTH_HEIGHT]: fieldNames.birthHeight || 'Birth Height',
@@ -71,7 +71,7 @@ class Mail {
     }
 
     static getLinkFieldList() {
-        return [SENDER, RECIPIENT];
+        return [FROM, TO];
     }
 
     static getShowQrCodeFieldList() {

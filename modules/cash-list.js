@@ -1,17 +1,25 @@
 // Import constants
 import { PAGE_SIZE, TEXT_TRUNCATE_LENGTH } from '../constants/constants.js';
 import Cash from '../entity/Cash.js';
-import './utils.js';  // Fix the import path
+import { getBestHeight } from './utils.js';
 import { getSearchConfig } from './search-config.js';
 
 // Get the URL head from global API
-let urlHead = window.API.urlHead;
+// Use a getter function to always get the current working server URL
+const getUrlHead = () => window.API.urlHead;
 let loadingOverlay;
 let currentPage = 1;
 let pageSize = PAGE_SIZE;
 let pageCashListMap = new Map();
 let lastValues = null;
 let currentSearchString = '';
+let cacheTimestamp = null;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache duration
+
+// Add avatar cache
+let avatarCache = new Map();
+let avatarCacheTimestamp = null;
+const AVATAR_CACHE_DURATION = 10 * 60 * 1000; // 10 minutes avatar cache duration
 
 // Event listener configurations
 const EVENT_LISTENERS = {
@@ -47,6 +55,9 @@ const EVENT_LISTENERS = {
 document.addEventListener('DOMContentLoaded', async () => {
     // Wait for strings to be loaded
     await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Flag to prevent duplicate language change handling
+    let languageChangeHandled = false;
 
     // Set page title
     const headerTitle = window.strings[window.currentLanguage].siteTitle;
@@ -54,7 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.title = `${headerTitle} - ${pageTitle}`;
 
     // Check if API.urlHead is available
-    if (!urlHead) {
+    if (!getUrlHead()) {
         return;
     }
 
@@ -70,19 +81,97 @@ document.addEventListener('DOMContentLoaded', async () => {
         handleSearch();
     });
     
-    // Load Cash list
-    loadCashList();
-
-    // Add language change listener
-    window.addEventListener('languageChanged', (event) => {
-        if (event.detail && event.detail.lang) {
-            // Update description
-            updateDescription();
-            // Re-render the table with new field names
+    // Check if this is a page refresh or navigation
+    const isPageRefresh = performance.navigation.type === 1 || 
+                         (performance.getEntriesByType('navigation')[0] && 
+                          performance.getEntriesByType('navigation')[0].type === 'reload');
+    
+    // Check for search parameter in URL (from homepage)
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get('search');
+    
+    if (searchParam) {
+        currentSearchString = searchParam;
+        // Set the search input value
+        const desktopSearchInput = document.getElementById('desktop-search-input');
+        const mobileSearchInput = document.getElementById('mobile-search-input');
+        if (desktopSearchInput) desktopSearchInput.value = searchParam;
+        if (mobileSearchInput) mobileSearchInput.value = searchParam;
+        
+        // Check if we have cached data for this search
+        if (!isPageRefresh && pageCashListMap.has(1) && isCacheValid()) {
+            // Use cached data if available, not a page refresh, and cache is still valid
             const currentPageData = pageCashListMap.get(currentPage);
             if (currentPageData) {
                 displayCashList(currentPageData);
+                updatePaginationButtons();
+                return;
+            }
+        }
+        
+        // Load new data (either no cache or page refresh)
+        const config = getSearchConfig();
+        pageCashListMap.clear();
+        lastValues = null;
+        currentPage = 1;
+        // Clear avatar cache on page refresh
+        if (isPageRefresh) {
+            avatarCache.clear();
+            avatarCacheTimestamp = null;
+        }
+        loadCashList(1, false, {
+            searchString: searchParam,
+            searchableFields: config.searchableFields
+        });
+    } else {
+        // Check if we have cached data for default list
+        if (!isPageRefresh && pageCashListMap.has(1) && isCacheValid()) {
+            // Use cached data if available, not a page refresh, and cache is still valid
+            const currentPageData = pageCashListMap.get(currentPage);
+            if (currentPageData) {
+                displayCashList(currentPageData);
+                updatePaginationButtons();
+                return;
+            }
+        }
+        
+        // Load new data (either no cache or page refresh)
+        // Clear avatar cache on page refresh
+        if (isPageRefresh) {
+            avatarCache.clear();
+            avatarCacheTimestamp = null;
+        }
+        loadCashList();
+    }
+
+    // Add language change listener
+    window.addEventListener('languageChanged', (event) => {
+        if (event.detail && event.detail.lang && !languageChangeHandled) {
+            languageChangeHandled = true;
+            // Update description
+            updateDescription();
+            // Re-render the table with new field names (skip avatar fetch for faster rendering)
+            const currentPageData = pageCashListMap.get(currentPage);
+            if (currentPageData) {
+                displayCashList(currentPageData, true);
                 // Update pagination when language changes
+                updatePaginationButtons();
+            }
+            // Reset flag after a short delay to allow future language changes
+            setTimeout(() => {
+                languageChangeHandled = false;
+            }, 100);
+        }
+    });
+
+    // Add page visibility change listener to handle back navigation
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && pageCashListMap.has(currentPage) && isCacheValid()) {
+            // Page became visible and we have valid cached data, just display it
+            // Skip avatar fetch for faster mobile back navigation
+            const currentPageData = pageCashListMap.get(currentPage);
+            if (currentPageData) {
+                displayCashList(currentPageData, true);
                 updatePaginationButtons();
             }
         }
@@ -103,11 +192,28 @@ function initializeEventListeners() {
     });
 }
 
+// Check if cache is still valid
+function isCacheValid() {
+    // For cash list, we consider cache valid if we have data, even without timestamp
+    // This ensures mobile back navigation works properly
+    if (!cacheTimestamp) {
+        // If no timestamp but we have cached data, consider it valid
+        return pageCashListMap.has(currentPage);
+    }
+    return (Date.now() - cacheTimestamp) < CACHE_DURATION;
+}
+
+// Check if avatar cache is still valid
+function isAvatarCacheValid() {
+    if (!avatarCacheTimestamp) return false;
+    return (Date.now() - avatarCacheTimestamp) < AVATAR_CACHE_DURATION;
+}
+
 // Load cash list
 async function loadCashList(page = 1, useCache = true, config = null) {
     try {
         // Check if we have cached data for this page
-        if (useCache && pageCashListMap.has(page)) {
+        if (useCache && pageCashListMap.has(page) && isCacheValid()) {
             await displayCashList(pageCashListMap.get(page));
             updatePaginationButtons();
             return;
@@ -116,10 +222,10 @@ async function loadCashList(page = 1, useCache = true, config = null) {
         loadingOverlay.show();
         loadingOverlay.setText('Loading cash list...');
         
-        let url = `${urlHead}${window.API.URL_TAIL.CASH_SEARCH}?`;
+        let url = `${getUrlHead()}${window.API.URL_TAIL.CASH_SEARCH}?`;
         
         if (config && config.searchString) {
-            url += `part=${config.searchableFields.join(',')},${config.searchString}&`;
+            url += `part=${config.searchableFields.join(',')},${encodeURIComponent(config.searchString)}&`;
         } else {
             url += 'unequals=issuer,coinbase&';
         }
@@ -138,6 +244,9 @@ async function loadCashList(page = 1, useCache = true, config = null) {
             // Save the cash list to our map
             pageCashListMap.set(page, data.data);
             
+            // Update cache timestamp
+            cacheTimestamp = Date.now();
+            
             // Update last values for next page
             if (data.last) {
                 lastValues = data.last;
@@ -151,6 +260,7 @@ async function loadCashList(page = 1, useCache = true, config = null) {
         }
     } catch (error) {
         // Handle error silently
+        console.error('Error loading cash list:', error);
     } finally {
         loadingOverlay.hide();
     }
@@ -165,7 +275,7 @@ function handleSearch() {
     // Get search configuration
     const config = getSearchConfig();
     
-    // Clear existing data
+    // Always clear cache and load fresh data for any search
     pageCashListMap.clear();
     lastValues = null;
     currentPage = 1;
@@ -237,17 +347,65 @@ function truncateTextWithEllipsis(text, maxLength) {
 
 // Function to fetch CID avatars
 async function fetchCidAvatars(owners) {
+    if (window.avatarCacheManager) {
+        return await window.avatarCacheManager.fetchCidAvatars(owners);
+    }
+    
+    // Fallback to local cache if global cache manager is not available
     try {
-        const url = `${urlHead}${window.API.URL_TAIL.CID_AVATAR_BY_IDS}?ids=${owners.join(',')}`;
+        // Check if we have cached avatars for these owners
+        if (isAvatarCacheValid()) {
+            const cachedAvatars = new Map();
+            const missingOwners = [];
+            
+            // Check which owners we have cached
+            owners.forEach(owner => {
+                if (avatarCache.has(owner)) {
+                    cachedAvatars.set(owner, avatarCache.get(owner));
+                } else {
+                    missingOwners.push(owner);
+                }
+            });
+            
+            // If we have all avatars cached, return them
+            if (missingOwners.length === 0) {
+                return cachedAvatars;
+            }
+            
+            // If we have some cached, only fetch the missing ones
+            if (missingOwners.length > 0) {
+                const url = `${getUrlHead()}${window.API.URL_TAIL.CID_AVATAR_BY_IDS}?ids=${missingOwners.join(',')}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data?.data) {
+                    // Cache the new avatars
+                    Object.entries(data.data).forEach(([owner, innerMap]) => {
+                        const avatarMap = new Map(Object.entries(innerMap));
+                        avatarCache.set(owner, avatarMap);
+                        cachedAvatars.set(owner, avatarMap);
+                    });
+                    avatarCacheTimestamp = Date.now();
+                    
+                    return cachedAvatars;
+                }
+            }
+        }
+        
+        // If no cache or cache invalid, fetch all avatars
+        const url = `${getUrlHead()}${window.API.URL_TAIL.CID_AVATAR_BY_IDS}?ids=${owners.join(',')}`;
         const response = await fetch(url);
         const data = await response.json();
         
-        // Convert the response data to a Map
         if (data?.data) {
             const avatarMap = new Map();
+            // Cache all avatars
             Object.entries(data.data).forEach(([owner, innerMap]) => {
-                avatarMap.set(owner, new Map(Object.entries(innerMap)));
+                const innerAvatarMap = new Map(Object.entries(innerMap));
+                avatarCache.set(owner, innerAvatarMap);
+                avatarMap.set(owner, innerAvatarMap);
             });
+            avatarCacheTimestamp = Date.now();
             return avatarMap;
         }
         return new Map();
@@ -257,7 +415,7 @@ async function fetchCidAvatars(owners) {
 }
 
 // Display cash list
-async function displayCashList(cashList) {
+async function displayCashList(cashList, skipAvatarFetch = false) {
     const tableHeader = document.getElementById('cash-table-header');
     const tableBody = document.getElementById('cash-table-body');
     
@@ -300,18 +458,23 @@ async function displayCashList(cashList) {
         const timestampFields = Cash.getTimestampFieldList();
         const satoshiFields = Cash.getSatoshiFieldList();
         
-        // Fetch CID avatars for all owners
-        const owners = [...new Set(cashList.map(cash => cash.owner).filter(Boolean))];
-        const idAvatarMap = await fetchCidAvatars(owners);
-        
+        // Fetch CID avatars for all owners (skip if requested)
+        let idAvatarMap = new Map();
+        if (!skipAvatarFetch) {
+            const owners = [...new Set(cashList.map(cash => cash.owner).filter(Boolean))];
+            idAvatarMap = await fetchCidAvatars(owners);
+        }
+
+        // Current best block height is the spend height for unspent cash (UTXO) CD.
+        const bestHeight = await getBestHeight();
+
         cashList.forEach(cash => {
             const tr = document.createElement('tr');
             tr.style.cursor = 'pointer';
-            
-            // Calculate cd value for each cash only if valid is true
+
+            // Calculate cd value for each cash only if valid is true (unspent / UTXO)
             if (cash.valid === true) {
-                const currentTimestamp = Math.floor(Date.now() / 1000);
-                cash.cd = Cash.calculateCoinDays(cash.value, cash.birthTime, currentTimestamp);
+                cash.cd = Cash.calculateCoinDays(cash.value, cash.birthHeight, bestHeight);
             } else {
                 cash.cd = null;
             }
@@ -399,7 +562,7 @@ async function displayCashList(cashList) {
                             year: '2-digit',
                             month: '2-digit',
                             day: '2-digit'
-                        }).replace(/\//g, '/');
+                        }).replace(/\//g, '-');
                         const timeStr = date.toLocaleTimeString(undefined, {
                             hour: '2-digit',
                             minute: '2-digit',

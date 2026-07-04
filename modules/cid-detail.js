@@ -5,8 +5,9 @@ import { showAsQrCodes } from './utils.js';
 import { QR_CODE_ICON_SVG } from '../constants/constants.js';
 
 // Get the URL head from global API
-let urlHead = window.API.urlHead;
-const urlTail = window.API.URL_TAIL.CID_INFO_BY_IDS;
+// Use a getter function to always get the current working server URL
+const getUrlHead = () => window.API.urlHead;
+const urlTail = window.API.URL_TAIL.FREER_BY_IDS;
 let loadingOverlay;
 
 // Add download function to global scope
@@ -22,10 +23,15 @@ window.downloadAvatar = function(dataUrl, filename) {
     document.body.removeChild(link);
 };
 
-// Function to fetch CID avatar
+// Function to fetch CID avatar with global cache support
 async function fetchCidAvatar(id) {
+    if (window.avatarCacheManager) {
+        return await window.avatarCacheManager.fetchAvatar(id);
+    }
+    
+    // Fallback to direct fetch if cache manager is not available
     try {
-        const url = `${urlHead}${window.API.URL_TAIL.AVATARS}?ids=${id}`;
+        const url = `${getUrlHead()}${window.API.URL_TAIL.AVATARS}?ids=${id}`;
         const response = await fetch(url);
         const data = await response.json();
         
@@ -46,7 +52,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Get URL parameters
     const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id');
+    let id = urlParams.get('id');
+
+    // 如果没有id参数，尝试从 /address/xxx 这种路径获取
+    if (!id) {
+        const pathMatch = window.location.pathname.match(/\/address\/([^/?#]+)/);
+        if (pathMatch && pathMatch[1]) {
+            id = pathMatch[1];
+        }
+    }
 
     let cidInstance;
     let avatar = null;
@@ -99,7 +113,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Set page title
     const headerTitle = window.strings[window.currentLanguage].siteTitle;
-    const pageTitle = window.strings[window.currentLanguage].fieldNames.cidDetail;
+    const pageTitle = window.strings[window.currentLanguage].fieldNames.freerDetail;
     document.title = `${headerTitle} - ${pageTitle}`;
     
     // Display CID details
@@ -110,7 +124,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (event.detail && event.detail.lang) {
             // Update page title
             const currentLang = event.detail.lang;
-            const title = window.strings[currentLang]?.fieldNames?.cidDetail || 'CID Detail';
+            const title = window.strings[currentLang]?.fieldNames?.freerDetail || 'CID Detail';
             document.title = `${window.strings[currentLang].siteTitle} - ${title}`;
             
             // Re-render the details with new field names
@@ -126,7 +140,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function fetchCidById(id) {
     try {
         const parameters = `?ids=${id}`;
-        const url = urlHead + urlTail + parameters;
+        const url = `${getUrlHead()}${urlTail}${parameters}`;
 
         const response = await fetch(url, {
             method: 'GET',
@@ -204,12 +218,19 @@ function displayCidDetails(cidInstance, avatar) {
                 minute: '2-digit',
                 second: '2-digit',
                 hour12: false
-            });
+            }).replace(/\//g, '-');
         } else if (satoshiFields.includes(field)) {
             displayValue = formatNumber(value / 100000000, 8);
         } else if (typeof value === 'boolean') {
             displayValue = value ? '✓' : '✗';
             valueClass = value ? 'boolean-true' : 'boolean-false';
+        } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+            // Handle Map<String, String> fields like home
+            displayValue = Object.entries(value)
+                .map(([k, v]) => `${k}: ${v}`)
+                .join('<br>');
+        } else if (Array.isArray(value)) {
+            displayValue = value.join(', ');
         }
 
         // Ensure originalValue is a string for copying
@@ -233,11 +254,19 @@ function displayCidDetails(cidInstance, avatar) {
             </svg>
         ` : '';
 
+        // Add special styling and data attributes for cash field
+        let cashStyle = '';
+        let cashDataAttr = '';
+        if (field === 'cash') {
+            cashStyle = 'color: var(--link-color);';
+            cashDataAttr = 'data-field="cash"';
+        }
+
         detailHTML += `
             <tr>
                 <th>${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}</th>
                 <td>
-                    <span class="copyable ${valueClass}" data-value="${copyValue}" style="cursor: pointer;">
+                    <span class="copyable ${valueClass}" data-value="${copyValue}" data-field="${field}" style="cursor: pointer; ${cashStyle}">
                         ${displayValue}
                     </span>
                     ${qrIcon}
@@ -254,6 +283,15 @@ function displayCidDetails(cidInstance, avatar) {
         span.addEventListener('click', async (e) => {
             e.preventDefault();
             e.stopPropagation();
+            
+            const field = span.getAttribute('data-field');
+            
+            // Special handling for cash field
+            if (field === 'cash') {
+                // Navigate to My Cash page with the CID's id as fid parameter
+                window.location.href = `/html/myCash.html?fid=${cidInstance.id}`;
+                return;
+            }
             
             try {
                 const valueToCopy = span.getAttribute('data-value');

@@ -52,10 +52,8 @@ function initializeLanguageStrings() {
         localStorage.setItem('preferredLanguage', defaultLang);
     }
     
-    // 只有在 Header.js 没有处理的情况下才更新语言字符串
-    if (!window.Header) {
-        updateLanguageStrings(defaultLang);
-    }
+    // Always update language strings on initial load to ensure cards are labeled correctly
+    updateLanguageStrings(defaultLang);
 }
 
 // Initialize language switcher
@@ -104,6 +102,30 @@ function initializeLanguageSwitcher() {
     });
 }
 
+// Function to update homepage card labels
+function updateHomepageCardLabels(strings) {
+    // Use the global card configuration
+    if (!window.HOMEPAGE_CARD_CONFIG) {
+        console.error('HOMEPAGE_CARD_CONFIG not found');
+        return;
+    }
+
+    // Helper function to safely update card labels
+    const updateCards = (sectionIndex, keys) => {
+        const cards = document.querySelectorAll(`#home .section-container:nth-child(${sectionIndex}) .stats-grid .stat-card h3`);
+        cards.forEach((card, index) => {
+            if (keys[index] && strings[keys[index]]) {
+                card.textContent = strings[keys[index]];
+            }
+        });
+    };
+
+    // Update all sections using the configuration
+    window.HOMEPAGE_CARD_CONFIG.forEach(config => {
+        updateCards(config.section, config.keys);
+    });
+}
+
 // Function to update language strings
 function updateLanguageStrings(lang) {
     if (!window.strings || !window.strings[lang]) {
@@ -112,7 +134,7 @@ function updateLanguageStrings(lang) {
     }
 
     const strings = window.strings[lang];
-    
+
     // Update section titles
     document.getElementById('blockchain-title').textContent = strings.blockchain || '...';
     document.getElementById('identity-title').textContent = strings.identity || '...';
@@ -121,6 +143,9 @@ function updateLanguageStrings(lang) {
     document.getElementById('personal-title').textContent = strings.personal || '...';
     document.getElementById('publish-title').textContent = strings.publish || '...';
     document.getElementById('business-title').textContent = strings.business || '...';
+
+    // Update all card labels directly (don't rely on Header being loaded)
+    updateHomepageCardLabels(strings);
 
     // Update search placeholder
     const searchInput = document.getElementById('search-input');
@@ -236,9 +261,9 @@ function populateStatCards(data) {
         updateElement('block-value', blockValue);
 
         // Identity stats
-        updateElement('cid-value', safeParseInt(data.cid));
+        updateElement('cid-value', safeParseInt(data.freer));
         updateElement('nobody-value', safeParseInt(data.nobody));
-        updateElement('multisign-value', safeParseInt(data.multisign));
+        updateElement('multisig-value', safeParseInt(data.multisig));
         updateElement('nid-value', safeParseInt(data.nid));
 
         // Construct stats
@@ -248,7 +273,7 @@ function populateStatCards(data) {
         updateElement('app-value', safeParseInt(data.app));
 
         // Organization stats
-        updateElement('group-value', safeParseInt(data.group));
+        updateElement('square-value', safeParseInt(data.square));
         updateElement('team-value', safeParseInt(data.team));
 
         // Personal stats
@@ -258,15 +283,15 @@ function populateStatCards(data) {
         updateElement('box-value', safeParseInt(data.box));
 
         // Publish stats
-        updateElement('statement-value', safeParseInt(data.statement));
-        updateElement('essay-value', safeParseInt(data.essay));
-        updateElement('report-value', safeParseInt(data.report));
-        updateElement('paper-value', safeParseInt(data.paper));
-        updateElement('book-value', safeParseInt(data.book));
-        updateElement('artwork-value', safeParseInt(data.artwork));
+        updateElement('news-value', safeParseInt(data.news));
+        updateElement('text-value', safeParseInt(data.text));
+        updateElement('sound-value', safeParseInt(data.sound));
+        updateElement('image-value', safeParseInt(data.image));
+        updateElement('video-value', safeParseInt(data.video));
         updateElement('remark-value', safeParseInt(data.remark));
 
         // Business stats
+        updateElement('statement-value', safeParseInt(data.statement));
         updateElement('proof-value', safeParseInt(data.proof));
         updateElement('token-value', safeParseInt(data.token));
         updateElement('tokenHolder-value', safeParseInt(data.token_holder));
@@ -388,13 +413,22 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Initialize API
     try {
+        console.log('🔍 Starting API server testing...');
+        
         // Test the first server and update urlHead if needed
+        console.log(`📡 Testing server 1: ${window.API.SERVER_URL_HEADS[0]}`);
         const isFirstServerWorking = await window.API.testServer(window.API.SERVER_URL_HEADS[0]);
+        console.log(`✅ Server 1 (apip.cash) test result: ${isFirstServerWorking}`);
+        
         if (!isFirstServerWorking) {
+            console.log('❌ First server failed, trying other servers...');
             // If first server fails, try others
             for (let i = 1; i < window.API.SERVER_URL_HEADS.length; i++) {
+                console.log(`📡 Testing server ${i + 1}: ${window.API.SERVER_URL_HEADS[i]}`);
                 const isWorking = await window.API.testServer(window.API.SERVER_URL_HEADS[i]);
+                console.log(`✅ Server ${i + 1} test result: ${isWorking}`);
                 if (isWorking) {
+                    console.log(`🎯 Setting working server to: ${window.API.SERVER_URL_HEADS[i]}`);
                     window.API.urlHead = window.API.SERVER_URL_HEADS[i];
                     // Also set the working server URL head to the full base URL
                     window.API.resetWorkingServer(window.API.SERVER_URL_HEADS[i]);
@@ -402,11 +436,14 @@ document.addEventListener('DOMContentLoaded', async function() {
                 }
             }
         } else {
+            console.log(`🎯 Setting working server to: ${window.API.SERVER_URL_HEADS[0]}`);
             // If first server works, set it as the working server
             window.API.resetWorkingServer(window.API.SERVER_URL_HEADS[0]);
         }
+        
+        console.log(`🏁 Final working server: ${window.API.getWorkingServer()}`);
     } catch (error) {
-        console.error('Error initializing API:', error);
+        console.error('❌ Error initializing API:', error);
     }
     
     // Initialize homepage

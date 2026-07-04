@@ -1,5 +1,7 @@
 // Get the URL head from global API
-const urlHead = 'https://cid.cash/APIP';
+const urlHead = 'https://freecash.info/APIP';
+import { showAsQrCodes } from './utils.js';
+import { QR_CODE_ICON_SVG } from '../constants/constants.js';
 
 // Language configuration
 const swapStrings = {
@@ -168,27 +170,102 @@ function updateSwapTexts(lang) {
             <p><strong>${strings.addLp}</strong>: ${strings.addLPInstruction}</p>
             <p><strong>${strings.donate}</strong>: ${strings.donateInstruction}</p>
             <p><strong>${strings.feature}</strong>: ${strings.featureInstruction}</p>
-            <p><strong class="highlight">${strings.importantNote}</strong> <a href="https://cid.cash/addressConversion.html" style="color: inherit;">${strings.checkAddresses}</a></p>
+            <p><strong class="highlight">${strings.importantNote}</strong> <a href="https://freecash.info/html/address-convert.html" style="color: inherit;">${strings.checkAddresses}</a></p>
         `;
     }
 }
 
+const SWAP_SERVICE_TYPE = 'SWAP@No1_NrC7';
+
 // Load swap services
 async function loadSwapServices() {
+    const resultArea = document.getElementById('resultArea');
     try {
-        const response = await fetch(urlHead + '/swapHall/v1/swapInfo');
-        if (!response.ok) {
-            throw new Error('No data found.' + response.statusText);
+        // 1. Find swap services by type from the SERVICE index.
+        const searchUrl = urlHead
+            + '/sn6/serviceSearch/v1?terms=1,type,'
+            + encodeURIComponent(SWAP_SERVICE_TYPE)
+            + '&sort=lastHeight,desc,id,asc&size=20';
+        const searchRes = await fetch(searchUrl);
+        if (!searchRes.ok) throw new Error('Service search failed: ' + searchRes.statusText);
+        const searchBody = await searchRes.json();
+        const services = Array.isArray(searchBody?.data) ? searchBody.data : [];
+        const activeServices = services.filter(s => s && s.active !== false);
+        if (activeServices.length === 0) {
+            resultArea.innerHTML = '';
+            resultArea.textContent = swapStrings[window.currentLanguage].noServices;
+            return;
         }
-        const data = await response.json();
-        // Clear existing content before displaying new content
-        const resultArea = document.getElementById('resultArea');
+
+        // 2. Best-effort enrichment with live pool/price state.
+        // Request /swapInfo with the explicit sid list. Sids without SwapState
+        // are silently dropped server-side (see makeSwapInfoList), so services
+        // whose dealer hasn't pushed state yet still render via params fallback.
+        // The sid-less path currently fails on the live server with an ES
+        // "all shards failed" error, which is why we avoid it.
+        const infoBySid = {};
+        const activeSids = activeServices.map(s => s.sid || s.id).filter(Boolean);
+        if (activeSids.length > 0) {
+            try {
+                const infoRes = await fetch(urlHead + '/swapHall/v1/swapInfo?sid=' + activeSids.join(','));
+                const infoBody = await infoRes.json().catch(() => null);
+                if (infoRes.ok && Array.isArray(infoBody?.data)) {
+                    infoBody.data.forEach(info => { if (info && info.sid) infoBySid[info.sid] = info; });
+                }
+            } catch (e) {
+                console.warn('[swap] swapInfo enrichment failed:', e);
+            }
+        }
+
+        // 3. Keep only services registered with the SwapHall — i.e. ones whose
+        // dealer has pushed state via SwapUpdate (present in infoBySid).
+        // On-chain Service registrations with no live state are skipped.
+        const registeredServices = activeServices.filter(s => infoBySid[s.sid || s.id]);
+        if (registeredServices.length === 0) {
+            resultArea.innerHTML = '';
+            resultArea.textContent = swapStrings[window.currentLanguage].noServices;
+            return;
+        }
+
+        // 4. Flatten Service + SwapInfoData into the shape the renderer expects.
+        const items = registeredServices.map(s => {
+            const sid = s.sid || s.id;
+            const params = typeof s.params === 'string' ? safeJsonParse(s.params) : (s.params || {});
+            const info = infoBySid[sid] || {};
+            return {
+                sid,
+                name: info.name || s.stdName || s.name || '',
+                owner: info.owner || s.owner,
+                tRate: info.tRate ?? s.tRate ?? 0,
+                tCdd: info.tCdd ?? s.tCdd ?? 0,
+                waiters: s.waiters || [],
+                gTick: info.gTick || params.gTick || '',
+                mTick: info.mTick || params.mTick || '',
+                gAddr: info.gAddr || params.gAddr || '',
+                mAddr: info.mAddr || params.mAddr || '',
+                gConfirm: info.gConfirm ?? params.gConfirm ?? 0,
+                mConfirm: info.mConfirm ?? params.mConfirm ?? 0,
+                swapFee: info.swapFee ?? params.swapFee ?? '0',
+                serviceFee: info.serviceFee ?? params.serviceFee ?? '0',
+                gWithdrawFee: info.gWithdrawFee ?? params.gWithdrawFee ?? 0,
+                mWithdrawFee: info.mWithdrawFee ?? params.mWithdrawFee ?? 0,
+                gSum: Number(info.gSum ?? 0),
+                mSum: Number(info.mSum ?? 0),
+                gPendingSum: Number(info.gPendingSum ?? 0),
+                mPendingSum: Number(info.mPendingSum ?? 0)
+            };
+        });
+
         resultArea.innerHTML = '';
-        displaySwapServices(data);
+        displaySwapServices({ data: items });
     } catch (error) {
         console.error('No data or error: ', error);
-        document.getElementById('resultArea').textContent = swapStrings[window.currentLanguage].noServices;
+        resultArea.textContent = swapStrings[window.currentLanguage].noServices;
     }
+}
+
+function safeJsonParse(str) {
+    try { return JSON.parse(str) || {}; } catch (e) { return {}; }
 }
 
 // Display swap services
@@ -215,23 +292,29 @@ function displaySwapServices(data) {
         const gAddrId = `copyableAddr_g_${item.sid}`;
         const mAddrId = `copyableAddr_m_${item.sid}`;
 
-        const avatarGAddrURL = urlHead + `/freeGet/v1/getAvatar?fid=${item.gAddr}`;
-        const avatarOwnerURL = urlHead + `/freeGet/v1/getAvatar?fid=${item.owner}`;
+        const avatarGAddrURL = urlHead + `/sn3/getAvatar/v1?fid=${item.gAddr}`;
+        const avatarOwnerURL = urlHead + `/sn3/getAvatar/v1?fid=${item.owner}`;
+
+        const qrIconHtml = (value) => `
+            <svg class="qr-icon" data-value="${value}" viewBox="0 0 24 24" width="16" height="16" style="cursor: pointer; vertical-align: middle; margin-left: 6px;">
+                ${QR_CODE_ICON_SVG}
+            </svg>
+        `;
 
         serviceBox.innerHTML = `
             <h3>${item.name}</h3>
             <div class="avatar-container">
                 <img src="${avatarGAddrURL}" alt="${strings.dealer}" class="avatar-dealer">
-                <p><strong>${item.gTick.toUpperCase()} ${strings.dealer}</strong>: <span id="${gAddrId}" class="copyable" data-value="${item.gAddr}">${item.gAddr}</span> <span class="copy-hint">${window.currentLanguage === 'zh' ? '点击复制' : 'Click to copy'}</span><br>
-                <strong> ${item.mTick.toUpperCase()} ${strings.dealer}</strong>: <span id="${mAddrId}" class="copyable" data-value="${item.mAddr}">${item.mAddr}</span> <span class="copy-hint">${window.currentLanguage === 'zh' ? '点击复制' : 'Click to copy'}</span></p>
+                <p><strong>${item.gTick.toUpperCase()} ${strings.dealer}</strong>: <span id="${gAddrId}" class="copyable" data-value="${item.gAddr}">${item.gAddr}</span>${qrIconHtml(item.gAddr)} <span class="copy-hint">${window.currentLanguage === 'zh' ? '点击复制' : 'Click to copy'}</span><br>
+                <strong> ${item.mTick.toUpperCase()} ${strings.dealer}</strong>: <span id="${mAddrId}" class="copyable" data-value="${item.mAddr}">${item.mAddr}</span>${qrIconHtml(item.mAddr)} <span class="copy-hint">${window.currentLanguage === 'zh' ? '点击复制' : 'Click to copy'}</span></p>
             </div>
             <p><strong>${strings.confirmations}</strong>:   ${item.gTick.toUpperCase()} <span class="highlight">${item.gConfirm}</span>, ${item.mTick.toUpperCase()} <span class="highlight"> ${item.mConfirm}</span>.</p>
             <div class="avatar-container">
-                <p><strong> ${strings.owner}</strong>: <img src="${avatarOwnerURL}" alt="${strings.owner}" class="avatar-owner"> <a href="https://cid.cash/fid.html?address=${item.owner}" target="_blank">${item.owner}</a></p>
+                <p><strong> ${strings.owner}</strong>: <img src="${avatarOwnerURL}" alt="${strings.owner}" class="avatar-owner"> <a href="https://freecash.info/html/cid-detail.html?id=${item.owner}" target="_blank">${item.owner}</a></p>
             </div>
             <p><strong>${strings.rating}</strong>: <span class="highlight">${item.tRate}</span> , <strong>${strings.cdd}</strong>: <span class="highlight">${item.tCdd}</span>  cd</p>
             <p><strong>${strings.waiters}</strong>: ${item && item.waiters ? item.waiters.join(', ') : strings.noWaiters}</p>
-            <p><strong>${strings.sid}</strong>: <a href="https://cid.cash/service.html?id=${item.sid}" target="_blank">${item.sid}</a></p>
+            <p><strong>${strings.sid}</strong>: <a href="service-detail.html?id=${item.sid}" target="_blank">${item.sid}</a></p>
             <p><strong>${strings.withdrawLP} ${item.gTick} ${strings.share}</strong>: ${strings.send} <strong>${item.gWithdrawFee}</strong> ${item.gTick} ${strings.toTheDealer}</p>
             <p><strong>${strings.withdrawLP} ${item.mTick} ${strings.share}</strong>: ${strings.send} <strong>${item.mWithdrawFee}</strong> ${item.mTick} ${strings.toTheDealer}</p>
             <p><strong>${strings.pool}</strong>: <span class="highlight">${item.gSum.toFixed(4)}</span> ${item.gTick} / <span class="highlight">${item.mSum.toFixed(4)}</span> ${item.mTick}</p>
@@ -304,6 +387,23 @@ function displaySwapServices(data) {
                     }, 1000);
                 } catch (err) {
                     console.error('Failed to copy text: ', err);
+                }
+            });
+        });
+
+        // Add click handlers for QR code icons (dealer addresses)
+        serviceBox.querySelectorAll('.qr-icon').forEach(icon => {
+            icon.addEventListener('click', async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const value = icon.getAttribute('data-value');
+                if (!value) return;
+                try {
+                    const encoder = new TextEncoder();
+                    const bytes = encoder.encode(String(value));
+                    await showAsQrCodes(bytes);
+                } catch (error) {
+                    console.error('Error showing QR code:', error);
                 }
             });
         });
@@ -401,6 +501,16 @@ function HandleBuyGoods(item, inputElement) {
     inputElement.parentNode.querySelector('.buyGoodsDisplay').appendChild(document.createTextNode(` ${swapStrings[window.currentLanguage].toTheDealer}`));
 }
 
+// Format a Unix timestamp (seconds or milliseconds) as local datetime.
+function formatAffairTime(ts) {
+    if (!ts || ts <= 0) return '-'.padEnd(19);
+    const ms = ts < 1e12 ? ts * 1000 : ts;
+    const d = new Date(ms);
+    if (isNaN(d.getTime())) return '-'.padEnd(19);
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
 // Fetch finished transactions
 async function fetchFinished(sid) {
     try {
@@ -409,7 +519,8 @@ async function fetchFinished(sid) {
         if (data.code === 0) {
             const simplifiedData = data.data.map(item => {
                 const lowercaseState = item.state.toLowerCase();
-                return ` ${item.sn} ${item.act} ${item.g.addr} ${item.g.amt.toFixed(8)} ${item.m.addr} ${item.m.amt.toFixed(8)} ${lowercaseState}`;
+                const time = formatAffairTime(item.getTime);
+                return ` ${time} ${item.sn} ${item.act} ${item.g.addr} ${item.g.amt.toFixed(8)} ${item.m.addr} ${item.m.amt.toFixed(8)} ${lowercaseState}`;
             }).join('\n');
 
             const newWindow = window.open('', '_blank');
@@ -432,7 +543,8 @@ async function fetchPendings(sid) {
         if (data.code === 0) {
             const simplifiedData = data.data.map(item => {
                 const lowercaseState = item.state.toLowerCase();
-                return ` ${item.sn} ${item.act} ${item.g.addr} ${item.g.amt.toFixed(8)} ${item.m.addr} ${item.m.amt.toFixed(8)} ${lowercaseState}`;
+                const time = formatAffairTime(item.sendTime);
+                return ` ${time} ${item.sn} ${item.act} ${item.g.addr} ${item.g.amt.toFixed(8)} ${item.m.addr} ${item.m.amt.toFixed(8)} ${lowercaseState}`;
             }).join('\n');
 
             const newWindow = window.open('', '_blank');
@@ -488,7 +600,7 @@ function rate(sid) {
     const jsonString = `<hr>{
   "type": "FEIP",
   "sn": 5,
-  "ver": 2,
+  "ver": 3,
   "name": "Service",
   "data":{
     "sid": "${sid}",

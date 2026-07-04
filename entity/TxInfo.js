@@ -29,6 +29,9 @@ import {
 
 class TxInfo {
     constructor() {
+        // Transaction ID
+        this.id = null;             // transaction ID
+
         // Block properties
         this.version = null;        // version
         this.lockTime = null;       // locktime

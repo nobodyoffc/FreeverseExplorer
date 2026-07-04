@@ -54,6 +54,12 @@ class Header {
             } else {
                 this.updateAllStrings();
             }
+            
+            // Ensure search inputs are updated with correct placeholders
+            const strings = window.strings[defaultLang];
+            if (strings) {
+                updateSearchInputs(strings);
+            }
         }
         
         // Initialize header functionality after strings are set
@@ -62,6 +68,22 @@ class Header {
         this.initMobileMenu();
         this.initDeveloperMenu();
         this.initToolsMenu();
+        
+        // Ensure search inputs are updated even if strings were not available initially
+        if (typeof window.strings === 'undefined') {
+            // Wait for strings to be loaded
+            const checkStrings = () => {
+                if (typeof window.strings !== 'undefined' && window.currentLanguage) {
+                    const strings = window.strings[window.currentLanguage];
+                    if (strings) {
+                        updateSearchInputs(strings);
+                    }
+                } else {
+                    setTimeout(checkStrings, 100);
+                }
+            };
+            checkStrings();
+        }
 
         // Add visibility change listener to handle page visibility changes
         document.addEventListener('visibilitychange', () => {
@@ -145,6 +167,7 @@ class Header {
         // Create menu items
         const menuItems = [
             { key: 'chainInfo', href: '../html/chain-info.html' },
+            { key: 'nodeList', href: '../html/node-list.html' },
             { key: 'nodeOfFCH', href: 'https://github.com/freecashorg/freecash/releases' },
             { key: 'sdk', href: '../html/sdk.html' },
             { key: 'api', href: '../html/api.html' },
@@ -235,7 +258,8 @@ class Header {
             { key: 'broadcastTX', href: '../html/broadcast-tx.html' },
             { key: 'addressConvert', href: '../html/address-convert.html' },
             { key: 'encrypt', href: '../html/encrypt.html' },
-            { key: 'verifySignature', href: '../html/verify-signature.html' }
+            { key: 'verifySignature', href: '../html/verify-signature.html' },
+            { key: 'hash', href: '../html/hash.html' }
         ];
 
         menuItems.forEach(item => {
@@ -499,7 +523,7 @@ class Header {
             siteTitle.textContent = strings.siteTitle || 'Freeverse';
         }
 
-        // Update navigation links
+        // Update navigation home
         const navLinks = document.querySelectorAll('nav a[data-string-key]');
         navLinks.forEach(link => {
             const key = link.getAttribute('data-string-key');
@@ -560,84 +584,150 @@ class Header {
         const businessTitle = document.getElementById('business-title');
         if (businessTitle) businessTitle.textContent = strings.business || '...';
 
-        // Update stat cards with new blockchain terms
-        const statCards = document.querySelectorAll('#home .section-container:nth-child(1) .stats-grid .stat-card h3');
-        const statKeys = ['cash', 'tx', 'opreturn', 'block'];
-        statCards.forEach((card, index) => {
-            if (statKeys[index]) {
-                const value = strings[statKeys[index]];
-                if (value) card.textContent = value;
-            }
-        });
-        
-        // Update Identity stat cards
-        const identityStatCards = document.querySelectorAll('#home .section-container:nth-child(2) .stats-grid .stat-card h3');
-        const identityStatKeys = ['cid', 'nobody', 'multisign', 'nid'];
-        identityStatCards.forEach((card, index) => {
-            if (identityStatKeys[index]) {
-                const value = strings[identityStatKeys[index]];
-                if (value) card.textContent = value;
-            }
-        });
-        
-        // Update Construct stat cards
-        const constructStatCards = document.querySelectorAll('#home .section-container:nth-child(3) .stats-grid .stat-card h3');
-        const constructStatKeys = ['protocol', 'code', 'service', 'app'];
-        constructStatCards.forEach((card, index) => {
-            if (constructStatKeys[index]) {
-                const value = strings[constructStatKeys[index]];
-                if (value) card.textContent = value;
-            }
-        });
-        
-        // Update Organization stat cards
-        const organizationStatCards = document.querySelectorAll('#home .section-container:nth-child(4) .stats-grid .stat-card h3');
-        const organizationStatKeys = ['group', 'team'];
-        organizationStatCards.forEach((card, index) => {
-            if (organizationStatKeys[index]) {
-                const value = strings[organizationStatKeys[index]];
-                if (value) card.textContent = value;
-            }
-        });
-        
-        // Update Personal stat cards
-        const personalStatCards = document.querySelectorAll('#home .section-container:nth-child(5) .stats-grid .stat-card h3');
-        const personalStatKeys = ['mail', 'contact', 'secret', 'box'];
-        personalStatCards.forEach((card, index) => {
-            if (personalStatKeys[index]) {
-                const value = strings[personalStatKeys[index]];
-                if (value) card.textContent = value;
-            }
-        });
-        
-        // Update Publish stat cards
-        const publishStatCards = document.querySelectorAll('#home .section-container:nth-child(6) .stats-grid .stat-card h3');
-        const publishStatKeys = ['statement', 'essay', 'report', 'paper', 'book', 'artwork', 'remark'];
-        publishStatCards.forEach((card, index) => {
-            if (publishStatKeys[index]) {
-                const value = strings[publishStatKeys[index]];
-                if (value) card.textContent = value;
-            }
-        });
-        
-        // Update Business stat cards
-        const businessStatCards = document.querySelectorAll('#home .section-container:nth-child(7) .stats-grid .stat-card h3');
-        const businessStatKeys = ['proof', 'token', 'tokenHolder'];
-        businessStatCards.forEach((card, index) => {
-            if (businessStatKeys[index]) {
-                const value = strings[businessStatKeys[index]];
-                if (value) card.textContent = value;
-            }
-        });
+        // Update stat cards using the global configuration
+        if (window.HOMEPAGE_CARD_CONFIG) {
+            window.HOMEPAGE_CARD_CONFIG.forEach(config => {
+                const cards = document.querySelectorAll(`#home .section-container:nth-child(${config.section}) .stats-grid .stat-card h3`);
+                cards.forEach((card, index) => {
+                    if (config.keys[index]) {
+                        const value = strings[config.keys[index]];
+                        if (value) card.textContent = value;
+                    }
+                });
+            });
+        }
     }
 
     static performSearch(query) {
         if (!query.trim()) return;
         
-        // Trigger search event
-        window.dispatchEvent(new CustomEvent('performSearch', { 
-            detail: { query: query.trim() }
-        }));
+        // Check if we're on homepage
+        const path = window.location.pathname;
+        const isHomepage = path === '/' || path === '/index.html' || path.endsWith('/');
+        
+        if (isHomepage) {
+            // Use homepage smart search
+            this.performHomepageSearch(query.trim());
+        } else {
+            // Use regular search for other pages
+            window.dispatchEvent(new CustomEvent('performSearch', { 
+                detail: { query: query.trim() }
+            }));
+        }
+    }
+
+    static async performHomepageSearch(searchString) {
+        try {
+            // Show loading overlay for homepage search
+            let loadingOverlay = null;
+            if (typeof LoadingOverlay !== 'undefined') {
+                loadingOverlay = new LoadingOverlay();
+                loadingOverlay.show();
+                // Use localized search text
+                const searchText = window.strings?.[window.currentLanguage]?.searchingFid || 'Searching...';
+                loadingOverlay.setText(searchText);
+            }
+            
+            try {
+                // 1. Check if searchString is an integer (block height)
+                if (/^\d+$/.test(searchString)) {
+                    // Navigate to block detail page with height parameter
+                    window.location.href = `/html/block-detail.html?height=${searchString}`;
+                    return;
+                }
+                
+                // 2. Check if searchString is a 64-character hex string
+                if (/^[0-9a-fA-F]{64}$/.test(searchString)) {
+                    // Try to find the entity type by making API calls
+                    const entityType = await this.findEntityType(searchString);
+                    if (entityType) {
+                        // Navigate to the appropriate detail page
+                        window.location.href = `/html/${entityType}-detail.html?id=${searchString}`;
+                        return;
+                    }
+                }
+                
+                // 3. If all else fails, navigate to CID list page with search
+                window.location.href = `/html/cid-list.html?search=${encodeURIComponent(searchString)}`;
+                
+            } finally {
+                // Hide loading overlay if it was shown
+                if (loadingOverlay) {
+                    loadingOverlay.hide();
+                }
+            }
+            
+        } catch (error) {
+            console.error('Homepage search error:', error);
+            // Fallback to CID list search
+            window.location.href = `/html/cid-list.html?search=${encodeURIComponent(searchString)}`;
+        }
+    }
+
+    static async findEntityType(id) {
+        const urlHead = window.API?.urlHead || window.API?.SERVER_URL_HEADS?.[0];
+        if (!urlHead) {
+            console.error('No API URL head available');
+            return null;
+        }
+
+        // Try TX_BY_IDS first
+        try {
+            const txUrl = `${urlHead}${window.API.URL_TAIL.TX_BY_IDS}?ids=${id}`;
+            const txResponse = await fetch(txUrl);
+            if (txResponse.ok) {
+                const txData = await txResponse.json();
+                if (txData?.data && txData.data[id]) {
+                    return 'tx';
+                }
+            }
+        } catch (error) {
+            console.log('TX search failed:', error);
+        }
+
+        // Try CASH_BY_IDS
+        try {
+            const cashUrl = `${urlHead}${window.API.URL_TAIL.CASH_BY_IDS}?ids=${id}`;
+            const cashResponse = await fetch(cashUrl);
+            if (cashResponse.ok) {
+                const cashData = await cashResponse.json();
+                if (cashData?.data && cashData.data[id]) {
+                    return 'cash';
+                }
+            }
+        } catch (error) {
+            console.log('Cash search failed:', error);
+        }
+
+        // Try BLOCK_BY_IDS
+        try {
+            const blockUrl = `${urlHead}${window.API.URL_TAIL.BLOCK_BY_IDS}?ids=${id}`;
+            const blockResponse = await fetch(blockUrl);
+            if (blockResponse.ok) {
+                const blockData = await blockResponse.json();
+                if (blockData?.data && blockData.data[id]) {
+                    return 'block';
+                }
+            }
+        } catch (error) {
+            console.log('Block search failed:', error);
+        }
+
+        // Try FREER_BY_IDS
+        try {
+            const cidUrl = `${urlHead}${window.API.URL_TAIL.FREER_BY_IDS}?ids=${id}`;
+            const cidResponse = await fetch(cidUrl);
+            if (cidResponse.ok) {
+                const cidData = await cidResponse.json();
+                if (cidData?.data && cidData.data[id]) {
+                    return 'freer';
+                }
+            }
+        } catch (error) {
+            console.log('CID search failed:', error);
+        }
+
+        return null;
     }
 
     static closeMobileMenu() {

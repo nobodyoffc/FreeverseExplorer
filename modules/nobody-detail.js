@@ -3,7 +3,8 @@ import Nobody from '../entity/Nobody.js';
 import { getSearchConfig } from './search-config.js';
 
 // Get the URL head from global API
-let urlHead = window.API.urlHead;
+// Use a getter function to always get the current working server URL
+const getUrlHead = () => window.API.urlHead;
 const urlTail = window.API.URL_TAIL.NOBODY_BY_IDS;
 let loadingOverlay;
 
@@ -150,7 +151,7 @@ function displayNobodyDetails(nobodyInstance) {
                     minute: '2-digit',
                     second: '2-digit',
                     hour12: false
-                });
+                }).replace(/\//g, '-');
             } else {
                 displayValue = '';
             }

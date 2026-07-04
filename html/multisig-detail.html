@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Freeverse</title>
     <link rel="icon" type="image/x-icon" href="../images/icons/favicon.ico">
     <link rel="shortcut icon" type="image/x-icon" href="../images/icons/favicon.ico">
@@ -13,14 +13,14 @@
 <body data-disable-header-search="true">
     <main>
         <div class="title-section">
-            <h2><span data-string-key="fieldNames.artworkDetail">Artwork Detail</span></h2>
+            <h2><span data-string-key="fieldNames.multisigDetail">Multisig Detail</span></h2>
             <div class="description en" style="display: inline-block;"></div>
             <div class="description zh" style="display: none;"></div>
         </div>
-        <section id="artwork-detail" class="section active">
+        <section id="multisig-detail" class="section active">
             <div class="detail-container">
-                <div id="artwork-detail-content">
-                    <!-- Artwork details will be populated by JavaScript -->
+                <div id="multisig-detail-content">
+                    <!-- Multisig details will be populated by JavaScript -->
                 </div>
             </div>
         </section>
@@ -31,8 +31,8 @@
     </footer>
 
     <script type="module" src="../modules/api.js"></script>
-    <script type="module" src="../entity/Artwork.js"></script>
-    <script type="module" src="../modules/artwork-detail.js"></script>
+    <script type="module" src="../entity/Multisig"></script>
+    <script type="module" src="../modules/fetch-multisig-by-id.js"></script>
     <script type="module">
         import Header from '../modules/Header.js';
         // Wait for DOM content to be loaded

@@ -5,13 +5,16 @@ import './utils.js';  // Fix the import path
 import { getSearchConfig } from './search-config.js';
 
 // Get the URL head from global API
-let urlHead = window.API.urlHead;
+// Use a getter function to always get the current working server URL
+const getUrlHead = () => window.API.urlHead;
 let loadingOverlay;
 let currentPage = 1;
 let pageSize = PAGE_SIZE;
 let pageTxListMap = new Map();
 let lastValues = null;
 let currentSearchString = '';
+let cacheTimestamp = null;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache duration
 
 // Event listener configurations
 const EVENT_LISTENERS = {
@@ -45,12 +48,15 @@ const EVENT_LISTENERS = {
 
 document.addEventListener('DOMContentLoaded', async () => {
     await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Flag to prevent duplicate language change handling
+    let languageChangeHandled = false;
 
     const headerTitle = window.strings[window.currentLanguage].siteTitle;
     const pageTitle = window.strings[window.currentLanguage].tx || 'TX';
     document.title = `${headerTitle} - ${pageTitle}`;
 
-    if (!urlHead) {
+    if (!getUrlHead()) {
         console.error('API.urlHead not available');
         return;
     }
@@ -62,12 +68,80 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentSearchString = event.detail.query;
         handleSearch();
     });
-
-    loadTxList();
+    
+    // Check if this is a page refresh or navigation
+    const isPageRefresh = performance.navigation.type === 1 || 
+                         (performance.getEntriesByType('navigation')[0] && 
+                          performance.getEntriesByType('navigation')[0].type === 'reload');
+    
+    // Check for search parameter in URL (from homepage)
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get('search');
+    
+    if (searchParam) {
+        currentSearchString = searchParam;
+        // Set the search input value
+        const desktopSearchInput = document.getElementById('desktop-search-input');
+        const mobileSearchInput = document.getElementById('mobile-search-input');
+        if (desktopSearchInput) desktopSearchInput.value = searchParam;
+        if (mobileSearchInput) mobileSearchInput.value = searchParam;
+        
+        // Check if we have cached data for this search
+        if (!isPageRefresh && pageTxListMap.has(1) && isCacheValid()) {
+            // Use cached data if available, not a page refresh, and cache is still valid
+            const currentPageData = pageTxListMap.get(currentPage);
+            if (currentPageData) {
+                displayTxList(currentPageData);
+                updatePaginationButtons();
+                return;
+            }
+        }
+        
+        // Load new data (either no cache or page refresh)
+        const config = getSearchConfig();
+        pageTxListMap.clear();
+        lastValues = null;
+        currentPage = 1;
+        loadTxList(1, false, {
+            searchString: searchParam,
+            searchableFields: config.searchableFields
+        });
+    } else {
+        // Check if we have cached data for default list
+        if (!isPageRefresh && pageTxListMap.has(1) && isCacheValid()) {
+            // Use cached data if available, not a page refresh, and cache is still valid
+            const currentPageData = pageTxListMap.get(currentPage);
+            if (currentPageData) {
+                displayTxList(currentPageData);
+                updatePaginationButtons();
+                return;
+            }
+        }
+        
+        // Load new data (either no cache or page refresh)
+        loadTxList();
+    }
 
     window.addEventListener('languageChanged', (event) => {
-        if (event.detail && event.detail.lang) {
+        if (event.detail && event.detail.lang && !languageChangeHandled) {
+            languageChangeHandled = true;
             updateDescription();
+            const currentPageData = pageTxListMap.get(currentPage);
+            if (currentPageData) {
+                displayTxList(currentPageData);
+                updatePaginationButtons();
+            }
+            // Reset flag after a short delay to allow future language changes
+            setTimeout(() => {
+                languageChangeHandled = false;
+            }, 100);
+        }
+    });
+
+    // Add page visibility change listener to handle back navigation
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && pageTxListMap.has(currentPage) && isCacheValid()) {
+            // Page became visible and we have valid cached data, just display it
             const currentPageData = pageTxListMap.get(currentPage);
             if (currentPageData) {
                 displayTxList(currentPageData);
@@ -88,9 +162,15 @@ function initializeEventListeners() {
     });
 }
 
+// Check if cache is still valid
+function isCacheValid() {
+    if (!cacheTimestamp) return false;
+    return (Date.now() - cacheTimestamp) < CACHE_DURATION;
+}
+
 async function loadTxList(page = 1, useCache = true, config = null) {
     try {
-        if (useCache && pageTxListMap.has(page)) {
+        if (useCache && pageTxListMap.has(page) && isCacheValid()) {
             displayTxList(pageTxListMap.get(page));
             updatePaginationButtons();
             return;
@@ -98,9 +178,9 @@ async function loadTxList(page = 1, useCache = true, config = null) {
         loadingOverlay.show();
         loadingOverlay.setText('Loading tx list...');
 
-        let url = `${urlHead}${window.API.URL_TAIL.TX_SEARCH}?`;
+        let url = `${getUrlHead()}${window.API.URL_TAIL.TX_SEARCH}?`;
         if (config && config.searchString) {
-            url += `part=${config.searchableFields.join(',')},${config.searchString}&`;
+            url += `part=${config.searchableFields.join(',')},${encodeURIComponent(config.searchString)}&`;
         } else {
             url += 'range=txIndex,gt,0&';
         }
@@ -114,6 +194,10 @@ async function loadTxList(page = 1, useCache = true, config = null) {
         
         if (data?.data) {
             pageTxListMap.set(page, data.data);
+            
+            // Update cache timestamp
+            cacheTimestamp = Date.now();
+            
             if (data.last) {
                 lastValues = data.last;
             }
@@ -136,19 +220,17 @@ function handleSearch() {
     // Get search configuration
     const config = getSearchConfig();
     
-    // Only clear cache and reset if there's a search string
-    if (searchString) {
-        pageTxListMap.clear();
-        lastValues = null;
-        currentPage = 1;
-        currentSearchString = searchString;
-        
-        // Load new data with search configuration
-        loadTxList(1, false, {
-            searchString,
-            searchableFields: config.searchableFields
-        });
-    }
+    // Always clear cache and load fresh data for any search
+    pageTxListMap.clear();
+    lastValues = null;
+    currentPage = 1;
+    currentSearchString = searchString;
+    
+    // Load new data with search configuration
+    loadTxList(1, false, {
+        searchString,
+        searchableFields: config.searchableFields
+    });
 }
 
 function handlePreviousPage() {
@@ -246,7 +328,7 @@ function displayTxList(txList) {
                         year: '2-digit',
                         month: '2-digit',
                         day: '2-digit'
-                    }).replace(/\//g, '/');
+                    }).replace(/\//g, '-');
                     const timeStr = date.toLocaleTimeString(undefined, {
                         hour: '2-digit',
                         minute: '2-digit',

@@ -4,8 +4,10 @@ import TxMark from '../entity/TxMark.js';
 import { getSearchConfig } from './search-config.js';
 
 // Get the URL head from global API
-let urlHead = window.API.urlHead;
+// Use a getter function to always get the current working server URL
+const getUrlHead = () => window.API.urlHead;
 const urlTail = window.API.URL_TAIL.BLOCK_BY_IDS;
+const urlTailByHeight = '/sn2/v1/blockByHeights';
 let loadingOverlay;
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -14,9 +16,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Get URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');
+    const height = urlParams.get('height');
 
-    if (!id) {
-        console.error('No Block ID provided');
+    if (!id && !height) {
+        console.error('No Block ID or Height provided');
         return;
     }
 
@@ -38,8 +41,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadingOverlay.show();
     loadingOverlay.setText('Loading Block details...');
     
-    // Fetch Block by ID
-    const blockInfo = await fetchBlockById(id);
+    // Fetch Block by ID or Height
+    let blockInfo;
+    if (height) {
+        blockInfo = await fetchBlockByHeight(height);
+    } else {
+        blockInfo = await fetchBlockById(id);
+    }
     
     // Hide loading overlay
     loadingOverlay.hide();
@@ -72,7 +80,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function fetchBlockById(id) {
     try {
         const parameters = `?ids=${id}&sn=sn2`;
-        const url = urlHead + urlTail + parameters;
+        const url = getUrlHead() + urlTail + parameters;
 
         const response = await fetch(url, {
             method: 'GET',
@@ -95,6 +103,37 @@ async function fetchBlockById(id) {
         return null;
     } catch (error) {
         console.error('Error fetching Block by ID:', error);
+        return null;
+    }
+}
+
+// Function to fetch Block by Height
+async function fetchBlockByHeight(height) {
+    try {
+        const parameters = `?terms=1,height,${height}`;
+        const url = getUrlHead() + urlTailByHeight + parameters;
+
+        const response = await fetch(url, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result?.data && result.data[height]) {
+            return BlockInfo.fromJson(JSON.stringify(result.data[height]));
+        }
+        return null;
+    } catch (error) {
+        console.error('Error fetching Block by Height:', error);
         return null;
     }
 }
@@ -134,7 +173,7 @@ function displayBlockDetails(blockInfo) {
                 minute: '2-digit',
                 second: '2-digit',
                 hour12: false
-            });
+            }).replace(/\//g, '-');
         } else if (field === 'inValueT' || field === 'outValueT') {
             displayValue = formatNumber(value / 100000000, 8);
         } else if (field === 'fee') {
@@ -275,7 +314,14 @@ window.BlockDetail = {
     updateStrings: () => {
         const urlParams = new URLSearchParams(window.location.search);
         const id = urlParams.get('id');
-        if (id) {
+        const height = urlParams.get('height');
+        if (height) {
+            fetchBlockByHeight(height).then(blockInfo => {
+                if (blockInfo) {
+                    displayBlockDetails(blockInfo);
+                }
+            });
+        } else if (id) {
             fetchBlockById(id).then(blockInfo => {
                 if (blockInfo) {
                     displayBlockDetails(blockInfo);

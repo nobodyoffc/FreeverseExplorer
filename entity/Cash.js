@@ -12,6 +12,8 @@ import {
     LAST_TIME,
     BIRTH_TX_ID,
     SPEND_TIME,
+    LOCK_TIME,
+    REDEEM_SCRIPT,
     BIRTH_INDEX
 } from '../constants/fieldNames.js';
 import {
@@ -23,7 +25,9 @@ import {
 } from '../constants/constants.js';
 
 const COINBASE = 'coinbase';
-const OneDayInterval = 24 * 60 * 60;
+// FCH block time is fixed at 1 minute, so 1 day = 1440 blocks (60 * 24).
+// CoinDay age is measured in elapsed block HEIGHT, not real-world time.
+const OneDayBlocks = 1440;
 
 class Cash {
     constructor() {
@@ -58,7 +62,8 @@ class Cash {
         this.sequence = null; // nSequence
         this.cdd = null; // CoinDays Destroyed
         this.cd = null; // CoinDays
-
+        this.lockTime = null; // Lock time
+        this.redeemScript = null; // Redeem script
     }
 
     static getFieldWidthMap() {
@@ -102,7 +107,9 @@ class Cash {
             [LAST_TIME]: fieldNames.lastTime || 'Last Time',
             [CDD]: fieldNames.cdd || 'CDD',
             [BIRTH_TIME]: fieldNames.birthTime || 'Birth Time',
-            [ISSUER]: fieldNames.issuer || 'Issuer'
+            [ISSUER]: fieldNames.issuer || 'Issuer',
+            [LOCK_TIME]: fieldNames.lockTime || 'Lock Time',
+            [REDEEM_SCRIPT]: fieldNames.redeemScript || 'Redeem Script'
         };
     }
 
@@ -114,11 +121,29 @@ class Cash {
         return {};
     }
 
-    static calculateCoinDays(value, startTime, endTime) {
-        if (!value || !startTime || !endTime) {
+    /**
+     * Compute CoinDays (CD) or CoinDays Destroyed (CDD) using block HEIGHT as the clock.
+     *
+     * age_days = floor((spendHeight - birthHeight) / 1440)
+     * CD/CDD   = floor(value * age_days / 100000000)   // value is in satoshi
+     *
+     * - For an UNSPENT cash (UTXO) CD: pass the current best block height as spendHeight.
+     * - For a SPENT cash (STXO) CDD: pass the block height where it was spent.
+     * - Returns 0 when spendHeight <= birthHeight (no negative CD) or inputs are missing,
+     *   and for cash younger than one day (age < 1440 blocks).
+     *
+     * @param {number} value - cash value in satoshi
+     * @param {number} birthHeight - block height where the cash was created
+     * @param {number} spendHeight - spend height (STXO) or current best height (UTXO)
+     * @returns {number} CD/CDD in whole FCH-days (integer arithmetic only)
+     */
+    static calculateCoinDays(value, birthHeight, spendHeight) {
+        if (!value || birthHeight === null || birthHeight === undefined ||
+            spendHeight === null || spendHeight === undefined ||
+            spendHeight <= birthHeight) {
             return 0;
         }
-        const days = Math.floor((endTime - startTime) / (60 * 60 * 24));
+        const days = Math.floor((spendHeight - birthHeight) / OneDayBlocks);
         return Math.floor((value * days) / 100000000);
     }
 

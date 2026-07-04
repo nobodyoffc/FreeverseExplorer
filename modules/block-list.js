@@ -5,13 +5,16 @@ import './utils.js';
 import { getSearchConfig } from './search-config.js';
 
 // Get the URL head from global API
-let urlHead = window.API.urlHead;
+// Use a getter function to always get the current working server URL
+const getUrlHead = () => window.API.urlHead;
 let loadingOverlay;
 let currentPage = 1;
 let pageSize = PAGE_SIZE;
 let pageBlockListMap = new Map();
 let lastValues = null;
 let currentSearchString = '';
+let cacheTimestamp = null;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache duration
 
 // Event listener configurations
 const EVENT_LISTENERS = {
@@ -47,6 +50,9 @@ const EVENT_LISTENERS = {
 document.addEventListener('DOMContentLoaded', async () => {
     // Wait for strings to be loaded
     await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Flag to prevent duplicate language change handling
+    let languageChangeHandled = false;
 
     // Set page title
     const headerTitle = window.strings[window.currentLanguage].siteTitle;
@@ -54,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.title = `${headerTitle} - ${pageTitle}`;
 
     // Check if API.urlHead is available
-    if (!urlHead) {
+    if (!getUrlHead()) {
         console.error('API.urlHead not available');
         return;
     }
@@ -71,12 +77,63 @@ document.addEventListener('DOMContentLoaded', async () => {
         handleSearch();
     });
     
-    // Load block list
-    loadBlockList();
+    // Check if this is a page refresh or navigation
+    const isPageRefresh = performance.navigation.type === 1 || 
+                         (performance.getEntriesByType('navigation')[0] && 
+                          performance.getEntriesByType('navigation')[0].type === 'reload');
+    
+    // Check for search parameter in URL (from homepage)
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get('search');
+    
+    if (searchParam) {
+        currentSearchString = searchParam;
+        // Set the search input value
+        const desktopSearchInput = document.getElementById('desktop-search-input');
+        const mobileSearchInput = document.getElementById('mobile-search-input');
+        if (desktopSearchInput) desktopSearchInput.value = searchParam;
+        if (mobileSearchInput) mobileSearchInput.value = searchParam;
+        
+        // Check if we have cached data for this search
+        if (!isPageRefresh && pageBlockListMap.has(1) && isCacheValid()) {
+            // Use cached data if available, not a page refresh, and cache is still valid
+            const currentPageData = pageBlockListMap.get(currentPage);
+            if (currentPageData) {
+                displayBlockList(currentPageData);
+                updatePaginationButtons();
+                return;
+            }
+        }
+        
+        // Load new data (either no cache or page refresh)
+        const config = getSearchConfig();
+        pageBlockListMap.clear();
+        lastValues = null;
+        currentPage = 1;
+        loadBlockList(1, false, {
+            searchString: searchParam,
+            searchableFields: config.searchableFields
+        });
+    } else {
+        // Check if we have cached data for default list
+        if (!isPageRefresh && pageBlockListMap.has(1) && isCacheValid()) {
+            // Use cached data if available, not a page refresh, and cache is still valid
+            const currentPageData = pageBlockListMap.get(currentPage);
+            if (currentPageData) {
+                displayBlockList(currentPageData);
+                updatePaginationButtons();
+                return;
+            }
+        }
+        
+        // Load new data (either no cache or page refresh)
+        loadBlockList();
+    }
 
     // Add language change listener
     window.addEventListener('languageChanged', (event) => {
-        if (event.detail && event.detail.lang) {
+        if (event.detail && event.detail.lang && !languageChangeHandled) {
+            languageChangeHandled = true;
             // Update description
             updateDescription();
             // Re-render the table with new field names
@@ -84,6 +141,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (currentPageData) {
                 displayBlockList(currentPageData);
                 // Update pagination when language changes
+                updatePaginationButtons();
+            }
+            // Reset flag after a short delay to allow future language changes
+            setTimeout(() => {
+                languageChangeHandled = false;
+            }, 100);
+        }
+    });
+
+    // Add page visibility change listener to handle back navigation
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && pageBlockListMap.has(currentPage) && isCacheValid()) {
+            // Page became visible and we have valid cached data, just display it
+            const currentPageData = pageBlockListMap.get(currentPage);
+            if (currentPageData) {
+                displayBlockList(currentPageData);
                 updatePaginationButtons();
             }
         }
@@ -103,11 +176,17 @@ function initializeEventListeners() {
     });
 }
 
+// Check if cache is still valid
+function isCacheValid() {
+    if (!cacheTimestamp) return false;
+    return (Date.now() - cacheTimestamp) < CACHE_DURATION;
+}
+
 // Load block list
 async function loadBlockList(page = 1, useCache = true, config = null) {
     try {
         // Check if we have cached data for this page
-        if (useCache && pageBlockListMap.has(page)) {
+        if (useCache && pageBlockListMap.has(page) && isCacheValid()) {
             await displayBlockList(pageBlockListMap.get(page));
             updatePaginationButtons();
             return;
@@ -116,23 +195,17 @@ async function loadBlockList(page = 1, useCache = true, config = null) {
         loadingOverlay.show();
         loadingOverlay.setText('Loading block list...');
         
-        // Build query parameters
-        const params = new URLSearchParams({
-            page: page,
-            size: pageSize,
-            sort: 'height,desc,id,asc'
-        });
-
-        // Add search parameters if provided
-        if (config?.searchString) {
-            params.append('search', config.searchString);
-            if (config.searchableFields) {
-                params.append('fields', config.searchableFields.join(','));
-            }
+        // Build URL (use cursor-based pagination like other lists)
+        let url = `${getUrlHead()}${window.API.URL_TAIL.BLOCK_SEARCH}?`;
+        if (config && config.searchString) {
+            url += `part=${config.searchableFields.join(',')},${encodeURIComponent(config.searchString)}&`;
+        } else {
+            url += 'range=height,gt,0&';
         }
-
-        // Make API request
-        const url = `${urlHead}${window.API.URL_TAIL.BLOCK_SEARCH}?${params.toString()}`;
+        url += `sort=height,desc,id,asc&size=${pageSize}`;
+        if (page > 1 && lastValues) {
+            url += `&after=${lastValues.join(',')}`;
+        }
         
         const response = await fetch(url);
         const data = await window.Utils.handleApiResponse(response, null, { page }); // Pass null as displayFunction
@@ -140,6 +213,9 @@ async function loadBlockList(page = 1, useCache = true, config = null) {
         if (data?.data) {
             // Save the block list to our map
             pageBlockListMap.set(page, data.data);
+            
+            // Update cache timestamp
+            cacheTimestamp = Date.now();
             
             // Update last values for next page
             if (data.last) {
@@ -164,16 +240,22 @@ function handleSearch() {
     const desktopSearchInput = document.getElementById('desktop-search-input');
     const mobileSearchInput = document.getElementById('mobile-search-input');
     const searchString = (desktopSearchInput?.value || mobileSearchInput?.value || '').trim();
-    
+
+    // If input is an integer, treat it as a block height and navigate directly
+    if (/^\d+$/.test(searchString)) {
+        window.location.href = `/html/block-detail.html?height=${searchString}`;
+        return;
+    }
+
     // Get search configuration
     const config = getSearchConfig();
-    
-    // Clear existing data
+
+    // Always clear cache and load fresh data for any search
     pageBlockListMap.clear();
     lastValues = null;
     currentPage = 1;
     currentSearchString = searchString;
-    
+
     // Load new data with search configuration
     loadBlockList(1, false, {
         searchString,
@@ -283,7 +365,7 @@ async function displayBlockList(blockList) {
                 }
                 
                 // Navigate to block detail page
-                window.location.href = `block-detail.html?id=${block.id}`;
+                window.location.href = `/html/block-detail.html?id=${block.id}`;
             });
             
             headers.forEach(field => {
@@ -299,7 +381,7 @@ async function displayBlockList(blockList) {
                             year: '2-digit',
                             month: '2-digit',
                             day: '2-digit'
-                        }).replace(/\//g, '/');
+                        }).replace(/\//g, '-');
                         const timeStr = date.toLocaleTimeString(undefined, {
                             hour: '2-digit',
                             minute: '2-digit',
@@ -309,6 +391,13 @@ async function displayBlockList(blockList) {
                         textSpan.innerHTML = `${dateStr}<br>${timeStr}`;
                     }
                     td.appendChild(textSpan);
+                } else if (field === 'fee') {
+                    // Convert fee from satoshi-like unit to cash cents, consistent with tx.fee in block-detail.js
+                    if (value) {
+                        const textSpan = document.createElement('span');
+                        textSpan.textContent = `${formatNumber(value / 100, 2)}c`;
+                        td.appendChild(textSpan);
+                    }
                 } else if (satoshiFields.includes(field)) {
                     if (value) {
                         value = formatNumber(value / 100000000, 8);

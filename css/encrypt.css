@@ -2,8 +2,8 @@
 .container {
     background: #1a1a1a;
     border-radius: 10px;
-    padding: 2rem;
-    margin-bottom: 2rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     border: 1px solid #333;
     width: 100%;
@@ -25,6 +25,7 @@
 /* Input styles */
 #pubkey-input, #plaintext-input {
     height: 40px;  
+    max-width: 400px;
     background-color: #000000;
     color: #CCCCCC;
 }
@@ -93,6 +94,18 @@
     background-color: #444444;
 }
 
+/* Chosen FID display */
+.chosen-fid {
+    display: none;
+    margin-top: 8px;
+    font-size: 13px;
+    color: #888;
+}
+
+.chosen-fid.active {
+    display: block;
+}
+
 /* Plaintext Input Container */
 .plaintext-input-container {
     margin-bottom: 2rem;
@@ -156,6 +169,7 @@
     border-radius: 4px;
     cursor: pointer;
     font-weight: 500;
+    font-size: 18px;
 }
 
 #clear-btn {
@@ -198,8 +212,17 @@
 /* Responsive Design */
 @media (max-width: 768px) {
     .pubkey-input-group {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+    }
+
+    #pubkey-input {
+        flex: 1;
+    }
+
+    .confirm-btn {
+        flex-shrink: 0;
     }
 
     .button-container {

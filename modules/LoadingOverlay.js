@@ -15,6 +15,8 @@ class LoadingOverlay {
                 <div class="loading-spinner"></div>
                 <div class="loading-text">Loading...</div>
             `;
+            // Set initial display to none
+            this.overlay.style.display = 'none';
             document.body.appendChild(this.overlay);
         } else {
             this.overlay = document.getElementById('loading-overlay');

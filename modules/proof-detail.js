@@ -3,7 +3,8 @@ import Proof from '../entity/Proof.js';
 import { getSearchConfig } from './search-config.js';
 
 // Get the URL head from global API
-let urlHead = window.API.urlHead;
+// Use a getter function to always get the current working server URL
+const getUrlHead = () => window.API.urlHead;
 const urlTail = window.API.URL_TAIL.PROOF_BY_IDS;
 let loadingOverlay;
 
@@ -152,7 +153,7 @@ function displayProofDetails(proofInstance) {
                     minute: '2-digit',
                     second: '2-digit',
                     hour12: false
-                });
+                }).replace(/\//g, '-');
             }
         } else if (satoshiFields.includes(field)) {
             displayValue = formatNumber(value / 100000000, 8);
