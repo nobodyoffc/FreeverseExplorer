@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Hash - Freeverse</title>
+    <link rel="icon" type="image/x-icon" href="../images/icons/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="../images/icons/favicon.ico">
+    <link rel="apple-touch-icon" href="../images/icons/favicon.ico">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="../constants/strings.js"></script>
+    <script src="../modules/api.js"></script>
+    <link rel="stylesheet" href="../css/hash.css">
+</head>
+<body data-disable-header-search="true">
+    <main>
+        <div class="title-section">
+            <h2 id="page-title">...</h2>
+            <div class="description" id="page-description"></div>
+            <hr class="title-divider">
+        </div>
+
+        <!-- Algorithm Selection Container -->
+        <div class="container algorithm-container">
+            <h2 class="container-title" id="algorithm-title">...</h2>
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" name="hash-algorithm" value="sha256" id="sha256-radio">
+                    <span id="sha256-label">...</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="hash-algorithm" value="sha256x2" id="sha256x2-radio" checked>
+                    <span id="sha256x2-label">...</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Text Input Container -->
+        <div class="container text-input-container">
+            <h2 class="container-title" id="text-hash-title">...</h2>
+            <label for="text-input" id="text-input-label" style="display: none;">...</label>
+            <textarea id="text-input" placeholder="Enter text to hash..."></textarea>
+        </div>
+
+        <!-- File Upload Container -->
+        <div class="container file-input-container">
+            <h2 class="container-title" id="file-hash-title">...</h2>
+            <label for="file-input" id="file-input-label" style="display: none;">...</label>
+            <div class="file-input-wrapper">
+                <input
+                    type="file"
+                    id="file-input"
+                    accept="*/*"
+                >
+                <span id="file-name" class="file-name">...</span>
+            </div>
+        </div>
+
+        <!-- Result Container -->
+        <div class="container result-container" id="result-section" style="display: none;">
+            <h2 class="container-title" id="result-title">...</h2>
+            <label id="hash-result-label" style="display: none;">...</label>
+            <div id="result-content" class="result-content">
+                <div class="hash-output">
+                    <code id="hash-output"></code>
+                    <button id="copy-btn" class="copy-btn" title="Copy">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13.5 5.5H6.5C5.67157 5.5 5 6.17157 5 7V14C5 14.8284 5.67157 15.5 6.5 15.5H13.5C14.3284 15.5 15 14.8284 15 14V7C15 6.17157 14.3284 5.5 13.5 5.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 10.5H2.5C2.10218 10.5 1.72064 10.342 1.43934 10.0607C1.15804 9.77936 1 9.39782 1 9V2C1 1.60218 1.15804 1.22064 1.43934 0.93934C1.72064 0.658035 2.10218 0.5 2.5 0.5H9.5C9.89782 0.5 10.2794 0.658035 10.5607 0.93934C10.842 1.22064 11 1.60218 11 2V2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Button Container -->
+        <div class="container button-container">
+            <button id="clear-btn" class="action-btn" data-string-key="clear">...</button>
+            <button id="hash-text-btn" class="action-btn">...</button>
+            <button id="hash-file-btn" class="action-btn">...</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>...</p>
+    </footer>
+
+    <script type="module" src="../modules/hash.js"></script>
+    <script type="module">
+        import Header from '../modules/Header.js';
+        // Wait for DOM content to be loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            Header.init();
+        });
+    </script>
+</body>
+</html>

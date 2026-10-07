@@ -1,0 +1,45 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Freeverse</title>
+    <link rel="icon" type="image/x-icon" href="../images/icons/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="../images/icons/favicon.ico">
+    <link rel="apple-touch-icon" href="../images/icons/favicon.ico">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="../constants/strings.js"></script>
+</head>
+<body data-disable-header-search="true">
+    <main>
+        <div class="title-section">
+            <h2><span data-string-key="fieldNames.freerDetail">CID Detail</span></h2>
+            <div class="description en" style="display: inline-block;"></div>
+            <div class="description zh" style="display: none;"></div>
+        </div>
+        <section id="cid-detail" class="section active">
+            <div class="detail-container">
+                <div id="cid-detail-content">
+                    <!-- CID details will be populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>...</p>
+    </footer>
+
+    <script type="module" src="../modules/api.js"></script>
+    <script type="module" src="../entity/Cid.js"></script>
+    <script type="module" src="../modules/cid-detail.js"></script>
+    <script type="module">
+        import Header from '../modules/Header.js';
+        // Wait for DOM content to be loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            Header.init();
+        });
+    </script>
+</body>
+</html> 

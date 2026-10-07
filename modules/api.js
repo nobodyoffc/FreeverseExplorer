@@ -2,7 +2,7 @@
 const SERVER_URL_HEADS = [
     // 'http://127.0.0.1:8081/APIP',
 	'https://freecash.info/APIP',
-	'https://info.freecash.org/APIP',
+	// 'https://info.freecash.org/APIP',
     'https://cid.cash/APIP',
 	'https://apip.cash/APIP'
 ];
