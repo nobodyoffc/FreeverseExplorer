@@ -321,8 +321,8 @@ export const RELEASE_FAMILIES = [
         id: 'freeverse',
         name: 'Freeverse',
         tagline: {
-            en: 'Server and developer tools: chain and FEIP parsers, APIP and FAPI servers and clients, and the FC-SDK library.',
-            zh: '服务端与开发工具：链与 FEIP 解析器、APIP 与 FAPI 服务端和客户端，以及 FC-SDK 库。'
+            en: 'Server and developer tools: chain and FEIP parsers, APIP and FAPI servers and clients, the FC-SDK library, and the explorer web app.',
+            zh: '服务端与开发工具：链与 FEIP 解析器、APIP 与 FAPI 服务端和客户端、FC-SDK 库，以及浏览器网页应用。'
         },
         builds: [
             {
@@ -375,6 +375,43 @@ export const RELEASE_FAMILIES = [
                     { name: 'FC-SDK.jar', size: 63123600, sha256: '8d8c5beedc2fc8611422af2535b6eae572e8e04d101ac757180a9949f44c8802',
                       label: { en: 'FC-JDK library with all dependencies', zh: '含全部依赖的 FC-JDK 库' } },
                     { name: 'SHA256SUMS', size: 725, sha256: '5c16e5e3b46e938fbef0890a28f2632d2bb046cc1d516c7d9e8ab438cda7cbce',
+                      label: { en: 'Checksums: shasum -a 256 -c SHA256SUMS', zh: '校验文件：shasum -a 256 -c SHA256SUMS' } }
+                ]
+            },
+            {
+                platform: 'server',
+                title: 'Freeverse Explorer',
+                repo: 'FreeverseExplorer',
+                version: '1.0',
+                tag: 'v1.0',
+                date: '2026-10-08',
+                prerelease: false,
+                requirements: {
+                    en: 'Tomcat 9+. Unzip into Tomcat\'s webapps directory: it unpacks as ROOT and must be served at /. Restart Tomcat afterwards.',
+                    zh: 'Tomcat 9+。解压到 Tomcat 的 webapps 目录：解压后为 ROOT，必须部署在根路径 /。解压后重启 Tomcat。'
+                },
+                notice: {
+                    en: 'The explorer reads chain data from freecash.info and cid.cash. To use your own ApipServer instead, replace these two servers in ROOT/modules/api.js (SERVER_URL_HEADS) with its URL, for example https://your.domain/APIP.',
+                    zh: '浏览器从 freecash.info 和 cid.cash 读取链上数据。如需使用你自己的 ApipServer，请在 ROOT/modules/api.js（SERVER_URL_HEADS）中把这两个服务器替换为它的地址，例如 https://your.domain/APIP。'
+                },
+                changes: {
+                    en: [
+                        'First release: the web front end of freecash.info, packaged to run on your own Tomcat.',
+                        'Pages for news, squares and published text, images, sounds and videos; a hash tool and a node list.',
+                        'Address links (/address/<FID>) are served by address.jsp.',
+                        'apip.cash, which has expired, is no longer among the APIP servers.'
+                    ],
+                    zh: [
+                        '首个版本：freecash.info 的网页前端，打包后可部署在你自己的 Tomcat 上。',
+                        '新增新闻、广场以及已发布的文本、图片、声音和视频页面；新增哈希工具和节点列表。',
+                        '地址链接（/address/<FID>）由 address.jsp 提供。',
+                        '已过期的 apip.cash 不再列入 APIP 服务器。'
+                    ]
+                },
+                assets: [
+                    { name: 'FreeverseExplorer.zip', size: 501321, sha256: 'd094719ded2c2d4fed1a8706908580c998a4220099c9283beecd2be78bfa455e',
+                      label: { en: 'The explorer web app: unzip into Tomcat webapps', zh: '浏览器网页应用：解压到 Tomcat 的 webapps 目录' } },
+                    { name: 'SHA256SUMS', size: 88, sha256: '60ab91f2822960368c4243be9310fe52b80b52a6089e759ea40595881361331e',
                       label: { en: 'Checksums: shasum -a 256 -c SHA256SUMS', zh: '校验文件：shasum -a 256 -c SHA256SUMS' } }
                 ]
             }
