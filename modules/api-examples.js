@@ -410,7 +410,7 @@
 //     }
     
 //     // Manually set a specific server
-//     resetWorkingServer('https://apip.cash/APIP');
+//     resetWorkingServer('https://cid.cash/APIP');
 //     console.log('Manually set working server:', getWorkingServer());
 // }
 

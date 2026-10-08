@@ -418,7 +418,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Test the first server and update urlHead if needed
         console.log(`📡 Testing server 1: ${window.API.SERVER_URL_HEADS[0]}`);
         const isFirstServerWorking = await window.API.testServer(window.API.SERVER_URL_HEADS[0]);
-        console.log(`✅ Server 1 (apip.cash) test result: ${isFirstServerWorking}`);
+        console.log(`✅ Server 1 (${window.API.SERVER_URL_HEADS[0]}) test result: ${isFirstServerWorking}`);
         
         if (!isFirstServerWorking) {
             console.log('❌ First server failed, trying other servers...');

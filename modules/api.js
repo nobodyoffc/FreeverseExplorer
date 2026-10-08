@@ -1,10 +1,11 @@
-// Global constant array for server URL heads (base URLs) with fallback functionality
+// Global constant array for server URL heads (base URLs) with fallback functionality.
+// Tried in order. To run this explorer against your own ApipServer, replace these
+// with its base URL, e.g. 'https://your.domain/APIP'.
 const SERVER_URL_HEADS = [
     // 'http://127.0.0.1:8081/APIP',
 	'https://freecash.info/APIP',
 	// 'https://info.freecash.org/APIP',
-    'https://cid.cash/APIP',
-	'https://apip.cash/APIP'
+    'https://cid.cash/APIP'
 ];
 
 // Global urlHead variable - load from localStorage if available
