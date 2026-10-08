@@ -440,3 +440,79 @@ export const OTHER_DOWNLOADS = [
         ]
     }
 ];
+
+// "How the pieces fit" guide above the downloads. Diagram boxes and card chips
+// jump to the release family (or section) named by `jump`.
+export const GUIDE = {
+    bands: {
+        devices: { en: 'On your devices', zh: '你的设备' },
+        servers: { en: 'Servers', zh: '服务器' },
+        serversNote: {
+            en: ['Run your own, or use public', 'ones such as freecash.info.'],
+            zh: ['可自行部署，也可使用', 'freecash.info 等公共服务器。']
+        }
+    },
+    nodes: {
+        safe:     { name: 'Safe', jump: 'safe', sub: { en: 'offline keys & signing', zh: '离线密钥与签名' } },
+        qr:       { name: 'EasyQR / ScanQR', jump: 'qr', sub: { en: 'carries data by QR', zh: '用二维码传递数据' } },
+        freer:    { name: 'Freer', jump: 'freer', sub: { en: 'wallet · ID · chat · calls', zh: '钱包 · 身份 · 聊天 · 通话' } },
+        mycoins:  { name: 'MyCoins', jump: 'mycoins', sub: { en: 'FCH, BTC, ETH…', zh: 'FCH、BTC、ETH…' } },
+        explorer: { name: 'Explorer', jump: 'freeverse', sub: { en: 'web, in a browser', zh: '网页，在浏览器中' } },
+        fapi:     { name: 'FapiServer', jump: 'freeverse', sub: { en: 'API for Freer', zh: '为 Freer 提供 API' } },
+        apip:     { name: 'ApipServer', jump: 'freeverse', sub: { en: 'HTTP API · Tomcat', zh: 'HTTP API · Tomcat' } },
+        manager:  { name: 'ApipManager', jump: 'freeverse', sub: { en: 'sets it up', zh: '配置它' } },
+        es:       { name: 'Elasticsearch', sub: { en: 'indexed chain and FEIP data · install it yourself', zh: '链与 FEIP 索引数据 · 需自行安装' } },
+        fch:      { name: 'FchParser', jump: 'freeverse', sub: { en: 'blocks, txs, cash', zh: '区块、交易、现金' } },
+        feip:     { name: 'FeipParser', jump: 'freeverse', sub: { en: 'IDs, groups, mail…', zh: '身份、群组、邮件…' } },
+        node:     { name: { en: 'Freecash full node', zh: 'Freecash 全节点' }, jump: 'dl-other', sub: { en: 'the FCH blockchain', zh: 'FCH 区块链' } }
+    },
+    edgeLabels: {
+        blocks: { en: 'block files', zh: '区块文件' }
+    },
+    cards: [
+        {
+            title: { en: 'Everyday use', zh: '日常使用' },
+            apps: ['freer'],
+            text: {
+                en: 'Wallet, CID identity, contacts, mail, chat, voice calls and meetings. Freer reaches the chain through a FAPI server over FUDP.',
+                zh: '钱包、CID 身份、联系人、邮件、聊天、语音通话与会议。Freer 通过 FUDP 连接 FAPI 服务器访问链上数据。'
+            }
+        },
+        {
+            title: { en: 'Keep keys offline', zh: '离线保管密钥' },
+            apps: ['safe', 'qr'],
+            text: {
+                en: 'Install Safe on a device that never goes online: it keeps keys and secrets and signs transactions, and data moves in and out only as QR codes. EasyQR and ScanQR show and scan long data as a series of codes. Freer can hold the same FID as watch-only.',
+                zh: '把 Safe 装在永不联网的设备上：它保管密钥与秘密并签署交易，数据只以二维码进出。EasyQR 和 ScanQR 可将长数据显示或扫描为一组二维码。Freer 可以只读（观察）方式持有同一 FID。'
+            }
+        },
+        {
+            title: { en: 'Other coins', zh: '其他币种' },
+            apps: ['mycoins'],
+            text: {
+                en: 'One private key for FCH, BTC, BCH, ETH and DOGE. FCH data comes from APIP servers; the other chains from public block explorers.',
+                zh: '一个私钥管理 FCH、BTC、BCH、ETH 和 DOGE。FCH 数据来自 APIP 服务器，其他链的数据来自公共区块浏览器。'
+            }
+        },
+        {
+            title: { en: 'Run a server', zh: '运行服务器' },
+            apps: ['dl-other', 'freeverse'],
+            text: {
+                en: 'Run a Freecash full node; FchParser reads its block files and FeipParser the OP_RETURN data, both indexing into Elasticsearch. FapiServer serves Freer over FUDP; ApipServer, set up with ApipManager, serves MyCoins and the Explorer over HTTP.',
+                zh: '运行 Freecash 全节点；FchParser 读取它的区块文件，FeipParser 解析其中的 OP_RETURN 数据，二者都写入 Elasticsearch。FapiServer 通过 FUDP 为 Freer 提供服务；ApipServer（用 ApipManager 配置）通过 HTTP 为 MyCoins 和浏览器提供服务。'
+            }
+        },
+        {
+            title: { en: 'Build on it', zh: '开发' },
+            apps: ['freeverse', 'dl-other'],
+            text: {
+                en: 'FC-SDK is the Java library under all the servers. FapiClient and ApipClient call the servers from a terminal, CryptoSign manages keys, signs and encrypts on the command line, and the Protocols specify every format.',
+                zh: 'FC-SDK 是所有服务端所用的 Java 库。FapiClient 和 ApipClient 可在终端调用服务器，CryptoSign 在命令行中管理密钥、签名与加密，协议文档定义了所有数据格式。'
+            }
+        }
+    ],
+    // Chip names for card `apps` that are not release families
+    chipNames: {
+        'dl-other': { en: 'Full node & protocols', zh: '全节点与协议' }
+    }
+};

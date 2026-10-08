@@ -1,5 +1,5 @@
 // Download page - renders the release catalog from download-data.js
-import { GITHUB_OWNER, SIGNING, RELEASE_FAMILIES, OTHER_DOWNLOADS } from './download-data.js?v=20261008c';
+import { GITHUB_OWNER, SIGNING, RELEASE_FAMILIES, OTHER_DOWNLOADS, GUIDE } from './download-data.js?v=20261008d';
 
 const FILTER_STORAGE_KEY = 'downloadPlatformFilter';
 const PLATFORMS = ['all', 'android', 'mac', 'server'];
@@ -11,12 +11,27 @@ const PLATFORM_LABEL_KEYS = {
 };
 
 let currentFilter = loadFilter();
+// Collapsible sections start closed; the ones opened on this visit stay open across re-renders
+const openSections = new Set();
 
 document.addEventListener('DOMContentLoaded', () => {
     render();
     window.addEventListener('languageChanged', render);
 
+    document.addEventListener('toggle', (e) => {
+        const key = e.target.dataset && e.target.dataset.section;
+        if (!key) return;
+        if (e.target.open) openSections.add(key);
+        else openSections.delete(key);
+    }, true);
+
     document.addEventListener('click', (e) => {
+        const jumpLink = e.target.closest('[data-jump]');
+        if (jumpLink) {
+            e.preventDefault();
+            jumpTo(jumpLink.dataset.jump);
+            return;
+        }
         const filterBtn = e.target.closest('[data-filter]');
         if (filterBtn) {
             setFilter(filterBtn.dataset.filter);
@@ -53,6 +68,20 @@ function loadFilter() {
         if (PLATFORMS.includes(saved)) return saved;
     } catch (e) { /* storage unavailable */ }
     return /android/i.test(navigator.userAgent) ? 'android' : 'all';
+}
+
+function openAttr(key) {
+    return openSections.has(key) ? ' open' : '';
+}
+
+// Scroll to a release family or section, showing all platforms if the filter hides it
+function jumpTo(id) {
+    let target = document.getElementById(id);
+    if (!target || target.hidden) {
+        setFilter('all');
+        target = document.getElementById(id);
+    }
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function setFilter(filter) {
@@ -96,11 +125,116 @@ function render() {
     document.getElementById('page-title').textContent = getString('dlPageTitle');
     document.getElementById('page-description').textContent = getString('dlPageDescription');
 
+    renderGuide();
     renderFilters();
     renderReleases();
     renderVerify();
     renderOther();
     renderOld();
+}
+
+// Diagram geometry, in viewBox units; labels come from GUIDE.nodes
+const GUIDE_BOX_H = 64;
+const GUIDE_LAYOUT = {
+    safe:     { x: 40,  y: 56,  w: 150 },
+    qr:       { x: 230, y: 56,  w: 150 },
+    freer:    { x: 420, y: 56,  w: 170 },
+    mycoins:  { x: 630, y: 56,  w: 140 },
+    explorer: { x: 790, y: 56,  w: 140 },
+    fapi:     { x: 420, y: 214, w: 170 },
+    apip:     { x: 630, y: 214, w: 170 },
+    manager:  { x: 814, y: 214, w: 122 },
+    es:       { x: 420, y: 318, w: 380, h: 56 },
+    fch:      { x: 420, y: 440, w: 160 },
+    feip:     { x: 640, y: 440, w: 160 },
+    node:     { x: 40,  y: 440, w: 250 }
+};
+// both: arrowheads at both ends (request and reply); offline: dashed, no network
+const GUIDE_EDGES = [
+    { d: 'M290 472 H414', label: 'blocks', lx: 352, ly: 463 },
+    { d: 'M580 472 H634', text: 'OP_RETURN', lx: 610, ly: 434 },
+    { d: 'M500 440 V380' },
+    { d: 'M720 440 V380' },
+    { d: 'M505 318 V284' },
+    { d: 'M715 318 V284' },
+    { d: 'M814 246 H806' },
+    { d: 'M505 208 V126', both: true, text: 'FUDP', lx: 513, ly: 172, anchor: 'start' },
+    { d: 'M700 208 V126', both: true, text: 'HTTP', lx: 708, ly: 172, anchor: 'start' },
+    { d: 'M760 208 V184 H860 V126', both: true },
+    { d: 'M196 88 H224', both: true, offline: true },
+    { d: 'M386 88 H414', both: true, offline: true }
+];
+
+function renderGuide() {
+    const cards = GUIDE.cards.map(card => `
+        <div class="dl-guide-card">
+            <h4>${esc(t(card.title))}</h4>
+            <p>${esc(t(card.text))}</p>
+            <div class="dl-guide-chips">
+                ${card.apps.map(id => `<a href="#${esc(id)}" class="dl-chip" data-jump="${esc(id)}">${esc(chipName(id))}</a>`).join('')}
+            </div>
+        </div>`).join('');
+
+    document.getElementById('dl-guide').innerHTML = `
+        <details data-section="guide"${openAttr('guide')}>
+            <summary>
+                <h3>${esc(getString('dlGuideTitle'))}</h3>
+                <span class="dl-guide-intro">${esc(getString('dlGuideIntro'))}</span>
+            </summary>
+            <div class="dl-guide-body">
+                <div class="dl-diagram-scroll">${guideDiagram()}</div>
+                <p class="dl-diagram-hint">${esc(getString('dlGuideHint'))}</p>
+                <h4 class="dl-guide-which">${esc(getString('dlGuideWhich'))}</h4>
+                <div class="dl-guide-cards">${cards}</div>
+            </div>
+        </details>`;
+}
+
+function chipName(id) {
+    const family = RELEASE_FAMILIES.find(f => f.id === id);
+    return family ? family.name : t(GUIDE.chipNames[id]);
+}
+
+function guideDiagram() {
+    const boxes = Object.entries(GUIDE_LAYOUT).map(([key, box]) => {
+        const node = GUIDE.nodes[key];
+        const h = box.h || GUIDE_BOX_H;
+        const cx = box.x + box.w / 2;
+        const external = !node.jump;
+        const inner = `
+            <rect x="${box.x}" y="${box.y}" width="${box.w}" height="${h}" rx="8"/>
+            <text class="dg-name" x="${cx}" y="${box.y + h / 2 - 4}">${esc(t(node.name))}</text>
+            <text class="dg-sub" x="${cx}" y="${box.y + h / 2 + 15}">${esc(t(node.sub))}</text>`;
+        return external
+            ? `<g class="dg-box external">${inner}</g>`
+            : `<a href="#${esc(node.jump)}" class="dg-box" data-jump="${esc(node.jump)}">${inner}</a>`;
+    }).join('');
+
+    const edges = GUIDE_EDGES.map(edge => {
+        const label = edge.label ? t(GUIDE.edgeLabels[edge.label]) : edge.text;
+        return `
+            <path class="dg-edge${edge.offline ? ' offline' : ''}" d="${edge.d}"
+                marker-end="url(#dg-arrow)"${edge.both ? ' marker-start="url(#dg-arrow)"' : ''}/>
+            ${label ? `<text class="dg-label" x="${edge.lx}" y="${edge.ly}" text-anchor="${edge.anchor || 'middle'}">${esc(label)}</text>` : ''}`;
+    }).join('');
+
+    const note = t(GUIDE.bands.serversNote);
+    return `
+    <svg class="dl-diagram" viewBox="0 0 960 544" role="img" aria-labelledby="dg-title">
+        <title id="dg-title">${esc(getString('dlGuideTitle'))}</title>
+        <defs>
+            <marker id="dg-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z"/>
+            </marker>
+        </defs>
+        <rect class="dg-band" x="16" y="16" width="928" height="128" rx="12"/>
+        <rect class="dg-band" x="16" y="160" width="928" height="368" rx="12"/>
+        <text class="dg-band-label" x="40" y="42">${esc(t(GUIDE.bands.devices))}</text>
+        <text class="dg-band-label" x="40" y="236">${esc(t(GUIDE.bands.servers))}</text>
+        ${note.map((line, i) => `<text class="dg-band-note" x="40" y="${260 + i * 18}">${esc(line)}</text>`).join('')}
+        ${edges}
+        ${boxes}
+    </svg>`;
 }
 
 function renderFilters() {
@@ -165,7 +299,7 @@ function renderBuild(build) {
         </div>
 
         ${changes.length ? `
-        <details class="dl-changes"${build.platform !== 'server' ? ' open' : ''}>
+        <details class="dl-changes" data-section="changes:${esc(build.repo)}"${openAttr(`changes:${build.repo}`)}>
             <summary>${esc(getString('dlWhatsNew'))} <span class="dl-count">${changes.length}</span></summary>
             <ul>${changes.map(c => `<li>${esc(c)}</li>`).join('')}</ul>
         </details>` : ''}

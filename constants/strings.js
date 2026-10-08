@@ -677,6 +677,10 @@ const strings = {
         dlOldDescription: "All earlier builds served from this site, with their DIDs.",
         dlOldLink: "Open the archive page",
         dlNoMatch: "No downloads for this platform.",
+        dlGuideTitle: "How the pieces fit",
+        dlGuideIntro: "What each download does and how they work together.",
+        dlGuideHint: "Click a box to jump to its download.",
+        dlGuideWhich: "Which do I need?",
         footer: "2025 No1_NrC7. Built with Freecash and Freeconsensus."
     },
     
@@ -1342,6 +1346,10 @@ const strings = {
         dlOldDescription: "本站此前提供的所有版本及其 DID。",
         dlOldLink: "打开历史版本页",
         dlNoMatch: "该平台暂无可下载内容。",
+        dlGuideTitle: "各组件如何协作",
+        dlGuideIntro: "每个下载项的用途，以及它们之间的关系。",
+        dlGuideHint: "点击方框可跳转到对应下载。",
+        dlGuideWhich: "我需要哪些？",
         footer: "2025 No1_NrC7 基于自由现金和自由共识构建。"
     },
 

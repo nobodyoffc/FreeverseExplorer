@@ -9,6 +9,198 @@
     margin: 0;
 }
 
+/* How the pieces fit */
+.dl-guide {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+}
+
+.dl-guide summary {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+}
+
+.dl-guide summary::-webkit-details-marker {
+    display: none;
+}
+
+.dl-guide summary::before {
+    content: "▸";
+    color: #888;
+    transition: transform 0.15s;
+}
+
+.dl-guide details[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.dl-guide summary h3 {
+    font-size: 1.15rem;
+    color: #fff;
+}
+
+.dl-guide-intro {
+    color: #999;
+    font-size: 0.9rem;
+}
+
+.dl-guide-body {
+    padding: 0 1.25rem 1.25rem;
+}
+
+.dl-diagram-scroll {
+    overflow-x: auto;
+}
+
+.dl-diagram {
+    display: block;
+    width: 100%;
+    min-width: 720px;
+    height: auto;
+    font-family: inherit;
+}
+
+.dl-diagram .dg-band {
+    fill: #141414;
+    stroke: #2a2a2a;
+}
+
+.dl-diagram .dg-band-label {
+    fill: #ddd;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.dl-diagram .dg-band-note {
+    fill: #888;
+    font-size: 12px;
+}
+
+.dl-diagram .dg-box rect {
+    fill: #1f2a36;
+    stroke: #2c4a6b;
+    stroke-width: 1.5;
+    transition: stroke 0.15s, fill 0.15s;
+}
+
+.dl-diagram a.dg-box:hover rect,
+.dl-diagram a.dg-box:focus-visible rect {
+    fill: #233a52;
+    stroke: var(--primary-color);
+}
+
+.dl-diagram .dg-box.external rect {
+    fill: #1c1c1c;
+    stroke: #555;
+    stroke-dasharray: 5 4;
+}
+
+.dl-diagram .dg-name,
+.dl-diagram .dg-sub {
+    text-anchor: middle;
+}
+
+.dl-diagram .dg-name {
+    fill: #fff;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.dl-diagram .dg-sub {
+    fill: #9aa;
+    font-size: 11.5px;
+}
+
+.dl-diagram .dg-edge {
+    fill: none;
+    stroke: #777;
+    stroke-width: 1.5;
+}
+
+.dl-diagram .dg-edge.offline {
+    stroke: #f0b54a;
+    stroke-dasharray: 4 3;
+}
+
+.dl-diagram marker path {
+    fill: #888;
+}
+
+.dl-diagram .dg-label {
+    fill: #aaa;
+    font-size: 11px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.dl-diagram-hint {
+    margin: 0.5rem 0 0;
+    color: #777;
+    font-size: 0.8rem;
+}
+
+.dl-guide-which {
+    margin: 1.25rem 0 0.75rem !important;
+    font-size: 1rem;
+    color: #ddd;
+}
+
+.dl-guide-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+    gap: 12px;
+}
+
+.dl-guide-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 14px;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    background: #141414;
+}
+
+.dl-guide-card h4 {
+    font-size: 1rem;
+    color: #fff;
+}
+
+.dl-guide-card p {
+    margin: 0;
+    color: #bbb;
+    font-size: 0.875rem;
+    line-height: 1.55;
+}
+
+.dl-guide-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: auto;
+}
+
+.dl-chip {
+    padding: 2px 10px;
+    border: 1px solid #2c4a6b;
+    border-radius: 999px;
+    color: var(--link-color);
+    font-size: 0.8rem;
+    text-decoration: none;
+}
+
+.dl-chip:hover {
+    border-color: var(--primary-color);
+    background: rgba(33, 150, 243, 0.12);
+}
+
 /* Platform filter */
 .dl-filters {
     display: flex;
@@ -49,6 +241,7 @@
 /* Product family */
 .dl-family {
     margin-bottom: 2rem;
+    scroll-margin-top: 84px; /* clear the fixed header when the guide jumps here */
 }
 
 .dl-family-head {
@@ -428,6 +621,7 @@
     }
 
     .dl-build,
+    .dl-guide summary,
     .dl-verify,
     .dl-old {
         padding: 0.875rem 1rem;
@@ -435,5 +629,9 @@
 
     .dl-btn {
         align-self: stretch;
+    }
+
+    .dl-guide-body {
+        padding: 0 1rem 1rem;
     }
 }
