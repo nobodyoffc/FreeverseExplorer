@@ -329,26 +329,28 @@ export const RELEASE_FAMILIES = [
                 platform: 'server',
                 title: 'Freeverse',
                 repo: 'Freeverse',
-                version: '0.3',
-                tag: 'v0.3',
-                date: '2026-10-07',
+                version: '0.3.1',
+                tag: 'v0.3.1',
+                date: '2026-10-08',
                 prerelease: true,
                 requirements: {
                     en: 'Java 17+; ApipServer.war needs Tomcat 10+ (Jakarta Servlet); parsers and servers need Elasticsearch 8.8.0+. Run jars in an interactive terminal: they read the password from the console.',
                     zh: 'Java 17+；ApipServer.war 需要 Tomcat 10+（Jakarta Servlet）；解析器和服务端需要 Elasticsearch 8.8.0+。请在交互式终端中运行 jar，程序会从控制台读取密码。'
                 },
                 notice: {
-                    en: 'Upgrading FeipParser needs a full reparse: stop FeipParser and pause the FAPI/APIP servers, run Start New Parse from file, and restart the servers once it has caught up. It will not resume on indices built by an older version.',
-                    zh: '升级 FeipParser 需要全量重新解析：停止 FeipParser 并暂停 FAPI/APIP 服务端，选择“Start New Parse from file”，追上链后再启动服务端。它不会在旧版本建立的索引上继续解析。'
+                    en: 'Upgrading FeipParser from v0.2 or older needs a full reparse: stop FeipParser and pause the FAPI/APIP servers, run Start New Parse from file, and restart the servers once it has caught up. It will not resume on indices built by an older version.',
+                    zh: '从 v0.2 或更早版本升级 FeipParser 需要全量重新解析：停止 FeipParser 并暂停 FAPI/APIP 服务端，选择“Start New Parse from file”，追上链后再启动服务端。它不会在旧版本建立的索引上继续解析。'
                 },
                 changes: {
                     en: [
+                        'A locked local database no longer hangs Tomcat: ApipServer fails just its webapp and logs which database is locked; command-line apps print it and exit.',
                         'FEIP Contact, Mail and Secret keep a history of every operation; a rollback now undoes an orphaned update, delete or recover instead of leaving it in the index.',
                         'Consensus: Contact delete/recover skip contacts the signer does not own; an add or update with an empty cipher is rejected (FEIP12, FEIP17, FEIP7).',
                         'FeipParser refuses to resume on indices without the new histories, and Reparse ID list handles box, contact, mail and secret.',
                         'FC-SDK: ContactOpData and SecretOpData gain makeUpdate; the CLI contact and secret managers can update on chain.'
                     ],
                     zh: [
+                        '本地数据库被占用时不再使 Tomcat 卡死：ApipServer 只让自身的 Web 应用启动失败，并记录被占用的数据库；命令行程序打印该信息后退出。',
                         'FEIP 联系人、邮件和秘密保留每次操作的历史；回滚时会撤销孤块中的更新、删除或恢复操作，不再遗留在索引中。',
                         '共识：联系人的删除/恢复会跳过不属于签名者的条目；密文为空的添加或更新会被拒绝（FEIP12、FEIP17、FEIP7）。',
                         'FeipParser 拒绝在缺少新历史索引的旧索引上继续解析；“Reparse ID list”支持 box、contact、mail 和 secret。',
@@ -356,25 +358,25 @@ export const RELEASE_FAMILIES = [
                     ]
                 },
                 assets: [
-                    { name: 'FchParser.jar', size: 57757062, sha256: '557bb83cff7c63248160c0b4f3f2a2c5c7aacea3a1c42cd6299206163edf07e0',
+                    { name: 'FchParser.jar', size: 57759060, sha256: '3526a32e30b827714c8877e38afe9715a7712c4b31436b75561ed7da7287237f',
                       label: { en: 'Freecash chain parser v2.1: blocks, transactions, cash and inscriptions', zh: 'Freecash 链解析器 v2.1：区块、交易、现金与刻字' } },
-                    { name: 'FeipParser.jar', size: 57840274, sha256: '13c4c151659485f93aa5a4cf7e8476da29ec17f8164a416cf64038a81ca0b69c',
+                    { name: 'FeipParser.jar', size: 57842272, sha256: 'e75a963b9b796e1ba89b2747a00775b43afeba2f94c2204bd39ceb37ef22c60f',
                       label: { en: 'FEIP parser v2.1: identity, organization and social data', zh: 'FEIP 解析器 v2.1：身份、组织与社交数据' } },
-                    { name: 'FapiServer.jar', size: 63123629, sha256: '071ed409e252a2fe59d2c7b3b367ccee8baa97d1e3c544655f3ad894c79906e1',
+                    { name: 'FapiServer.jar', size: 63125626, sha256: '0b278603e555a6b5c03649be2ef2b960d9a14d9bf0542a25f50a5a3e7122d1b5',
                       label: { en: 'FAPI server v1.3: API provider for Freer over FUDP', zh: 'FAPI 服务端 v1.3：基于 FUDP 为 Freer 提供 API' } },
-                    { name: 'FapiClient.jar', size: 63123630, sha256: '372ca5966ed93a10fc6f739f8e57918a9135420f0a45ab05363d7963b7826c02',
+                    { name: 'FapiClient.jar', size: 63125628, sha256: '490a9a0f3f4eae6c20279e2e824ffec3818fe929ea019f859030a0e10cd6e838',
                       label: { en: 'FAPI client', zh: 'FAPI 客户端' } },
-                    { name: 'ApipServer.war', size: 62191447, sha256: 'af07114e55ad1f9b63642c628c2891420fd3c78fbc3b940c2ea7d449887fc654',
+                    { name: 'ApipServer.war', size: 62193213, sha256: '9d66847df912f4b7c1a6d935c6e271e978fb4f2384cb4a71ab8ed3337e8e7c0e',
                       label: { en: 'APIP server (web app) for the Freeverse explorer over HTTP', zh: 'APIP 服务端（Web 应用），通过 HTTP 为 Freeverse 浏览器提供 API' } },
-                    { name: 'ApipManager.jar', size: 57754914, sha256: 'd4aa137a64717ac082c391c0e3655190ef9ede5dadb5f876e3ff2c7e9e33282f',
+                    { name: 'ApipManager.jar', size: 57756911, sha256: '75a822716092676e9d28f1bfe58d32bc87bb6392668bb214d86ec9993316b588',
                       label: { en: 'APIP manager v2.1: configure ApipServer before launching it', zh: 'APIP 管理器 v2.1：启动 ApipServer 前配置参数' } },
-                    { name: 'ApipClient.jar', size: 57698740, sha256: '2b27f9a87eb07f12ae550f119e668da8173262184009959765ce2049b0ee69bf',
+                    { name: 'ApipClient.jar', size: 57700737, sha256: '2e6580aee449cee61bf53cbcbffa8f64ae1073d5579789187e3e911e0dbd1942',
                       label: { en: 'APIP client', zh: 'APIP 客户端' } },
-                    { name: 'CryptoSign.jar', size: 63123627, sha256: '97b05f0d2465ad62fe77e070108970bc011ec005d2f98141721c31db622131dc',
+                    { name: 'CryptoSign.jar', size: 63125624, sha256: '21b76c2e5595bf787c50b83b516fb2d132ccabfff28fd41f775468afbf5686c6',
                       label: { en: 'CryptoSign tool', zh: 'CryptoSign 工具' } },
-                    { name: 'FC-SDK.jar', size: 63123600, sha256: '8d8c5beedc2fc8611422af2535b6eae572e8e04d101ac757180a9949f44c8802',
+                    { name: 'FC-SDK.jar', size: 63125598, sha256: '20b8a85f1e6ba4d33d0fbd370c61c456c47e16088b6c0ac921f224d908c85aee',
                       label: { en: 'FC-JDK library with all dependencies', zh: '含全部依赖的 FC-JDK 库' } },
-                    { name: 'SHA256SUMS', size: 725, sha256: '5c16e5e3b46e938fbef0890a28f2632d2bb046cc1d516c7d9e8ab438cda7cbce',
+                    { name: 'SHA256SUMS', size: 725, sha256: 'b151b81c7efbb2d921576d33bf6d87e157d7b9727a78fe7767f3842582be02d6',
                       label: { en: 'Checksums: shasum -a 256 -c SHA256SUMS', zh: '校验文件：shasum -a 256 -c SHA256SUMS' } }
                 ]
             },
