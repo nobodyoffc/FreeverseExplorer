@@ -421,7 +421,7 @@ export const RELEASE_FAMILIES = [
     }
 ];
 
-// Files served from this site that are not on GitHub
+// Full node files served from this site, plus the protocols (a GitHub release outside the app families)
 export const OTHER_DOWNLOADS = [
     {
         title: { en: 'Freecash full node 1.0.5', zh: 'Freecash 全节点 1.0.5' },
@@ -434,7 +434,9 @@ export const OTHER_DOWNLOADS = [
     {
         title: { en: 'Protocols', zh: '协议文档' },
         files: [
-            { name: 'Protocols.zip', href: '/download/Protocols.zip', did: 'ddd7b82dcfe6dd8a206b5bd195070dddeeb11e82afbf99d54b6abbdccb346ff6' }
+            { name: 'Protocols.zip', size: 589146, sha256: '5e06a4c95f76c30441e884a24b1461cfb93475b462aa9bc2a88845d9b2e2aa66',
+              href: 'https://github.com/nobodyoffc/Freeverse/releases/download/protocols-2026-10-08/Protocols.zip',
+              label: { en: 'Protocol specifications, 2026-10-08 (FAPI, FBP, FBSP, FEIP, FTSP, FUDP, FVEP, IM)', zh: '协议规范，2026-10-08（FAPI、FBP、FBSP、FEIP、FTSP、FUDP、FVEP、IM）' } }
         ]
     }
 ];

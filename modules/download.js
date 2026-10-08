@@ -1,5 +1,5 @@
 // Download page - renders the release catalog from download-data.js
-import { GITHUB_OWNER, SIGNING, RELEASE_FAMILIES, OTHER_DOWNLOADS } from './download-data.js?v=20261008b';
+import { GITHUB_OWNER, SIGNING, RELEASE_FAMILIES, OTHER_DOWNLOADS } from './download-data.js?v=20261008c';
 
 const FILTER_STORAGE_KEY = 'downloadPlatformFilter';
 const PLATFORMS = ['all', 'android', 'mac', 'server'];
