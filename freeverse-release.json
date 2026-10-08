@@ -1,0 +1,13 @@
+{
+  "github": "nobodyoffc/FreeverseExplorer",
+  "codes": [
+    { "name": "FreeverseExplorer", "path": ".", "langs": ["JavaScript", "HTML"],
+      "desc": "Web explorer of the Freecash chain and Freeverse registries.",
+      "protocols": ["FAPI0", "FEIP0", "FVEP0"] }
+  ],
+  "apps": [
+    { "stdName": "FreeverseExplorer", "asset": "FreeverseExplorer.zip", "os": "web", "types": ["explorer"],
+      "desc": "Web explorer of the Freecash chain and Freeverse registries.",
+      "codes": ["FreeverseExplorer"], "protocols": ["FAPI0", "FEIP0"] }
+  ]
+}
