@@ -69,9 +69,9 @@ export const RELEASE_FAMILIES = [
                 platform: 'mac',
                 title: 'Freer for macOS',
                 repo: 'freer-mac',
-                version: '0.4.1',
-                tag: 'v0.4.1',
-                date: '2026-10-06',
+                version: '0.5',
+                tag: 'v0.5',
+                date: '2026-10-09',
                 prerelease: true,
                 requirements: { en: 'macOS 14.0 or later, Apple silicon only', zh: 'macOS 14.0 或更高版本，仅支持 Apple 芯片' },
                 notice: {
@@ -80,24 +80,24 @@ export const RELEASE_FAMILIES = [
                 },
                 changes: {
                     en: [
-                        'Voice calls and meetings: 1:1 calls via relay or a direct path, FUDP over TCP fallback; meetings with chosen people; Freer stays in the menu bar to stay available for calls.',
-                        'Service components: home BASE picks the server; BASE and DISK can be private or public; CALL, MAP and BASE set from buttons.',
-                        'DOCK: a server answering 402 offers a balance top-up; DOCKs polled every 10 s in front, every minute behind.',
-                        'Teams: bulk appoint and remove managers, search long member lists.',
-                        'SSH terminal: focus on connect; scroll back from the keyboard.',
-                        'Keys exported from Android import as main FIDs; one-click copy of warnings and errors.'
+                        'Release Sync: a Tools pane that carves what a GitHub release changed (protocols, codes and apps) following FVEP11, and resumes an interrupted run without carving twice.',
+                        'Tools derives an Android APK signing key (P-256) from the main FID.',
+                        'Secrets can be edited; a carved secret is updated under the same id.',
+                        'Secrets and contacts still waiting to confirm show Pending and cannot be carved twice; a pending carve expires after two hours.',
+                        'Secret, contact and mail syncs recover from a rolled-back carve after a reorg.',
+                        'Sidebar: Chat above Contacts, Personal above Finance.'
                     ],
                     zh: [
-                        '语音通话与会议：一对一通话经中继或直连，可回退到基于 TCP 的 FUDP；可与自选的人开会；Freer 常驻菜单栏以便接听来电。',
-                        '服务组件：由 home BASE 选择服务器；BASE 和 DISK 可设为私有或公开；可通过按钮设置 CALL、MAP 和 BASE。',
-                        'DOCK：服务器返回 402 时提供余额充值；前台每 10 秒、后台每分钟轮询。',
-                        '团队：批量任免管理员，可搜索长成员列表。',
-                        'SSH 终端：连接后自动聚焦；可用键盘回滚。',
-                        '从 Android 导出的密钥可作为主 FID 导入；警告与错误一键复制。'
+                        '发布同步：工具中新增面板，按 FVEP11 把 GitHub 发布中变更的协议、代码和应用上链，中断后可续传且不会重复上链。',
+                        '工具可从主 FID 派生 Android APK 签名密钥（P-256）。',
+                        '密文可编辑；已上链的密文以同一 ID 更新。',
+                        '待确认的密文和联系人显示“待确认”，不会重复上链；待确认的上链两小时后过期。',
+                        '链重组回滚上链后，密文、联系人和邮件同步会自动恢复。',
+                        '侧边栏：聊天在联系人之上，个人在财务之上。'
                     ]
                 },
                 assets: [
-                    { name: 'Freer-0.4.1.dmg', size: 17887189, sha256: '0d67a283b6b77f74ff37e07be4fd278066c35f98eb758bd195a99d4a182bb925' }
+                    { name: 'Freer-0.5.dmg', size: 18177767, sha256: '6a73ebd34fda73b8c4b4b827f5276396d1a40d3841d3eccdc3f1cef75a2e6c63' }
                 ]
             }
         ]
