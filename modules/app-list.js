@@ -290,7 +290,7 @@ function displayAppList(appList) {
             
             headers.forEach(field => {
                 const td = document.createElement('td');
-                let value = app[field] ?? "";
+                let value = field === 'os' ? App.getOsList(app.downloads) : (app[field] ?? "");
                 
                 // Handle different field types
                 if (timestampFields.includes(field)) {

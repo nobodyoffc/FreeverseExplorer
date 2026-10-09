@@ -22,7 +22,8 @@ import {
     PROTOCOLS,
     CODES,
     SERVICES,
-    DOWNLOADS
+    DOWNLOADS,
+    OS
 } from '../constants/fieldNames.js';
 
 import {
@@ -67,10 +68,10 @@ class App {
         return {
             [OWNER]: DEFAULT_ID_LENGTH,
             [STD_NAME]: DEFAULT_ID_LENGTH,
-            [LOCAL_NAMES]: DEFAULT_ID_LENGTH,
+            [OS]: DEFAULT_ID_LENGTH,
+            [DESC]: DEFAULT_ID_LENGTH,
             [T_RATE]: DEFAULT_AMOUNT_LENGTH,
             [T_CDD]: DEFAULT_AMOUNT_LENGTH,
-            [DESC]: DEFAULT_ID_LENGTH,
             [LAST_TIME]: DEFAULT_TIME_LENGTH,
             [BIRTH_TIME]: DEFAULT_TIME_LENGTH,
             [ID]: DEFAULT_ID_LENGTH,
@@ -108,6 +109,7 @@ class App {
             [T_RATE]: fieldNames.tRate || 'Total Rate',
             [LAST_TIME]: fieldNames.lastTime || 'Last Time',
             [DOWNLOADS]: fieldNames.downloads || 'Downloads',
+            [OS]: fieldNames.os || 'OS',
             [WAITERS]: fieldNames.waiters || 'Waiters',
             [PROTOCOLS]: fieldNames.protocols || 'Protocols',
             [CODES]: fieldNames.codes || 'Codes',
@@ -118,6 +120,19 @@ class App {
             [LAST_TIME]: fieldNames.lastTime || 'Last Time',
             [LAST_HEIGHT]: fieldNames.lastHeight || 'Last Height',
         };
+    }
+
+    // Comma-joined list of distinct download.os values, e.g. 'macos, android'
+    static getOsList(downloads) {
+        if (typeof downloads === 'string') {
+            try {
+                downloads = JSON.parse(downloads);
+            } catch (e) {
+                return '';
+            }
+        }
+        if (!Array.isArray(downloads)) return '';
+        return [...new Set(downloads.map(d => d?.os).filter(Boolean))].join(', ');
     }
 
     static getReplaceWithMeFieldList() {

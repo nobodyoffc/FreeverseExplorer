@@ -115,6 +115,7 @@ export const SERVICES = 'services';
 export const CODES = 'codes';
 export const PARAMS = 'params';
 export const DOWNLOADS = 'downloads';
+export const OS = 'os';
 export const WAITERS = 'waiters';
 export const PROTOCOLS = 'protocols'; 
 export const CDD_TO_UPDATE = 'cddToUpdate';

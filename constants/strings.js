@@ -285,6 +285,7 @@ const strings = {
             // Service specific fields
             stdName: 'Standard Name',
             localNames: 'Local Names',
+            os: 'OS',
             types: 'Types',
             protocols: 'Protocols',
             services: 'Services',
@@ -972,6 +973,7 @@ const strings = {
             // Service specific fields
             stdName: '名称',
             localNames: '其他名称',
+            os: '操作系统',
             types: '类型',
             urls: '网址',
             protocols: '协议',
