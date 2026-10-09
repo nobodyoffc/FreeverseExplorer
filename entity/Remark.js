@@ -12,6 +12,7 @@ import {
     AUTHORS,
     LANG,
     SUMMARY,
+    LOCAS,
     FORMAT,
     PUBLISHER,
     T_CDD,
@@ -35,6 +36,7 @@ class Remark {
         this.authors = null;
         this.lang = null;
         this.summary = null;
+        this.locas = null;
         this.format = null;
         this.publisher = null;
         this.birthTime = null;
@@ -85,6 +87,7 @@ class Remark {
             [PUBLISHER]: fieldNames.publisher || 'Publisher',
             [TITLE]: fieldNames.title || 'Title',
             [SUMMARY]: fieldNames.summary || 'Summary',
+            [LOCAS]: fieldNames.locas || 'Locations',
             [AUTHORS]: fieldNames.authors || 'Authors',
             [LAST_HEIGHT]: fieldNames.lastHeight || 'Last Height',
             [BIRTH_TIME]: fieldNames.birthTime || 'Birth Time'

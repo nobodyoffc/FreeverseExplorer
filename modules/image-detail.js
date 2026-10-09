@@ -1,6 +1,7 @@
 // Import Image class
 import Image from '../entity/Image.js';
 import { getSearchConfig } from './search-config.js';
+import { renderLocasRow } from './locas.js';
 
 // Get the URL head from global API
 // Use a getter function to always get the current working server URL
@@ -170,6 +171,13 @@ function displayImageDetails(imageInstance) {
         const fieldName = window.strings[currentLang]?.fieldNames?.[field] ||
                          showFieldNameMap[field] ||
                          field.replace(/([A-Z])/g, ' $1').trim();
+
+        // Locations are links, so they get their own row rather than the
+        // click-to-copy span, whose handler would swallow the click.
+        if (field === 'locas') {
+            detailHTML += renderLocasRow(fieldName.charAt(0).toUpperCase() + fieldName.slice(1), value);
+            return;
+        }
 
         detailHTML += `
             <tr>
