@@ -60,7 +60,9 @@ export const RELEASE_FAMILIES = [
                 },
                 signedWith: 'android',
                 assets: [
-                    { name: 'Freer-3.4.0.apk', size: 54844820, sha256: '3c8860392ff23eccc7565ec1de0cc95c7bd79a486f11e18b26b1f1a66c4a471a' }
+                    { name: 'Freer-3.4.0.apk', size: 54844820, sha256: '3c8860392ff23eccc7565ec1de0cc95c7bd79a486f11e18b26b1f1a66c4a471a' },
+                    { name: 'DIDS.sig.json', size: 538, sha256: '1b21d94567a6383a2163c6a0bcee5fe6bd981d71c129d64b01261790cf09f4d9',
+                      label: { en: 'Signed DID list (FJYN3D7x…): paste into Freer, Tools → Verify', zh: '签名的 DID 清单（FJYN3D7x…）：粘贴到飞人“工具 → 验签”' } }
                 ]
             },
             {
@@ -91,7 +93,9 @@ export const RELEASE_FAMILIES = [
                     ]
                 },
                 assets: [
-                    { name: 'Freer-0.7.dmg', size: 18742342, sha256: '8e106bdb5010268909e979b546034e3318ff2ccbec52a3dcff035a1db1888a26' }
+                    { name: 'Freer-0.7.dmg', size: 18742342, sha256: '8e106bdb5010268909e979b546034e3318ff2ccbec52a3dcff035a1db1888a26' },
+                    { name: 'DIDS.sig.json', size: 550, sha256: '3050d9a886c762f7f94c40421b129905e42702e5de8b27418f8c4c462dd35283',
+                      label: { en: 'Signed DID list (FJYN3D7x…): paste into Freer, Tools → Verify', zh: '签名的 DID 清单（FJYN3D7x…）：粘贴到飞人“工具 → 验签”' } }
                 ]
             }
         ]
@@ -133,7 +137,9 @@ export const RELEASE_FAMILIES = [
                 },
                 signedWith: 'android',
                 assets: [
-                    { name: 'Safe-2.5.apk', size: 48893301, sha256: '5c467e1b7ee842861935e3255ab58a3d997cb1da9f4f761be5b01027e8d78833' }
+                    { name: 'Safe-2.5.apk', size: 48893301, sha256: '5c467e1b7ee842861935e3255ab58a3d997cb1da9f4f761be5b01027e8d78833' },
+                    { name: 'DIDS.sig.json', size: 526, sha256: '1784d1cc93989884d096ac167870fb03c16b5f4f20ff72d28b08ca276132a5be',
+                      label: { en: 'Signed DID list (FJYN3D7x…): paste into Freer, Tools → Verify', zh: '签名的 DID 清单（FJYN3D7x…）：粘贴到飞人“工具 → 验签”' } }
                 ]
             },
             {
@@ -162,7 +168,9 @@ export const RELEASE_FAMILIES = [
                     ]
                 },
                 assets: [
-                    { name: 'Safe-1.1.1.dmg', size: 183796325, sha256: 'a6b533ddd6f0cec53aebafd66233a83d281868a24005ab2f82539a4bf37fa298' }
+                    { name: 'Safe-1.1.1.dmg', size: 183796325, sha256: 'a6b533ddd6f0cec53aebafd66233a83d281868a24005ab2f82539a4bf37fa298' },
+                    { name: 'DIDS.sig.json', size: 556, sha256: '1f5770b6c18504581c9d6084c0f401b6f7063379e0571353ff102f25e52d2567',
+                      label: { en: 'Signed DID list (FJYN3D7x…): paste into Freer, Tools → Verify', zh: '签名的 DID 清单（FJYN3D7x…）：粘贴到飞人“工具 → 验签”' } }
                 ]
             }
         ]
@@ -361,7 +369,9 @@ export const RELEASE_FAMILIES = [
                     { name: 'FC-SDK.jar', size: 63170097, sha256: 'ed1345cc2fa23d0db09171fea4ccbe11d6bcfa38f23be47223f7bf8b60939fb6',
                       label: { en: 'FC-JDK library with all dependencies', zh: '含全部依赖的 FC-JDK 库' } },
                     { name: 'SHA256SUMS', size: 725, sha256: '1eb0d0f317102b94f0635d7af72fcd82e2555515fa3f1f9f276199d50d0aabeb',
-                      label: { en: 'Checksums: shasum -a 256 -c SHA256SUMS', zh: '校验文件：shasum -a 256 -c SHA256SUMS' } }
+                      label: { en: 'Checksums: shasum -a 256 -c SHA256SUMS', zh: '校验文件：shasum -a 256 -c SHA256SUMS' } },
+                    { name: 'DIDS.sig.json', size: 1896, sha256: 'ff6cd326288c21fb964ebafcfe0c213c05594b87edc2bdc6c158bb9ea86d0a35',
+                      label: { en: 'Signed DID list (FJYN3D7x…): paste into Freer, Tools → Verify', zh: '签名的 DID 清单（FJYN3D7x…）：粘贴到飞人“工具 → 验签”' } }
                 ]
             },
             {
@@ -398,7 +408,9 @@ export const RELEASE_FAMILIES = [
                     { name: 'FreeverseExplorer.zip', size: 520642, sha256: 'a03f474a1b2b9e7502a970ce06326e4cc2d6dcb15e7d78d3a096ece73a544c3f',
                       label: { en: 'The explorer web app: unzip into Tomcat webapps', zh: '浏览器网页应用：解压到 Tomcat 的 webapps 目录' } },
                     { name: 'SHA256SUMS', size: 88, sha256: '696fc0679fbef0b2137dc17c7ba515837c8113f15e047dd2da67d900cad9f0ee',
-                      label: { en: 'Checksums: shasum -a 256 -c SHA256SUMS', zh: '校验文件：shasum -a 256 -c SHA256SUMS' } }
+                      label: { en: 'Checksums: shasum -a 256 -c SHA256SUMS', zh: '校验文件：shasum -a 256 -c SHA256SUMS' } },
+                    { name: 'DIDS.sig.json', size: 654, sha256: '9b9ecca8d04302aea3fd5acf9eceafca455d6911f12daad0b08c295a9df79a3a',
+                      label: { en: 'Signed DID list (FJYN3D7x…): paste into Freer, Tools → Verify', zh: '签名的 DID 清单（FJYN3D7x…）：粘贴到飞人“工具 → 验签”' } }
                 ]
             }
         ]
@@ -420,7 +432,10 @@ export const OTHER_DOWNLOADS = [
         files: [
             { name: 'Protocols.zip', size: 584580, sha256: '9624cde7230999a89facf8a2a854488f2db5b4d0275d426189710cce97fb65e2',
               href: 'https://github.com/nobodyoffc/Freeverse/releases/download/protocols-2026-11-01/Protocols.zip',
-              label: { en: 'Protocol specifications, 2026-11-01 (FAPI, FBP, FBSP, FEIP, FTSP, FUDP, FVEP, IM)', zh: '协议规范，2026-11-01（FAPI、FBP、FBSP、FEIP、FTSP、FUDP、FVEP、IM）' } }
+              label: { en: 'Protocol specifications, 2026-11-01 (FAPI, FBP, FBSP, FEIP, FTSP, FUDP, FVEP, IM)', zh: '协议规范，2026-11-01（FAPI、FBP、FBSP、FEIP、FTSP、FUDP、FVEP、IM）' } },
+            { name: 'DIDS.sig.json', size: 567, sha256: '7b3e4ab404cfcfe075d3dea7c856caea6b4f8e6c2a1f4f0e61d31ad7636c97c5',
+              href: 'https://github.com/nobodyoffc/Freeverse/releases/download/protocols-2026-11-01/DIDS.sig.json',
+              label: { en: 'Signed DID list (FJYN3D7x…): paste into Freer, Tools → Verify', zh: '签名的 DID 清单（FJYN3D7x…）：粘贴到飞人“工具 → 验签”' } }
         ]
     }
 ];
