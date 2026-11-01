@@ -67,37 +67,31 @@ export const RELEASE_FAMILIES = [
                 platform: 'mac',
                 title: 'Freer for macOS',
                 repo: 'freer-mac',
-                version: '0.6',
-                tag: 'v0.6',
-                date: '2026-10-30',
+                version: '0.7',
+                tag: 'v0.7',
+                date: '2026-11-01',
                 prerelease: true,
                 requirements: { en: 'macOS 14.0 or later, Apple silicon only', zh: 'macOS 14.0 或更高版本，仅支持 Apple 芯片' },
                 notice: {
-                    en: 'Developer ID signed and notarized by Apple. Proofs and tokens follow the new FEIP rules: proof issues and transfers made with 0.5 or earlier are ignored, so upgrade before issuing or transferring proofs.',
-                    zh: '已使用 Developer ID 签名并通过 Apple 公证。存证和通证遵循新的 FEIP 规则：0.5 及更早版本发出的存证签发和转让会被忽略，请先升级再签发或转让存证。'
+                    en: 'Developer ID signed and notarized by Apple. Covers need a server running FeipParser v0.4.2.',
+                    zh: '已使用 Developer ID 签名并通过 Apple 公证。封面功能需要服务器运行 FeipParser v0.4.2。'
                 },
                 changes: {
                     en: [
-                        'Proofs: issue to a first owner; issueTo / transferTo named in the op, no payment output needed.',
-                        'Tokens: a FID\'s history is searched by issueTo.fid / transferTo.fid.',
-                        'Mail is now Cmail (Crypto Mail); replies open from a preset and add the original\'s time; default notice-fee limit 1 F.',
-                        'Publish: texts from files; carve and read locas (FEIP21-25).',
-                        'First-FCH board: an asker with a guide is funded, even at zero balance.',
-                        'Release Sync ignores closed records and re-reads every manifest on Scan; registry Refresh and Return search the whole index.',
-                        'Imports backups from Safe 2.5, Safe for macOS 1.1.1 and Freer 3.4.0, which no longer carry their random password.'
+                        'Covers: texts, sounds and videos can show one of your images as a cover, or a new image published with the work under one approval; readers show it.',
+                        'Release Sync publishes a release\'s texts, images, sounds and videos (FVEP11 works), images first so works can name them as covers.',
+                        'Release Sync keeps repo folders per identity instead of sharing one list across vaults and FIDs.',
+                        'Release Sync scans again after a run and while carves are pending, and says so when the server cannot confirm them.'
                     ],
                     zh: [
-                        '存证：可签发给首位所有者；操作中写明 issueTo / transferTo，不再需要支付输出。',
-                        '通证：按 issueTo.fid / transferTo.fid 查询 FID 的历史。',
-                        '邮件更名为密信（Cmail）；回复从预设打开并附原信时间；通知费默认上限 1 F。',
-                        '发布：文本从文件发布；可上链并读取 locas（FEIP21-25）。',
-                        '新手求助：有引路人的求助者即使余额为零也会获得资助。',
-                        '发布同步忽略已关闭的记录，扫描时重读全部清单；注册表的刷新和返回搜索整个索引。',
-                        '可导入 Safe 2.5、Safe for macOS 1.1.1 和 Freer 3.4.0 的备份，这些备份不再包含随机密码。'
+                        '封面：文本、声音和视频可以用你的一张图片作封面，或与作品一起发布一张新图片（一次批准）；阅读时显示封面。',
+                        '发布同步可发布一次发布中的文本、图片、声音和视频（FVEP11 作品），先发布图片，作品可将其作为封面。',
+                        '发布同步的仓库文件夹按身份分别保存，不再在各保险库和 FID 之间共用。',
+                        '发布同步在运行后及有待确认的刻写时自动重新扫描；服务器无法确认时会提示。'
                     ]
                 },
                 assets: [
-                    { name: 'Freer-0.6.dmg', size: 18551485, sha256: 'd325aed80df1de8ee8d80d6d5bb3b9421c6d0c92babe3fdda900461afb0d48da' }
+                    { name: 'Freer-0.7.dmg', size: 18742342, sha256: '8e106bdb5010268909e979b546034e3318ff2ccbec52a3dcff035a1db1888a26' }
                 ]
             }
         ]
@@ -323,60 +317,50 @@ export const RELEASE_FAMILIES = [
                 platform: 'server',
                 title: 'Freeverse',
                 repo: 'Freeverse',
-                version: '0.4.1',
-                tag: 'v0.4.1',
-                date: '2026-10-30',
+                version: '0.4.2',
+                tag: 'v0.4.2',
+                date: '2026-11-01',
                 prerelease: true,
                 requirements: {
                     en: 'Java 17+; ApipServer.war needs Tomcat 10+ (Jakarta Servlet); parsers and servers need Elasticsearch 8.8.0+. Run jars in an interactive terminal: they read the password from the console.',
                     zh: 'Java 17+；ApipServer.war 需要 Tomcat 10+（Jakarta Servlet）；解析器和服务端需要 Elasticsearch 8.8.0+。请在交互式终端中运行 jar，程序会从控制台读取密码。'
                 },
                 notice: {
-                    en: 'Upgrading FeipParser from v0.3.1 or older needs a full reparse: FEIP rules and index mappings changed for the whole chain. Stop FeipParser and pause the FAPI/APIP servers, run Start New Parse from file, and restart the servers once it has caught up. FeipParser now reads config/FEIP_settings.json: rename FEIP_v2.1_settings.json before starting it.',
-                    zh: '从 v0.3.1 或更早版本升级 FeipParser 需要全量重新解析：FEIP 规则和索引映射对全链生效。停止 FeipParser 并暂停 FAPI/APIP 服务端，选择“Start New Parse from file”，追上链后再启动服务端。FeipParser 现在读取 config/FEIP_settings.json：启动前请将 FEIP_v2.1_settings.json 改名。'
+                    en: 'Upgrading FeipParser needs a full reparse (Start New Parse from file) to index the new cover field. Upgrade FapiServer and ApipServer at the same time: a v0.4.1 server cannot read texts, sounds and videos that carry a cover. From v0.3.1 or older, also rename config/FEIP_v2.1_settings.json to FEIP_settings.json.',
+                    zh: '升级 FeipParser 需要全量重新解析（Start New Parse from file），以索引新的 cover 字段。请同时升级 FapiServer 和 ApipServer：v0.4.1 的服务端读不了带封面的文本、声音和视频。从 v0.3.1 或更早版本升级时，还需将 config/FEIP_v2.1_settings.json 改名为 FEIP_settings.json。'
                 },
                 changes: {
                     en: [
-                        'Apps show the release they were built for (e.g. Freeverse v0.4.1) instead of per-app version numbers.',
-                        'Consensus (FEIP0): a malformed FID in any FID field invalidates the whole op; enforced for proof cosigners and team lists.',
-                        'Consensus: from height 4,000,000 every FEIP op needs 1 cd; token deploy and proof issue no longer need ×100.',
-                        'Consensus (FEIP14): proof owners are named in the op (issueTo, transferTo); tx outputs are ignored. FEIP20 token history drops the output-derived recipient.',
-                        'FchParser re-syncs on its own when the fullnode rewrites the tip block file, instead of stopping on "Read Magic wrong".',
-                        'FeipParser maps home as an object and skips a field Elasticsearch refuses instead of stopping.',
-                        'FUDP: a peer that restarts and reconnects from the same address no longer has its first request time out.',
-                        'FEIP7 renamed Cmail (Crypto Mail); FEIP21–25 gain locas, where to download a published work.'
+                        'FEIP21 Text, FEIP23 Sound and FEIP25 Video gain an optional cover: the imageId of a FEIP24 Image, so updating the Image changes the cover.',
+                        'FVEP11 Release: a section on works, so a release can register the texts, images, sounds and videos it publishes, with their covers.',
+                        'Servers skip index fields their classes do not know instead of failing the read, so a newer parser no longer breaks an older server\'s lookups.'
                     ],
                     zh: [
-                        '各程序显示其所属的发布版本（如 Freeverse v0.4.1），不再显示各自的版本号。',
-                        '共识（FEIP0）：任何 FID 字段中出现格式错误的 FID，整个操作无效；已用于证明共签人和团队名单。',
-                        '共识：从高度 4,000,000 起每个 FEIP 操作需要 1 cd；通证部署和证明发行不再需要 ×100。',
-                        '共识（FEIP14）：证明的所有者由操作中的 issueTo、transferTo 指定，不再读取交易输出。FEIP20 通证历史去掉由输出推出的 recipient。',
-                        '全节点重写最新区块文件时，FchParser 会自动重新同步，不再因 “Read Magic wrong” 停止。',
-                        'FeipParser 将 home 映射为对象；Elasticsearch 拒绝某个字段时跳过该字段，不再停止。',
-                        'FUDP：对方重启后从同一地址重新连接时，第一个请求不再超时。',
-                        'FEIP7 更名为 Cmail（Crypto Mail）；FEIP21–25 新增 locas 字段，说明作品可从哪里下载。'
+                        'FEIP21 文本、FEIP23 声音和 FEIP25 视频新增可选的 cover：一个 FEIP24 图片的 imageId，更新该图片即更换封面。',
+                        'FVEP11 发布：新增作品一节，发布时可登记其中的文本、图片、声音和视频及其封面。',
+                        '服务端遇到不认识的索引字段时跳过，不再整条读取失败，较新的解析器不再导致旧服务端查询出错。'
                     ]
                 },
                 assets: [
-                    { name: 'FchParser.jar', size: 57817026, sha256: '72cc7c7f797740d3b986e8fcf41183dbbd758393085d5e377be5ff3e147234e1',
+                    { name: 'FchParser.jar', size: 57817720, sha256: '7f18ac36d29813e983c8796a4e20408ae9e993f1d2c6009ec8e0a3d04972adcf',
                       label: { en: 'Freecash chain parser: blocks, transactions, cash and inscriptions', zh: 'Freecash 链解析器：区块、交易、现金与刻字' } },
-                    { name: 'FeipParser.jar', size: 57896232, sha256: '3f0f58f6f19d24aa64cd38ceee61c766444b64031b8a88480e921069456c0c07',
+                    { name: 'FeipParser.jar', size: 57897448, sha256: '0ea009952adb6fd47e02be3205c4a10bd1a1cc482bbd8c2d1a64a72955e0a447',
                       label: { en: 'FEIP parser: identity, organization and social data', zh: 'FEIP 解析器：身份、组织与社交数据' } },
-                    { name: 'FapiServer.jar', size: 63169432, sha256: 'a114f1c25030ac3576f21f3caf31e60119a3e4430479a62bd009b8cfba66989e',
+                    { name: 'FapiServer.jar', size: 63170126, sha256: '9658bfdc1a4fae291e2c3c46fd0bb62485827de9094694f58f5bb1a9b36f5b03',
                       label: { en: 'FAPI server: API provider for Freer over FUDP', zh: 'FAPI 服务端：基于 FUDP 为 Freer 提供 API' } },
-                    { name: 'FapiClient.jar', size: 63169432, sha256: '559e32881bea2341892d7215ba77d4ddeeeb92825832acc86db641a10807f9a0',
+                    { name: 'FapiClient.jar', size: 63170126, sha256: '0543b1ee76a9ffe2732e066ec9ce07b45f1fc961bcf2efbc5ee59d66bdf246f5',
                       label: { en: 'FAPI client', zh: 'FAPI 客户端' } },
-                    { name: 'ApipServer.war', size: 62194761, sha256: '5dbb6f9b1df0531658f099257b2d16f9cb8ec8f7d97f1c548087a199cc3056c8',
+                    { name: 'ApipServer.war', size: 62195572, sha256: '34a26100800ed0cb0fdbfc2e157835369b7a25eb55fc3556f9b0a123428bd50e',
                       label: { en: 'APIP server (web app) for the Freeverse explorer over HTTP', zh: 'APIP 服务端（Web 应用），通过 HTTP 为 Freeverse 浏览器提供 API' } },
-                    { name: 'ApipManager.jar', size: 57773428, sha256: '984e3359328b81be5b07611f97d3926ae9dd77ff0c66061efe0d08a8d72968b7',
+                    { name: 'ApipManager.jar', size: 57774122, sha256: 'f50d3a768e5df0f434b1059fe9f6759a87700f4cd48e1dee2ed6e61d32c9e379',
                       label: { en: 'APIP manager: configure ApipServer before launching it', zh: 'APIP 管理器：启动 ApipServer 前配置参数' } },
-                    { name: 'ApipClient.jar', size: 57750679, sha256: '2c26317d2f17102938b31c32068d910b34e9f7906e09362cee171574b237c0c6',
+                    { name: 'ApipClient.jar', size: 57751373, sha256: '7ab394e60139e2fa907806cdb8e9e38d37cc6c12ee6bc381432d5a3724efe45d',
                       label: { en: 'APIP client', zh: 'APIP 客户端' } },
-                    { name: 'CryptoSign.jar', size: 63169430, sha256: 'b10520865d29af1b5cfcb1c43c738339913c0cfcd2e9b9a2d0027fcf79083916',
+                    { name: 'CryptoSign.jar', size: 63170124, sha256: 'f5a22d5d6346fac100d1417698dd8a62437847f92c6d85795744bad5093fc10f',
                       label: { en: 'CryptoSign tool', zh: 'CryptoSign 工具' } },
-                    { name: 'FC-SDK.jar', size: 63169403, sha256: '2192770f473d54018509ba9762b0e04971d1bf6d3dc95e2ed509159fd9d01a3c',
+                    { name: 'FC-SDK.jar', size: 63170097, sha256: 'ed1345cc2fa23d0db09171fea4ccbe11d6bcfa38f23be47223f7bf8b60939fb6',
                       label: { en: 'FC-JDK library with all dependencies', zh: '含全部依赖的 FC-JDK 库' } },
-                    { name: 'SHA256SUMS', size: 725, sha256: '645693ac19c97a72f0a73f3b89f86ee5830d232dea3bad94af8c04185ec0624a',
+                    { name: 'SHA256SUMS', size: 725, sha256: '1eb0d0f317102b94f0635d7af72fcd82e2555515fa3f1f9f276199d50d0aabeb',
                       label: { en: 'Checksums: shasum -a 256 -c SHA256SUMS', zh: '校验文件：shasum -a 256 -c SHA256SUMS' } }
                 ]
             },
@@ -384,36 +368,36 @@ export const RELEASE_FAMILIES = [
                 platform: 'server',
                 title: 'Freeverse Explorer',
                 repo: 'FreeverseExplorer',
-                version: '1.0',
-                tag: 'v1.0',
-                date: '2026-10-08',
+                version: '1.1',
+                tag: 'v1.1',
+                date: '2026-11-01',
                 prerelease: false,
                 requirements: {
                     en: 'Tomcat 9+. Unzip into Tomcat\'s webapps directory: it unpacks as ROOT and must be served at /. Restart Tomcat afterwards.',
                     zh: 'Tomcat 9+。解压到 Tomcat 的 webapps 目录：解压后为 ROOT，必须部署在根路径 /。解压后重启 Tomcat。'
                 },
                 notice: {
-                    en: 'The explorer reads chain data from freecash.info and cid.cash. To use your own ApipServer instead, replace these two servers in ROOT/modules/api.js (SERVER_URL_HEADS) with its URL, for example https://your.domain/APIP.',
-                    zh: '浏览器从 freecash.info 和 cid.cash 读取链上数据。如需使用你自己的 ApipServer，请在 ROOT/modules/api.js（SERVER_URL_HEADS）中把这两个服务器替换为它的地址，例如 https://your.domain/APIP。'
+                    en: 'The explorer reads chain data from freecash.info and cid.cash. To use your own ApipServer instead, replace these two servers in ROOT/modules/api.js (SERVER_URL_HEADS) with its URL, for example https://your.domain/APIP. Download buttons link files in webapps/download; fill it with tools/mirror.sh from the source zip, or use the GitHub links.',
+                    zh: '浏览器从 freecash.info 和 cid.cash 读取链上数据。如需使用你自己的 ApipServer，请在 ROOT/modules/api.js（SERVER_URL_HEADS）中把这两个服务器替换为它的地址，例如 https://your.domain/APIP。下载按钮指向 webapps/download 中的文件，可用源码包里的 tools/mirror.sh 填充，或使用 GitHub 链接。'
                 },
                 changes: {
                     en: [
-                        'First release: the web front end of freecash.info, packaged to run on your own Tomcat.',
-                        'Pages for news, squares and published text, images, sounds and videos; a hash tool and a node list.',
-                        'Address links (/address/<FID>) are served by address.jsp.',
-                        'apip.cash, which has expired, is no longer among the APIP servers.'
+                        'School (学堂): a page that plays the Freer School videos, with each episode\'s download and DID.',
+                        'Downloads are served from this site, mirrored from GitHub and checked by SHA-256, with GitHub as a fallback.',
+                        'Published works show where they can be downloaded (locas), and texts, sounds and videos show their cover.',
+                        'Labels for Format and Deleted; the app list shows each app\'s OS.'
                     ],
                     zh: [
-                        '首个版本：freecash.info 的网页前端，打包后可部署在你自己的 Tomcat 上。',
-                        '新增新闻、广场以及已发布的文本、图片、声音和视频页面；新增哈希工具和节点列表。',
-                        '地址链接（/address/<FID>）由 address.jsp 提供。',
-                        '已过期的 apip.cash 不再列入 APIP 服务器。'
+                        '学堂：播放飞人学堂视频的页面，附每集的下载和 DID。',
+                        '下载文件由本站提供（从 GitHub 镜像并按 SHA-256 校验），GitHub 为备用。',
+                        '已发布作品显示下载位置（locas），文本、声音和视频显示封面。',
+                        '新增“格式”和“已删除”标签；应用列表显示各应用的系统。'
                     ]
                 },
                 assets: [
-                    { name: 'FreeverseExplorer.zip', size: 501321, sha256: 'd094719ded2c2d4fed1a8706908580c998a4220099c9283beecd2be78bfa455e',
+                    { name: 'FreeverseExplorer.zip', size: 520642, sha256: 'a03f474a1b2b9e7502a970ce06326e4cc2d6dcb15e7d78d3a096ece73a544c3f',
                       label: { en: 'The explorer web app: unzip into Tomcat webapps', zh: '浏览器网页应用：解压到 Tomcat 的 webapps 目录' } },
-                    { name: 'SHA256SUMS', size: 88, sha256: '60ab91f2822960368c4243be9310fe52b80b52a6089e759ea40595881361331e',
+                    { name: 'SHA256SUMS', size: 88, sha256: '696fc0679fbef0b2137dc17c7ba515837c8113f15e047dd2da67d900cad9f0ee',
                       label: { en: 'Checksums: shasum -a 256 -c SHA256SUMS', zh: '校验文件：shasum -a 256 -c SHA256SUMS' } }
                 ]
             }
@@ -434,9 +418,9 @@ export const OTHER_DOWNLOADS = [
     {
         title: { en: 'Protocols', zh: '协议文档' },
         files: [
-            { name: 'Protocols.zip', size: 581113, sha256: '43a93f7d473238b8e1490c215790e2c41c940d5d4bf1e8563e4faa14d3eef5af',
-              href: 'https://github.com/nobodyoffc/Freeverse/releases/download/protocols-2026-10-30/Protocols.zip',
-              label: { en: 'Protocol specifications, 2026-10-30 (FAPI, FBP, FBSP, FEIP, FTSP, FUDP, FVEP, IM)', zh: '协议规范，2026-10-30（FAPI、FBP、FBSP、FEIP、FTSP、FUDP、FVEP、IM）' } }
+            { name: 'Protocols.zip', size: 584580, sha256: '9624cde7230999a89facf8a2a854488f2db5b4d0275d426189710cce97fb65e2',
+              href: 'https://github.com/nobodyoffc/Freeverse/releases/download/protocols-2026-11-01/Protocols.zip',
+              label: { en: 'Protocol specifications, 2026-11-01 (FAPI, FBP, FBSP, FEIP, FTSP, FUDP, FVEP, IM)', zh: '协议规范，2026-11-01（FAPI、FBP、FBSP、FEIP、FTSP、FUDP、FVEP、IM）' } }
         ]
     }
 ];
