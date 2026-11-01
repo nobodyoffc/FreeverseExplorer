@@ -452,6 +452,16 @@
     flex: none;
 }
 
+/* A DID row waits hidden until the browser has derived it. */
+.dl-hash[hidden] {
+    display: none;
+}
+
+/* Both labels take one width, so the two hashes line up. */
+.dl-asset .dl-hash-label {
+    min-width: 4.2em;
+}
+
 .dl-hash code {
     color: #999;
     background: var(--code-background);

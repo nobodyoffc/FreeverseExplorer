@@ -1,6 +1,6 @@
 // Download page - renders the release catalog from download-data.js
-import { GITHUB_OWNER, SIGNING, RELEASE_FAMILIES, OTHER_DOWNLOADS, GUIDE } from './download-data.js?v=20261101e';
-import { SCHOOL } from './school-data.js?v=20261101e';
+import { GITHUB_OWNER, SIGNING, RELEASE_FAMILIES, OTHER_DOWNLOADS, GUIDE } from './download-data.js?v=20261101f';
+import { SCHOOL } from './school-data.js?v=20261101f';
 
 const FILTER_STORAGE_KEY = 'downloadPlatformFilter';
 const PLATFORMS = ['all', 'android', 'mac', 'server'];
@@ -145,6 +145,39 @@ function render() {
     renderSchool();
     renderOther();
     renderOld();
+    fillDids();
+}
+
+// A file's DID is the SHA-256 of its SHA-256 (FVEP11), so it is derived
+// from the catalog's sha256 here rather than kept beside it. The rows are
+// drawn empty and filled once the browser has hashed each digest.
+async function fillDids() {
+    const rows = document.querySelectorAll('[data-did-from]');
+    for (const row of rows) {
+        const code = row.querySelector('code');
+        const copy = row.querySelector('[data-copy]');
+        try {
+            const digest = new Uint8Array(row.dataset.didFrom.match(/../g).map(h => parseInt(h, 16)));
+            const did = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', digest)))
+                .map(b => b.toString(16).padStart(2, '0')).join('');
+            code.textContent = did;
+            code.title = did;
+            copy.dataset.copy = did;
+            row.hidden = false;
+        } catch (e) {
+            // No Web Crypto (an http:// page other than localhost): leave it out.
+            row.hidden = true;
+        }
+    }
+}
+
+function hashRow(label, title, value, didFrom) {
+    return `
+        <div class="dl-hash"${didFrom ? ` data-did-from="${esc(didFrom)}" hidden` : ''}>
+            <span class="dl-hash-label" title="${esc(title)}">${label}</span>
+            <code title="${esc(value)}">${esc(value)}</code>
+            <button type="button" class="dl-copy" data-copy="${esc(value)}" title="${esc(getString('dlCopyHash'))}" aria-label="${esc(getString('dlCopyHash'))}">${copyIcon()}</button>
+        </div>`;
 }
 
 // Diagram geometry, in viewBox units; labels come from GUIDE.nodes
@@ -323,8 +356,6 @@ function renderBuild(build) {
 }
 
 function renderAsset(build, asset) {
-    const hash = asset.sha256 || asset.did;
-    const hashLabel = asset.sha256 ? 'SHA-256' : 'DID';
     const urls = assetUrls(build, asset);
     return `
     <div class="dl-asset">
@@ -337,12 +368,9 @@ function renderAsset(build, asset) {
         </a>
         ${asset.label ? `<div class="dl-asset-label">${esc(t(asset.label))}</div>` : ''}
         ${urls.github ? `<a class="dl-alt" href="${esc(urls.github)}" rel="noopener">${esc(getString('dlFromGithub'))}</a>` : ''}
-        ${hash ? `
-        <div class="dl-hash">
-            <span class="dl-hash-label">${hashLabel}</span>
-            <code title="${esc(hash)}">${esc(hash)}</code>
-            <button type="button" class="dl-copy" data-copy="${esc(hash)}" title="${esc(getString('dlCopyHash'))}" aria-label="${esc(getString('dlCopyHash'))}">${copyIcon()}</button>
-        </div>` : ''}
+        ${asset.sha256 ? hashRow('SHA-256', 'shasum -a 256', asset.sha256) : ''}
+        ${asset.sha256 ? hashRow('DID', 'sha256x2 (FVEP11)', '', asset.sha256)
+                       : asset.did ? hashRow('DID', 'sha256x2 (FVEP11)', asset.did) : ''}
     </div>`;
 }
 
