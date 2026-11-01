@@ -1,7 +1,7 @@
 // Import Image class
-import Image from '../entity/Image.js';
+import Image from '../entity/Image.js?v=20261101c';
 import { getSearchConfig } from './search-config.js';
-import { renderLocasRow } from './locas.js';
+import { renderLocasRow } from './locas.js?v=20261101c';
 
 // Get the URL head from global API
 // Use a getter function to always get the current working server URL

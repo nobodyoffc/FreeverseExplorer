@@ -13,6 +13,7 @@ import {
     LANG,
     SUMMARY,
     LOCAS,
+    COVER,
     FORMAT,
     PUBLISHER,
     T_CDD,
@@ -39,6 +40,7 @@ class Text {
         this.lang = null;
         this.summary = null;
         this.locas = null;
+        this.cover = null;
         this.format = null;
         this.publisher = null;
         this.birthTime = null;
@@ -90,6 +92,7 @@ class Text {
             [TYPE]: fieldNames.type || 'Type',
             [SUMMARY]: fieldNames.summary || 'Summary',
             [LOCAS]: fieldNames.locas || 'Locations',
+            [COVER]: fieldNames.cover || 'Cover',
             [AUTHORS]: fieldNames.authors || 'Authors',
             [LAST_HEIGHT]: fieldNames.lastHeight || 'Last Height',
             [BIRTH_TIME]: fieldNames.birthTime || 'Birth Time',

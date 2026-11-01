@@ -1,7 +1,7 @@
 // Import Text class
-import Text from '../entity/Text.js';
+import Text from '../entity/Text.js?v=20261101c';
 import { getSearchConfig } from './search-config.js';
-import { renderLocasRow } from './locas.js';
+import { renderLocasRow, renderCoverRow } from './locas.js?v=20261101c';
 
 // Get the URL head from global API
 // Use a getter function to always get the current working server URL
@@ -176,6 +176,10 @@ function displayTextDetails(textInstance) {
         // click-to-copy span, whose handler would swallow the click.
         if (field === 'locas') {
             detailHTML += renderLocasRow(fieldName.charAt(0).toUpperCase() + fieldName.slice(1), value);
+            return;
+        }
+        if (field === 'cover') {
+            detailHTML += renderCoverRow(fieldName.charAt(0).toUpperCase() + fieldName.slice(1), value);
             return;
         }
 

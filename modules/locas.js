@@ -60,3 +60,16 @@ export function renderLocasRow(fieldName, locas) {
             </tr>
         `;
 }
+
+// One table row for a Text, Sound or Video `cover`: the record id of a FEIP24
+// Image, linked to that Image's page, or '' when it is not an id. The page
+// shows the Image's current version, since an update of the Image changes it.
+export function renderCoverRow(fieldName, cover) {
+    if (typeof cover !== 'string' || !SID_PATTERN.test(cover)) return '';
+    return `
+            <tr>
+                <th>${escapeHtml(fieldName)}</th>
+                <td><a href="image-detail.html?id=${cover}" title="${cover}">${shortSid(cover)}</a></td>
+            </tr>
+        `;
+}

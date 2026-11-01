@@ -129,6 +129,7 @@ export const AUTHORS = 'authors';
 export const DELETED = 'deleted';
 export const SUMMARY = 'summary';
 export const LOCAS = 'locas';
+export const COVER = 'cover';
 export const KEYWORDS = 'keywords';
 export const FORMAT = 'format';
 export const ON_DID = 'onDid';
