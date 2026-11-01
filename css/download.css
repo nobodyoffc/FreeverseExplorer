@@ -428,6 +428,12 @@
     opacity: 0.85;
 }
 
+.dl-alt {
+    align-self: flex-start;
+    font-size: 0.85rem;
+    color: var(--primary-color);
+}
+
 .dl-asset-label {
     color: #aaa;
     font-size: 0.85rem;
@@ -519,6 +525,57 @@
     font-size: 0.9rem;
     line-height: 1.55;
     margin-bottom: 4px;
+}
+
+/* 飞人学堂 videos */
+.dl-episodes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dl-episodes a {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    color: #ccc;
+    text-decoration: none;
+}
+
+.dl-episodes a:hover {
+    background: #242424;
+    color: #fff;
+}
+
+.dl-episodes svg {
+    width: 15px;
+    height: 15px;
+    flex: none;
+    align-self: center;
+    color: var(--primary-color);
+}
+
+.dl-ep-id {
+    flex: none;
+    color: #f5b942;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.dl-ep-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.dl-episodes .dl-size {
+    flex: none;
+    color: #777;
+    font-size: 0.8rem;
 }
 
 .dl-links {

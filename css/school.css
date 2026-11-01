@@ -1,0 +1,317 @@
+/* School page */
+.sc-page {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.sc-page h3 {
+    margin: 0;
+}
+
+/* Player beside the episode list; stacked on narrow screens */
+.sc-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 900px) {
+    .sc-layout {
+        grid-template-columns: minmax(320px, 440px) minmax(0, 1fr);
+        align-items: start;
+    }
+
+    .sc-stage {
+        position: sticky;
+        top: 1rem;
+    }
+}
+
+.sc-stage {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    scroll-margin-top: 1rem;
+}
+
+.sc-screen {
+    background: #000;
+    border: 1px solid #333;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* The videos are portrait (9:16): keep the whole frame on screen */
+.sc-video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    max-height: 78vh;
+    background: #0d1524;
+    object-fit: contain;
+}
+
+.sc-now {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+}
+
+.sc-now-series {
+    color: #f5b942;
+    font-size: 0.85rem;
+}
+
+.sc-now h3 {
+    font-size: 1.35rem;
+    color: #fff;
+}
+
+.sc-meta {
+    color: #999;
+    font-size: 0.85rem;
+}
+
+.sc-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+}
+
+.sc-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: var(--primary-color);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.sc-btn:hover {
+    background: #1976d2;
+    color: #fff;
+}
+
+.sc-btn svg,
+.sc-file svg {
+    width: 18px;
+    height: 18px;
+    flex: none;
+}
+
+.sc-alt {
+    font-size: 0.85rem;
+    color: var(--primary-color);
+}
+
+.sc-hash {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    font-size: 0.78rem;
+}
+
+.sc-hash-label {
+    color: #777;
+    flex: none;
+}
+
+.sc-hash code,
+.sc-verify code {
+    color: #999;
+    background: var(--code-background);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.sc-hash code {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.sc-copy {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 1px solid #333;
+    border-radius: 5px;
+    background: transparent;
+    color: #999;
+    cursor: pointer;
+}
+
+.sc-copy svg {
+    width: 14px;
+    height: 14px;
+}
+
+.sc-copy:hover {
+    color: #fff;
+    border-color: var(--primary-color);
+}
+
+.sc-copy.copied {
+    color: #8bd17c;
+    border-color: #8bd17c;
+}
+
+/* Episode list */
+.sc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.sc-series {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+}
+
+.sc-series-head h3 {
+    font-size: 1.25rem;
+    color: #fff;
+}
+
+.sc-count {
+    color: #888;
+    font-size: 0.85rem;
+    font-weight: normal;
+    margin-left: 6px;
+}
+
+.sc-series-head p {
+    margin: 0.35rem 0 0.75rem;
+    color: #999;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.sc-series ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 4px 12px;
+}
+
+.sc-item {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    color: #ccc;
+    text-decoration: none;
+}
+
+.sc-item:hover {
+    background: #242424;
+    color: #fff;
+}
+
+.sc-item.current {
+    background: rgba(33, 150, 243, 0.15);
+    color: #fff;
+    box-shadow: inset 3px 0 0 var(--primary-color);
+}
+
+.sc-item-id {
+    flex: none;
+    color: #f5b942;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.sc-item-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.sc-item-time {
+    flex: none;
+    color: #777;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Verify */
+.sc-verify {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    color: #bbb;
+    line-height: 1.6;
+}
+
+.sc-verify h3 {
+    font-size: 1.15rem;
+    color: #fff;
+}
+
+.sc-verify code {
+    overflow-wrap: anywhere;
+}
+
+.sc-files {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0.5rem 0;
+}
+
+.sc-file {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #ddd;
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+.sc-file:hover {
+    border-color: var(--primary-color);
+    color: #fff;
+}
+
+.sc-verify ul {
+    margin: 0.5rem 0;
+    padding-left: 1.25rem;
+    overflow-wrap: anywhere;
+}
+
+.sc-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.sc-links a {
+    color: var(--primary-color);
+}

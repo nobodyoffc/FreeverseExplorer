@@ -68,7 +68,7 @@ class App {
         return {
             [OWNER]: DEFAULT_ID_LENGTH,
             [STD_NAME]: DEFAULT_ID_LENGTH,
-            [OS]: DEFAULT_ID_LENGTH,
+            [OS]: DEFAULT_TIME_LENGTH,
             [DESC]: DEFAULT_ID_LENGTH,
             [T_RATE]: DEFAULT_AMOUNT_LENGTH,
             [T_CDD]: DEFAULT_AMOUNT_LENGTH,

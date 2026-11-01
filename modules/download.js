@@ -1,5 +1,6 @@
 // Download page - renders the release catalog from download-data.js
-import { GITHUB_OWNER, SIGNING, RELEASE_FAMILIES, OTHER_DOWNLOADS, GUIDE } from './download-data.js?v=20261009a';
+import { GITHUB_OWNER, SIGNING, RELEASE_FAMILIES, OTHER_DOWNLOADS, GUIDE } from './download-data.js?v=20261101a';
+import { SCHOOL } from './school-data.js?v=20261101a';
 
 const FILTER_STORAGE_KEY = 'downloadPlatformFilter';
 const PLATFORMS = ['all', 'android', 'mac', 'server'];
@@ -102,8 +103,20 @@ function repoUrl(repo) {
     return `https://github.com/${GITHUB_OWNER}/${repo}`;
 }
 
-function assetUrl(build, asset) {
-    return asset.href || `${repoUrl(build.repo)}/releases/download/${build.tag}/${encodeURIComponent(asset.name)}`;
+// GitHub release files are mirrored on this site by tools/mirror.sh, under
+// /download/<repo>/<tag>/<name>; the GitHub copy stays as a fallback.
+const GITHUB_RELEASE = /^https:\/\/github\.com\/[^/]+\/([^/]+)\/releases\/download\/([^/]+)\/([^/]+)$/;
+
+function assetUrls(build, asset) {
+    let github = null;
+    if (!asset.href && build.tag) {
+        github = `${repoUrl(build.repo)}/releases/download/${encodeURIComponent(build.tag)}/${encodeURIComponent(asset.name)}`;
+    } else if (asset.href && GITHUB_RELEASE.test(asset.href)) {
+        github = asset.href;
+    }
+    if (!github) return { local: asset.href, github: null };
+    const [, repo, tag, name] = github.match(GITHUB_RELEASE);
+    return { local: `/download/${repo}/${tag}/${name}`, github };
 }
 
 function platformIcon(platform) {
@@ -129,6 +142,7 @@ function render() {
     renderFilters();
     renderReleases();
     renderVerify();
+    renderSchool();
     renderOther();
     renderOld();
 }
@@ -311,9 +325,10 @@ function renderBuild(build) {
 function renderAsset(build, asset) {
     const hash = asset.sha256 || asset.did;
     const hashLabel = asset.sha256 ? 'SHA-256' : 'DID';
+    const urls = assetUrls(build, asset);
     return `
     <div class="dl-asset">
-        <a class="dl-btn" href="${esc(assetUrl(build, asset))}" ${asset.href ? 'download' : 'rel="noopener"'}>
+        <a class="dl-btn" href="${esc(urls.local)}" download>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3a1 1 0 0 1 1 1v9.59l3.3-3.3a1 1 0 1 1 1.4 1.42l-5 5a1 1 0 0 1-1.4 0l-5-5a1 1 0 1 1 1.4-1.42l3.3 3.3V4a1 1 0 0 1 1-1zM5 19h14a1 1 0 1 1 0 2H5a1 1 0 1 1 0-2z"/></svg>
             <span class="dl-btn-text">
                 <span class="dl-file">${esc(asset.name)}</span>
@@ -321,6 +336,7 @@ function renderAsset(build, asset) {
             </span>
         </a>
         ${asset.label ? `<div class="dl-asset-label">${esc(t(asset.label))}</div>` : ''}
+        ${urls.github ? `<a class="dl-alt" href="${esc(urls.github)}" rel="noopener">${esc(getString('dlFromGithub'))}</a>` : ''}
         ${hash ? `
         <div class="dl-hash">
             <span class="dl-hash-label">${hashLabel}</span>
@@ -349,6 +365,47 @@ function renderVerify() {
             <li>${esc(getString('dlVerifyMac'))} <code>${esc(SIGNING.macTeam)}</code></li>
             <li>${esc(getString('dlGithubSlow'))}</li>
         </ul>`;
+}
+
+// 飞人学堂: one card per series, each video downloaded from this site; the signed lists as text links.
+function renderSchool() {
+    const section = document.getElementById('dl-school');
+    section.hidden = currentFilter !== 'all';
+    if (section.hidden) return;
+    const build = { repo: SCHOOL.repo, tag: SCHOOL.tag };
+    const lists = SCHOOL.lists.map(f => `<a href="${esc(assetUrls(build, f).local)}" download>${esc(f.name)}</a>`);
+    section.innerHTML = `
+        <div class="dl-family-head">
+            <h3>${esc(getString('dlSchoolTitle'))}</h3>
+            <p>${esc(getString('dlSchoolDescription'))}</p>
+        </div>
+        <div class="dl-builds two">
+            ${SCHOOL.series.map(series => `
+            <article class="dl-build">
+                <div class="dl-build-head">
+                    <div>
+                        <h4>${esc(t(series.title))}</h4>
+                        <div class="dl-meta">${series.episodes.length} ${esc(getString('scEpisodes'))} · ${esc(t(SCHOOL.title))} · CC0 1.0</div>
+                    </div>
+                </div>
+                <ol class="dl-episodes">
+                    ${series.episodes.map(ep => `
+                    <li>
+                        <a href="${esc(assetUrls(build, ep.video).local)}" download title="${esc(ep.video.name)}">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3a1 1 0 0 1 1 1v9.59l3.3-3.3a1 1 0 1 1 1.4 1.42l-5 5a1 1 0 0 1-1.4 0l-5-5a1 1 0 1 1 1.4-1.42l3.3 3.3V4a1 1 0 0 1 1-1zM5 19h14a1 1 0 1 1 0 2H5a1 1 0 1 1 0-2z"/></svg>
+                            <span class="dl-ep-id">${esc(ep.id)}</span>
+                            <span class="dl-ep-title">${esc(ep.title)}</span>
+                            <span class="dl-size">${esc(formatSize(ep.video.size))}</span>
+                        </a>
+                    </li>`).join('')}
+                </ol>
+                <div class="dl-links">
+                    <a href="school.html">${esc(getString('dlSchoolLink'))} →</a>
+                    <span aria-hidden="true">·</span>
+                    ${lists.join('<span aria-hidden="true">·</span>')}
+                </div>
+            </article>`).join('')}
+        </div>`;
 }
 
 function renderOther() {

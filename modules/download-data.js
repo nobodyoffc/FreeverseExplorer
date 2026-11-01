@@ -27,77 +27,77 @@ export const RELEASE_FAMILIES = [
                 platform: 'android',
                 title: 'Freer for Android',
                 repo: 'Freer',
-                version: '3.3.0',
-                tag: 'v3.3.0',
-                date: '2026-10-06',
+                version: '3.4.0',
+                tag: 'v3.4.0',
+                date: '2026-10-30',
                 prerelease: false,
                 requirements: { en: 'Android 9.0 (API 28) or newer', zh: 'Android 9.0（API 28）或更高版本' },
                 notice: {
-                    en: 'From 3.2.2: installs in place, keys and data stay. From 3.1.1 or earlier: you must uninstall first, which erases the keys and data on the device. Export your private keys, CIDs and secrets before uninstalling.',
-                    zh: '从 3.2.2 升级：直接覆盖安装，密钥和数据保留。从 3.1.1 或更早版本升级：必须先卸载，卸载会清除设备上的密钥和数据。卸载前请先导出私钥、CID 和秘密并在设备外核对。'
+                    en: 'Proofs and tokens follow the new FEIP rules: proof issues and transfers made with 3.3.0 or earlier are ignored, so upgrade before issuing or transferring proofs. From 3.2.2 or 3.3.0: installs in place, keys and data stay. From 3.1.1 or earlier: uninstall first, which erases the keys and data on the device; export your private keys, CIDs and secrets before uninstalling.',
+                    zh: '存证和通证遵循新的 FEIP 规则：3.3.0 及更早版本发出的存证签发和转让会被忽略，请先升级再签发或转让存证。从 3.2.2 或 3.3.0 升级：直接覆盖安装，密钥和数据保留。从 3.1.1 或更早版本升级：必须先卸载，卸载会清除设备上的密钥和数据；卸载前请先导出私钥、CID 和秘密。'
                 },
                 changes: {
                     en: [
-                        'Voice calls: end-to-end sealed audio (Opus) with attested senders; direct or via the callee\'s CALL relay; FUDP falls back to TCP when UDP gets no answer; optional echo canceller (AEC3).',
-                        'Meetings: group and Team meetings on the group\'s CALL service, or with people you pick; re-keyed when someone joins or leaves.',
-                        'Argon2id runs in native code: the password check takes a fraction of a second.',
-                        'Imported key lists are sealed for this device; watch-only keys can no longer become a main FID.',
-                        'Home BASE: follow it, and choose whether BASE and DISK are private or public.',
-                        'Service search no longer requires the FAPI type.',
-                        'FUDP: packets stay under one MTU; the peer book saves atomically; stream and ACK fixes.',
-                        'FAPI client: a top-up is no longer reported as balance drift.',
-                        'Getting started remembers a finished checklist.'
+                        'Proofs: issue to a first owner, a history page per proof, hidden proofs on their own page.',
+                        'Tokens: closed tokens move to a read-only Closed page; history shows issueTo / transferTo as FID and amount.',
+                        'Mail is now Cmail (Crypto Mail); reply heads show the original\'s time; notice fees in F, default sending limit 1 F.',
+                        'Multisig: sign until there are enough signatures, then Send; merge several signed JSONs; at most 15 members.',
+                        'Backups: a random export password is 128 bits, not written into the export, and shown once; exports carry no key name.',
+                        'Servants: recover a prikey from the master\'s declaration record.',
+                        'Create TX: lock days convert to block heights; locked outputs fixed.',
+                        'Fixes: a crash on symkey receipt in Chinese, balance after send, stale managers after a login, Cmail badge after background sync.'
                     ],
                     zh: [
-                        '语音通话：端到端加密音频（Opus），发送者经过认证；可直连或经被叫方的 CALL 中继；UDP 无响应时 FUDP 回退到 TCP；可选回声消除（AEC3）。',
-                        '会议：在群的 CALL 服务上召开群组和团队会议，也可自选参会人；有人加入或离开时自动更换密钥。',
-                        'Argon2id 改用原生代码运行，密码校验仅需不到一秒。',
-                        '导入的密钥列表为本设备加密保存；只读（观察）密钥不能再成为主 FID。',
-                        'Home BASE：可关注，并可设置 BASE 和 DISK 为私有或公开。',
-                        '服务搜索不再要求 FAPI 类型。',
-                        'FUDP：数据包保持在一个 MTU 内；节点簿原子保存；修复了若干流与 ACK 问题。',
-                        'FAPI 客户端：充值不再被误报为余额偏差。',
-                        '入门指引会记住已完成的清单。'
+                        '存证：可签发给首位所有者，每个存证有历史页，已隐藏的存证单独成页。',
+                        '通证：已关闭的通证移入只读的“已关闭”页；历史以 FID 和数量显示 issueTo / transferTo。',
+                        '邮件更名为密信（Cmail）；回复头显示原信时间；通知费以 F 显示，默认发送上限 1 F。',
+                        '多签：签名数足够后再发送；可合并多个已签名 JSON；成员最多 15 个。',
+                        '备份：随机导出密码为 128 位，不写入导出数据，只显示一次；导出数据不含密钥名。',
+                        '仆从：可从主 FID 的声明记录恢复私钥。',
+                        '创建交易：锁定天数换算为区块高度；修复锁定输出。',
+                        '修复：中文环境收到对称密钥时崩溃、发送后余额、登录后沿用旧身份的管理器、后台同步后密信角标未刷新。'
                     ]
                 },
                 signedWith: 'android',
                 assets: [
-                    { name: 'Freer-3.3.0.apk', size: 54750330, sha256: 'b93ed1a3d7970e2fc03a60cf73625f225c6a2785609a8508d63241ba915b9110' }
+                    { name: 'Freer-3.4.0.apk', size: 54844820, sha256: '3c8860392ff23eccc7565ec1de0cc95c7bd79a486f11e18b26b1f1a66c4a471a' }
                 ]
             },
             {
                 platform: 'mac',
                 title: 'Freer for macOS',
                 repo: 'freer-mac',
-                version: '0.5',
-                tag: 'v0.5',
-                date: '2026-10-09',
+                version: '0.6',
+                tag: 'v0.6',
+                date: '2026-10-30',
                 prerelease: true,
                 requirements: { en: 'macOS 14.0 or later, Apple silicon only', zh: 'macOS 14.0 或更高版本，仅支持 Apple 芯片' },
                 notice: {
-                    en: 'Developer ID signed and notarized by Apple: opens on a double-click with no Gatekeeper warning.',
-                    zh: '已使用 Developer ID 签名并通过 Apple 公证，双击即可打开，不会被系统拦截。'
+                    en: 'Developer ID signed and notarized by Apple. Proofs and tokens follow the new FEIP rules: proof issues and transfers made with 0.5 or earlier are ignored, so upgrade before issuing or transferring proofs.',
+                    zh: '已使用 Developer ID 签名并通过 Apple 公证。存证和通证遵循新的 FEIP 规则：0.5 及更早版本发出的存证签发和转让会被忽略，请先升级再签发或转让存证。'
                 },
                 changes: {
                     en: [
-                        'Release Sync: a Tools pane that carves what a GitHub release changed (protocols, codes and apps) following FVEP11, and resumes an interrupted run without carving twice.',
-                        'Tools derives an Android APK signing key (P-256) from the main FID.',
-                        'Secrets can be edited; a carved secret is updated under the same id.',
-                        'Secrets and contacts still waiting to confirm show Pending and cannot be carved twice; a pending carve expires after two hours.',
-                        'Secret, contact and mail syncs recover from a rolled-back carve after a reorg.',
-                        'Sidebar: Chat above Contacts, Personal above Finance.'
+                        'Proofs: issue to a first owner; issueTo / transferTo named in the op, no payment output needed.',
+                        'Tokens: a FID\'s history is searched by issueTo.fid / transferTo.fid.',
+                        'Mail is now Cmail (Crypto Mail); replies open from a preset and add the original\'s time; default notice-fee limit 1 F.',
+                        'Publish: texts from files; carve and read locas (FEIP21-25).',
+                        'First-FCH board: an asker with a guide is funded, even at zero balance.',
+                        'Release Sync ignores closed records and re-reads every manifest on Scan; registry Refresh and Return search the whole index.',
+                        'Imports backups from Safe 2.5, Safe for macOS 1.1.1 and Freer 3.4.0, which no longer carry their random password.'
                     ],
                     zh: [
-                        '发布同步：工具中新增面板，按 FVEP11 把 GitHub 发布中变更的协议、代码和应用上链，中断后可续传且不会重复上链。',
-                        '工具可从主 FID 派生 Android APK 签名密钥（P-256）。',
-                        '密文可编辑；已上链的密文以同一 ID 更新。',
-                        '待确认的密文和联系人显示“待确认”，不会重复上链；待确认的上链两小时后过期。',
-                        '链重组回滚上链后，密文、联系人和邮件同步会自动恢复。',
-                        '侧边栏：聊天在联系人之上，个人在财务之上。'
+                        '存证：可签发给首位所有者；操作中写明 issueTo / transferTo，不再需要支付输出。',
+                        '通证：按 issueTo.fid / transferTo.fid 查询 FID 的历史。',
+                        '邮件更名为密信（Cmail）；回复从预设打开并附原信时间；通知费默认上限 1 F。',
+                        '发布：文本从文件发布；可上链并读取 locas（FEIP21-25）。',
+                        '新手求助：有引路人的求助者即使余额为零也会获得资助。',
+                        '发布同步忽略已关闭的记录，扫描时重读全部清单；注册表的刷新和返回搜索整个索引。',
+                        '可导入 Safe 2.5、Safe for macOS 1.1.1 和 Freer 3.4.0 的备份，这些备份不再包含随机密码。'
                     ]
                 },
                 assets: [
-                    { name: 'Freer-0.5.dmg', size: 18177767, sha256: '6a73ebd34fda73b8c4b4b827f5276396d1a40d3841d3eccdc3f1cef75a2e6c63' }
+                    { name: 'Freer-0.6.dmg', size: 18551485, sha256: 'd325aed80df1de8ee8d80d6d5bb3b9421c6d0c92babe3fdda900461afb0d48da' }
                 ]
             }
         ]
@@ -114,67 +114,61 @@ export const RELEASE_FAMILIES = [
                 platform: 'android',
                 title: 'Safe for Android',
                 repo: 'Safe',
-                version: '2.4',
-                tag: 'v2.4',
-                date: '2026-10-06',
+                version: '2.5',
+                tag: 'v2.5',
+                date: '2026-10-30',
                 prerelease: false,
                 requirements: { en: 'Android 9 (API 28) or later', zh: 'Android 9（API 28）或更高版本' },
                 notice: {
-                    en: 'On first unlock, 2.4 moves your vault to a new format. Don\'t go back to an older version afterwards: it won\'t open your vault. Password exports from 2.4 can\'t be read by older Safe, Freer and Freer for Mac.',
-                    zh: '首次解锁时 2.4 会把保险库迁移到新格式。升级后请勿回退到旧版本，旧版无法打开新保险库。2.4 用密码导出的数据，旧版 Safe、Freer 和 Freer for Mac 无法读取。'
+                    en: 'Coming from 2.3 or older, the first unlock moves your vault to a new format; don\'t go back to an older version afterwards. Backups exported from 2.5 always ask for their password, since a random password is no longer in the file.',
+                    zh: '从 2.3 或更早版本升级时，首次解锁会把保险库迁移到新格式，之后请勿回退到旧版本。2.5 导出的备份导入时总会要求输入密码，因为随机密码不再写入文件。'
                 },
                 changes: {
                     en: [
-                        'The vault stays on the device: excluded from cloud backup and device-to-device transfer (Android 12+).',
-                        'Argon2id password check in native code, with a waiting dialog while it runs.',
-                        'The app locks once each time you return from the background.',
-                        'Signed with the developer FID key (APK Signature Scheme v3), the same signer as Freer.'
+                        'A random export password is 128 bits and is not written into the export: it is shown once, as text and QR code, and the dialog closes only after you confirm you saved it.',
+                        'Backups and password ciphers carry no key name, so a copy of the file no longer allows quick password guessing.',
+                        'Adding keys is one Import Keys screen, as in Freer.',
+                        'Fixes: import reports the number of keys saved; more dialogs in Chinese; the TOTP code shrinks to fit.'
                     ],
                     zh: [
-                        '保险库只留在本机：不参与云备份和设备间迁移（Android 12+）。',
-                        '密码校验改用原生 Argon2id，运行时显示等待提示。',
-                        '每次从后台返回时锁定一次。',
-                        '使用开发者 FID 派生的密钥签名（APK 签名方案 v3），与 Freer 同一签名者。'
+                        '随机导出密码为 128 位，且不写入导出数据：只显示一次（文本和二维码），确认已保存后对话框才会关闭。',
+                        '备份和密码密文不再含密钥名，拿到文件的人无法借此快速猜测密码。',
+                        '添加密钥合并为一个“导入密钥”界面，与 Freer 一致。',
+                        '修复：导入时报告已保存的密钥数；更多对话框已译为中文；TOTP 验证码会缩小以完整显示。'
                     ]
                 },
                 signedWith: 'android',
                 assets: [
-                    { name: 'Safe-2.4.apk', size: 48881689, sha256: '4ff303fa1a687b2e27836fe06d7f7376f114d22945ecdf6683e5765bd2f71f2c' }
+                    { name: 'Safe-2.5.apk', size: 48893301, sha256: '5c467e1b7ee842861935e3255ab58a3d997cb1da9f4f761be5b01027e8d78833' }
                 ]
             },
             {
                 platform: 'mac',
                 title: 'Safe for macOS',
                 repo: 'SafeForMac',
-                version: '1.1.0',
-                tag: 'v1.1.0',
-                date: '2026-10-07',
+                version: '1.1.1',
+                tag: 'v1.1.1',
+                date: '2026-10-30',
                 prerelease: false,
                 requirements: { en: 'macOS 11 or later, Apple silicon (M1 or later)', zh: 'macOS 11 或更高版本，Apple 芯片（M1 及以上）' },
                 notice: {
-                    en: 'Notarization is still pending: approve the first launch once (macOS 15+: System Settings → Privacy & Security → Open Anyway; macOS 14 and earlier: Control-click → Open). The first unlock after upgrading migrates the wallet (up to a minute); don\'t go back to 1.0.x afterwards.',
-                    zh: '尚未完成 Apple 公证：首次打开需放行一次（macOS 15+：系统设置 → 隐私与安全性 → 仍要打开；macOS 14 及以下：按住 Control 点按 → 打开）。升级后首次解锁会迁移钱包（最多约一分钟），之后请勿回退到 1.0.x。'
+                    en: 'Developer ID signed and notarized by Apple: opens with no Gatekeeper warning. Coming from 1.0.x, the first unlock migrates the wallet (up to a minute); don\'t go back to 1.0.x afterwards.',
+                    zh: '已使用 Developer ID 签名并通过 Apple 公证，打开时不会被系统拦截。从 1.0.x 升级时，首次解锁会迁移钱包（最多约一分钟），之后请勿回退到 1.0.x。'
                 },
                 changes: {
                     en: [
-                        'The vault is opened by a random data key wrapped under your password with Argon2id; nothing derived from your password is stored on disk.',
-                        'Change password (Tools → Change password) without touching your records.',
-                        'Screenshots and screen recordings don\'t capture Safe\'s windows.',
-                        'Reads everything Android Safe 2.4 writes: password bundles, ChaCha20 / X25519 and Bitcore ciphers, key and secret backups.',
-                        'Faster signing: Argon2id no longer runs for every key.',
-                        'Wallets lost from the wallet list by 1.0.x are found and restored.'
+                        'A random export password is 128 bits and is not written into the export: it is shown once, as text and QR code, and the window stays open until you confirm you saved it.',
+                        'Exports carry no key name, so a copy of the file no longer allows quick password guessing.',
+                        'Reads key and secret backups from Android Safe 2.5; older backups still import.'
                     ],
                     zh: [
-                        '保险库由随机数据密钥打开，该密钥以 Argon2id 在密码下加密；磁盘上不再保存任何由密码派生的内容。',
-                        '支持修改密码（工具 → 修改密码），记录本身不受影响。',
-                        '截屏和录屏不会捕获 Safe 的窗口。',
-                        '可读取 Android Safe 2.4 写出的全部数据：密码包、ChaCha20 / X25519 与 Bitcore 密文、密钥和秘密备份。',
-                        '签名更快：不再为每个密钥运行 Argon2id。',
-                        '1.0.x 从钱包列表中丢失的钱包可被找回。'
+                        '随机导出密码为 128 位，且不写入导出数据：只显示一次（文本和二维码），确认已保存后窗口才会关闭。',
+                        '导出数据不再含密钥名，拿到文件的人无法借此快速猜测密码。',
+                        '可读取 Android Safe 2.5 的密钥和秘密备份；旧备份仍可导入。'
                     ]
                 },
                 assets: [
-                    { name: 'Safe-1.1.0.dmg', size: 183696372, sha256: 'bede92522fd5428ea66f96a660e6663a5cc19e5195b263f9eb04346a850716e6' }
+                    { name: 'Safe-1.1.1.dmg', size: 183796325, sha256: 'a6b533ddd6f0cec53aebafd66233a83d281868a24005ab2f82539a4bf37fa298' }
                 ]
             }
         ]
@@ -329,54 +323,60 @@ export const RELEASE_FAMILIES = [
                 platform: 'server',
                 title: 'Freeverse',
                 repo: 'Freeverse',
-                version: '0.3.1',
-                tag: 'v0.3.1',
-                date: '2026-10-08',
+                version: '0.4.1',
+                tag: 'v0.4.1',
+                date: '2026-10-30',
                 prerelease: true,
                 requirements: {
                     en: 'Java 17+; ApipServer.war needs Tomcat 10+ (Jakarta Servlet); parsers and servers need Elasticsearch 8.8.0+. Run jars in an interactive terminal: they read the password from the console.',
                     zh: 'Java 17+；ApipServer.war 需要 Tomcat 10+（Jakarta Servlet）；解析器和服务端需要 Elasticsearch 8.8.0+。请在交互式终端中运行 jar，程序会从控制台读取密码。'
                 },
                 notice: {
-                    en: 'Upgrading FeipParser from v0.2 or older needs a full reparse: stop FeipParser and pause the FAPI/APIP servers, run Start New Parse from file, and restart the servers once it has caught up. It will not resume on indices built by an older version.',
-                    zh: '从 v0.2 或更早版本升级 FeipParser 需要全量重新解析：停止 FeipParser 并暂停 FAPI/APIP 服务端，选择“Start New Parse from file”，追上链后再启动服务端。它不会在旧版本建立的索引上继续解析。'
+                    en: 'Upgrading FeipParser from v0.3.1 or older needs a full reparse: FEIP rules and index mappings changed for the whole chain. Stop FeipParser and pause the FAPI/APIP servers, run Start New Parse from file, and restart the servers once it has caught up. FeipParser now reads config/FEIP_settings.json: rename FEIP_v2.1_settings.json before starting it.',
+                    zh: '从 v0.3.1 或更早版本升级 FeipParser 需要全量重新解析：FEIP 规则和索引映射对全链生效。停止 FeipParser 并暂停 FAPI/APIP 服务端，选择“Start New Parse from file”，追上链后再启动服务端。FeipParser 现在读取 config/FEIP_settings.json：启动前请将 FEIP_v2.1_settings.json 改名。'
                 },
                 changes: {
                     en: [
-                        'A locked local database no longer hangs Tomcat: ApipServer fails just its webapp and logs which database is locked; command-line apps print it and exit.',
-                        'FEIP Contact, Mail and Secret keep a history of every operation; a rollback now undoes an orphaned update, delete or recover instead of leaving it in the index.',
-                        'Consensus: Contact delete/recover skip contacts the signer does not own; an add or update with an empty cipher is rejected (FEIP12, FEIP17, FEIP7).',
-                        'FeipParser refuses to resume on indices without the new histories, and Reparse ID list handles box, contact, mail and secret.',
-                        'FC-SDK: ContactOpData and SecretOpData gain makeUpdate; the CLI contact and secret managers can update on chain.'
+                        'Apps show the release they were built for (e.g. Freeverse v0.4.1) instead of per-app version numbers.',
+                        'Consensus (FEIP0): a malformed FID in any FID field invalidates the whole op; enforced for proof cosigners and team lists.',
+                        'Consensus: from height 4,000,000 every FEIP op needs 1 cd; token deploy and proof issue no longer need ×100.',
+                        'Consensus (FEIP14): proof owners are named in the op (issueTo, transferTo); tx outputs are ignored. FEIP20 token history drops the output-derived recipient.',
+                        'FchParser re-syncs on its own when the fullnode rewrites the tip block file, instead of stopping on "Read Magic wrong".',
+                        'FeipParser maps home as an object and skips a field Elasticsearch refuses instead of stopping.',
+                        'FUDP: a peer that restarts and reconnects from the same address no longer has its first request time out.',
+                        'FEIP7 renamed Cmail (Crypto Mail); FEIP21–25 gain locas, where to download a published work.'
                     ],
                     zh: [
-                        '本地数据库被占用时不再使 Tomcat 卡死：ApipServer 只让自身的 Web 应用启动失败，并记录被占用的数据库；命令行程序打印该信息后退出。',
-                        'FEIP 联系人、邮件和秘密保留每次操作的历史；回滚时会撤销孤块中的更新、删除或恢复操作，不再遗留在索引中。',
-                        '共识：联系人的删除/恢复会跳过不属于签名者的条目；密文为空的添加或更新会被拒绝（FEIP12、FEIP17、FEIP7）。',
-                        'FeipParser 拒绝在缺少新历史索引的旧索引上继续解析；“Reparse ID list”支持 box、contact、mail 和 secret。',
-                        'FC-SDK：ContactOpData 和 SecretOpData 新增 makeUpdate；命令行联系人和秘密管理器可在链上更新。'
+                        '各程序显示其所属的发布版本（如 Freeverse v0.4.1），不再显示各自的版本号。',
+                        '共识（FEIP0）：任何 FID 字段中出现格式错误的 FID，整个操作无效；已用于证明共签人和团队名单。',
+                        '共识：从高度 4,000,000 起每个 FEIP 操作需要 1 cd；通证部署和证明发行不再需要 ×100。',
+                        '共识（FEIP14）：证明的所有者由操作中的 issueTo、transferTo 指定，不再读取交易输出。FEIP20 通证历史去掉由输出推出的 recipient。',
+                        '全节点重写最新区块文件时，FchParser 会自动重新同步，不再因 “Read Magic wrong” 停止。',
+                        'FeipParser 将 home 映射为对象；Elasticsearch 拒绝某个字段时跳过该字段，不再停止。',
+                        'FUDP：对方重启后从同一地址重新连接时，第一个请求不再超时。',
+                        'FEIP7 更名为 Cmail（Crypto Mail）；FEIP21–25 新增 locas 字段，说明作品可从哪里下载。'
                     ]
                 },
                 assets: [
-                    { name: 'FchParser.jar', size: 57759060, sha256: '3526a32e30b827714c8877e38afe9715a7712c4b31436b75561ed7da7287237f',
-                      label: { en: 'Freecash chain parser v2.1: blocks, transactions, cash and inscriptions', zh: 'Freecash 链解析器 v2.1：区块、交易、现金与刻字' } },
-                    { name: 'FeipParser.jar', size: 57842272, sha256: 'e75a963b9b796e1ba89b2747a00775b43afeba2f94c2204bd39ceb37ef22c60f',
-                      label: { en: 'FEIP parser v2.1: identity, organization and social data', zh: 'FEIP 解析器 v2.1：身份、组织与社交数据' } },
-                    { name: 'FapiServer.jar', size: 63125626, sha256: '0b278603e555a6b5c03649be2ef2b960d9a14d9bf0542a25f50a5a3e7122d1b5',
-                      label: { en: 'FAPI server v1.3: API provider for Freer over FUDP', zh: 'FAPI 服务端 v1.3：基于 FUDP 为 Freer 提供 API' } },
-                    { name: 'FapiClient.jar', size: 63125628, sha256: '490a9a0f3f4eae6c20279e2e824ffec3818fe929ea019f859030a0e10cd6e838',
+                    { name: 'FchParser.jar', size: 57817026, sha256: '72cc7c7f797740d3b986e8fcf41183dbbd758393085d5e377be5ff3e147234e1',
+                      label: { en: 'Freecash chain parser: blocks, transactions, cash and inscriptions', zh: 'Freecash 链解析器：区块、交易、现金与刻字' } },
+                    { name: 'FeipParser.jar', size: 57896232, sha256: '3f0f58f6f19d24aa64cd38ceee61c766444b64031b8a88480e921069456c0c07',
+                      label: { en: 'FEIP parser: identity, organization and social data', zh: 'FEIP 解析器：身份、组织与社交数据' } },
+                    { name: 'FapiServer.jar', size: 63169432, sha256: 'a114f1c25030ac3576f21f3caf31e60119a3e4430479a62bd009b8cfba66989e',
+                      label: { en: 'FAPI server: API provider for Freer over FUDP', zh: 'FAPI 服务端：基于 FUDP 为 Freer 提供 API' } },
+                    { name: 'FapiClient.jar', size: 63169432, sha256: '559e32881bea2341892d7215ba77d4ddeeeb92825832acc86db641a10807f9a0',
                       label: { en: 'FAPI client', zh: 'FAPI 客户端' } },
-                    { name: 'ApipServer.war', size: 62193213, sha256: '9d66847df912f4b7c1a6d935c6e271e978fb4f2384cb4a71ab8ed3337e8e7c0e',
+                    { name: 'ApipServer.war', size: 62194761, sha256: '5dbb6f9b1df0531658f099257b2d16f9cb8ec8f7d97f1c548087a199cc3056c8',
                       label: { en: 'APIP server (web app) for the Freeverse explorer over HTTP', zh: 'APIP 服务端（Web 应用），通过 HTTP 为 Freeverse 浏览器提供 API' } },
-                    { name: 'ApipManager.jar', size: 57756911, sha256: '75a822716092676e9d28f1bfe58d32bc87bb6392668bb214d86ec9993316b588',
-                      label: { en: 'APIP manager v2.1: configure ApipServer before launching it', zh: 'APIP 管理器 v2.1：启动 ApipServer 前配置参数' } },
-                    { name: 'ApipClient.jar', size: 57700737, sha256: '2e6580aee449cee61bf53cbcbffa8f64ae1073d5579789187e3e911e0dbd1942',
+                    { name: 'ApipManager.jar', size: 57773428, sha256: '984e3359328b81be5b07611f97d3926ae9dd77ff0c66061efe0d08a8d72968b7',
+                      label: { en: 'APIP manager: configure ApipServer before launching it', zh: 'APIP 管理器：启动 ApipServer 前配置参数' } },
+                    { name: 'ApipClient.jar', size: 57750679, sha256: '2c26317d2f17102938b31c32068d910b34e9f7906e09362cee171574b237c0c6',
                       label: { en: 'APIP client', zh: 'APIP 客户端' } },
-                    { name: 'CryptoSign.jar', size: 63125624, sha256: '21b76c2e5595bf787c50b83b516fb2d132ccabfff28fd41f775468afbf5686c6',
+                    { name: 'CryptoSign.jar', size: 63169430, sha256: 'b10520865d29af1b5cfcb1c43c738339913c0cfcd2e9b9a2d0027fcf79083916',
                       label: { en: 'CryptoSign tool', zh: 'CryptoSign 工具' } },
-                    { name: 'FC-SDK.jar', size: 63125598, sha256: '20b8a85f1e6ba4d33d0fbd370c61c456c47e16088b6c0ac921f224d908c85aee',
+                    { name: 'FC-SDK.jar', size: 63169403, sha256: '2192770f473d54018509ba9762b0e04971d1bf6d3dc95e2ed509159fd9d01a3c',
                       label: { en: 'FC-JDK library with all dependencies', zh: '含全部依赖的 FC-JDK 库' } },
-                    { name: 'SHA256SUMS', size: 725, sha256: 'b151b81c7efbb2d921576d33bf6d87e157d7b9727a78fe7767f3842582be02d6',
+                    { name: 'SHA256SUMS', size: 725, sha256: '645693ac19c97a72f0a73f3b89f86ee5830d232dea3bad94af8c04185ec0624a',
                       label: { en: 'Checksums: shasum -a 256 -c SHA256SUMS', zh: '校验文件：shasum -a 256 -c SHA256SUMS' } }
                 ]
             },
@@ -434,9 +434,9 @@ export const OTHER_DOWNLOADS = [
     {
         title: { en: 'Protocols', zh: '协议文档' },
         files: [
-            { name: 'Protocols.zip', size: 589146, sha256: '5e06a4c95f76c30441e884a24b1461cfb93475b462aa9bc2a88845d9b2e2aa66',
-              href: 'https://github.com/nobodyoffc/Freeverse/releases/download/protocols-2026-10-08/Protocols.zip',
-              label: { en: 'Protocol specifications, 2026-10-08 (FAPI, FBP, FBSP, FEIP, FTSP, FUDP, FVEP, IM)', zh: '协议规范，2026-10-08（FAPI、FBP、FBSP、FEIP、FTSP、FUDP、FVEP、IM）' } }
+            { name: 'Protocols.zip', size: 581113, sha256: '43a93f7d473238b8e1490c215790e2c41c940d5d4bf1e8563e4faa14d3eef5af',
+              href: 'https://github.com/nobodyoffc/Freeverse/releases/download/protocols-2026-10-30/Protocols.zip',
+              label: { en: 'Protocol specifications, 2026-10-30 (FAPI, FBP, FBSP, FEIP, FTSP, FUDP, FVEP, IM)', zh: '协议规范，2026-10-30（FAPI、FBP、FBSP、FEIP、FTSP、FUDP、FVEP、IM）' } }
         ]
     }
 ];

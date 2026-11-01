@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freer School - Freeverse</title>
+    <link rel="icon" type="image/x-icon" href="../images/icons/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="../images/icons/favicon.ico">
+    <link rel="apple-touch-icon" href="../images/icons/favicon.ico">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/school.css?v=20261101a">
+    <script src="../constants/strings.js?v=20261101b"></script>
+    <script src="../modules/api.js"></script>
+</head>
+<body data-disable-header-search="true">
+    <main class="sc-page">
+        <div class="title-section">
+            <h2 id="page-title">Freer School</h2>
+            <div class="description" id="page-description"></div>
+            <hr class="title-divider">
+        </div>
+
+        <div class="sc-layout">
+            <section class="sc-stage" id="sc-stage"></section>
+            <div class="sc-list" id="sc-list"></div>
+        </div>
+
+        <section class="sc-verify" id="sc-verify"></section>
+    </main>
+
+    <footer>
+        <p>...</p>
+    </footer>
+
+    <script type="module" src="../modules/school.js?v=20261101a"></script>
+    <script type="module">
+        import Header from '../modules/Header.js';
+        document.addEventListener('DOMContentLoaded', () => {
+            Header.init();
+        });
+    </script>
+</body>
+</html>
