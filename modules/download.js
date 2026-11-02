@@ -3,12 +3,13 @@ import { GITHUB_OWNER, SIGNING, RELEASE_FAMILIES, OTHER_DOWNLOADS, GUIDE } from 
 import { SCHOOL } from './school-data.js?v=20261101f';
 
 const FILTER_STORAGE_KEY = 'downloadPlatformFilter';
-const PLATFORMS = ['all', 'android', 'mac', 'server'];
+const PLATFORMS = ['all', 'android', 'mac', 'server', 'video'];
 const PLATFORM_LABEL_KEYS = {
     all: 'dlFilterAll',
     android: 'dlFilterAndroid',
     mac: 'dlFilterMac',
-    server: 'dlFilterServer'
+    server: 'dlFilterServer',
+    video: 'dlFilterVideo'
 };
 
 let currentFilter = loadFilter();
@@ -123,7 +124,8 @@ function platformIcon(platform) {
     const icons = {
         android: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.6 9.48l1.84-3.18a.5.5 0 1 0-.87-.5l-1.86 3.22A11.4 11.4 0 0 0 12 8.1c-1.7 0-3.3.33-4.71.92L5.43 5.8a.5.5 0 1 0-.87.5L6.4 9.48A10.8 10.8 0 0 0 1 18h22a10.8 10.8 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/></svg>',
         mac: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.37 12.6c-.02-2.3 1.88-3.4 1.96-3.46-1.07-1.56-2.73-1.78-3.32-1.8-1.41-.14-2.76.83-3.47.83-.72 0-1.82-.81-3-.79a4.43 4.43 0 0 0-3.74 2.27c-1.6 2.77-.41 6.87 1.15 9.12.76 1.1 1.67 2.33 2.85 2.29 1.15-.05 1.58-.74 2.96-.74s1.77.74 2.98.71c1.23-.02 2.01-1.12 2.76-2.22a9.8 9.8 0 0 0 1.25-2.57 3.98 3.98 0 0 1-2.38-3.64zM14.1 5.86c.63-.77 1.06-1.83.94-2.89-.91.04-2.01.61-2.66 1.37-.58.67-1.09 1.75-.96 2.79 1.02.08 2.05-.52 2.68-1.27z"/></svg>',
-        server: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 3h16a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm0 10h16a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1zm3-6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0 10a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>'
+        server: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 3h16a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm0 10h16a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1zm3-6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0 10a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>',
+        video: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 5h12a2 2 0 0 1 2 2v2.5l4-2.5v10l-4-2.5V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>'
     };
     return icons[platform] || '';
 }
@@ -285,7 +287,9 @@ function guideDiagram() {
 }
 
 function renderFilters() {
-    document.getElementById('dl-filters').innerHTML = PLATFORMS.map(p => `
+    const filters = document.getElementById('dl-filters');
+    filters.setAttribute('aria-label', getString('dlFilterGroup'));
+    filters.innerHTML = PLATFORMS.map(p => `
         <button type="button" class="dl-filter${p === currentFilter ? ' active' : ''}" data-filter="${p}" aria-pressed="${p === currentFilter}">
             ${p === 'all' ? '' : platformIcon(p)}<span>${esc(getString(PLATFORM_LABEL_KEYS[p]))}</span>
         </button>`).join('');
@@ -293,6 +297,11 @@ function renderFilters() {
 
 function renderReleases() {
     const container = document.getElementById('dl-releases');
+    // The Videos filter shows only the School section, so no "no match" note here
+    if (currentFilter === 'video') {
+        container.innerHTML = '';
+        return;
+    }
     const html = RELEASE_FAMILIES.map(family => {
         const builds = family.builds.filter(b => currentFilter === 'all' || b.platform === currentFilter);
         if (builds.length === 0) return '';
@@ -398,7 +407,7 @@ function renderVerify() {
 // 飞人学堂: one card per series, each video downloaded from this site; the signed lists as text links.
 function renderSchool() {
     const section = document.getElementById('dl-school');
-    section.hidden = currentFilter !== 'all';
+    section.hidden = currentFilter !== 'all' && currentFilter !== 'video';
     if (section.hidden) return;
     const build = { repo: SCHOOL.repo, tag: SCHOOL.tag };
     const lists = SCHOOL.lists.map(f => `<a href="${esc(assetUrls(build, f).local)}" download>${esc(f.name)}</a>`);
