@@ -15,27 +15,27 @@ export const SCHOOL = {
   "lists": [
     {
       "name": "DIDS.txt",
-      "size": 2548,
-      "sha256": "65c61626a25457ff6994f2221f5acfbda200adedd64bc296a436346152e08f17",
-      "did": "0f2de966c3eff4cdb125bceeb29f72d6cf9f659444c377a763627638e0211694"
+      "size": 2595,
+      "sha256": "15807b66ab21ddad94fbb5a8f4096f5ba798a1be7c78a60cfd030fabb1edda8a",
+      "did": "0afa1d46c0dd846cecd1455a128f392dea3e9c0b33fbdfd24d84a2067bd63488"
     },
     {
       "name": "DIDS.sig.json",
-      "size": 2769,
-      "sha256": "3508e72d7109896e0eacc77f5abaa51228bc520ea1a359576390c0ff018c0102",
-      "did": "60910fb3bc2f64283a936cc56ba7d060c16c8fdb5f7739cf7fd0d4301bfb51f6"
+      "size": 2816,
+      "sha256": "b881bf80115decf0263666b2a4c02d0139e09d56497eee980fca1b825851e3b4",
+      "did": "a69eda96e90599d0109667dd99fa4bd950c2bfe096854471a0365e92c0a81a2c"
     },
     {
       "name": "SHA256SUMS.txt",
-      "size": 2519,
-      "sha256": "0f905149a0527d7b206ff56899df11c30918ee13a9042f9e1eae1191d124fd6d",
-      "did": "5eaa64b736d596ff9391615603c72617174a108b9a72ab0648e547677e5f94dc"
+      "size": 2566,
+      "sha256": "ff8c18d71a0e780cecbf75895eca730b46fc1bd55ff8dffa2cf786b1f9c46688",
+      "did": "c59dd14cef60704dd06e34ad93faf21744b4b5abd8791573a1b3d6c5b1c56466"
     },
     {
       "name": "SHA256SUMS.sig.json",
-      "size": 2739,
-      "sha256": "92de51354503cca0e419cb8e593f8d9eb95b8cd9dd6b3da9c942e40187146ef5",
-      "did": "313568ccb167b4f100821649fccd3752647336cf42d32f072a3a3f0e2b2ea726"
+      "size": 2786,
+      "sha256": "3681a1bef7db842af5bde2384ebb4964614b929ed660a768d9ff5da7780fb105",
+      "did": "d77a940877cb2997cee1fc0cfe479a05c180ef70909792c70a2ee1252610ce1e"
     }
   ],
   "series": [
@@ -56,9 +56,9 @@ export const SCHOOL = {
           "seconds": 209,
           "video": {
             "name": "U1-01.mp4",
-            "size": 16763735,
-            "sha256": "cf57eb41e535906850fa4429770e29fb5fbe9edb741d37c0add20681bf0c6434",
-            "did": "2871196320d2e3642d8a684ca1e5b811117dd212e1213c1721494a18dff2a5c0"
+            "size": 16721770,
+            "sha256": "28621a31b5438214f3310850e32a7c74d35681d9f94c878d85c31455907721f8",
+            "did": "ea802311b60cefa485490381a6e622c61f98021e6837c2e6397dec4eff8fce65"
           },
           "cover": {
             "name": "U1-01-cover.png",

@@ -1,6 +1,6 @@
 // School page - plays the 飞人学堂 videos listed in school-data.js
 import { GITHUB_OWNER } from './download-data.js?v=20261101a';
-import { SCHOOL } from './school-data.js?v=20261101a';
+import { SCHOOL } from './school-data.js?v=20261105a';
 
 const EPISODES = SCHOOL.series.flatMap(s => s.episodes);
 let current = fromHash() || EPISODES[0];
