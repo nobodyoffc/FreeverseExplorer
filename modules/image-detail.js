@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function fetchImageById(id) {
     try {
         const parameters = `?ids=${id}`;
-        const url = urlHead + urlTail + parameters;
+        const url = getUrlHead() + urlTail + parameters;
 
         const response = await fetch(url, {
             method: 'GET',
