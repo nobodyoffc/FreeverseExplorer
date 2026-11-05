@@ -1,13 +1,15 @@
 // Import Image class
 import Image from '../entity/Image.js?v=20261101c';
 import { getSearchConfig } from './search-config.js';
-import { renderLocasRow } from './locas.js?v=20261101c';
+import { renderLocasRow, Picture } from './locas.js?v=20261105c';
 
 // Get the URL head from global API
 // Use a getter function to always get the current working server URL
 const getUrlHead = () => window.API.urlHead;
 const urlTail = window.API.URL_TAIL.IMAGE_BY_IDS;
 let loadingOverlay;
+// The picture itself, fetched from where the record says it is.
+let picture;
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', async () => {
@@ -64,8 +66,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const pageTitle = window.strings[window.currentLanguage].fieldNames.imageDetail;
     document.title = `${headerTitle} - ${pageTitle}`;
 
-    // Display image details
+    // Display image details; the picture follows once it is fetched.
+    picture = new Picture(() => displayImageDetails(imageInstance), 320);
+    picture.image = imageInstance;
     displayImageDetails(imageInstance);
+    if (!imageInstance.deleted) picture.load(imageInstance, getUrlHead());
 
     // Add language change listener
     window.addEventListener('languageChanged', (event) => {
@@ -127,6 +132,10 @@ function displayImageDetails(imageInstance) {
 
     // Create detail table
     let detailHTML = '<table class="detail-table-unified">';
+    if (picture && !imageInstance.deleted) {
+        const label = (window.currentLanguage || 'en') === 'zh' ? '图片' : 'Picture';
+        detailHTML += `<tr><th>${label}</th><td>${picture.html()}</td></tr>`;
+    }
 
     // Get fields from Image constructor
     const image = new Image();
@@ -193,6 +202,7 @@ function displayImageDetails(imageInstance) {
 
     detailHTML += '</table>';
     detailContent.innerHTML = detailHTML;
+    picture?.bind(detailContent);
 
     // Add click handlers for copyable values
     document.querySelectorAll('.copyable').forEach(span => {

@@ -1,7 +1,7 @@
 // Import Token class
 import Token from '../entity/Token.js?v=20261105b';
 import { getSearchConfig } from './search-config.js';
-import { renderTokenCoverRow } from './locas.js?v=20261105b';
+import { renderTokenCoverRow, Picture, fetchImageRecord } from './locas.js?v=20261105c';
 
 // Get the URL head from global API
 // Use a getter function to always get the current working server URL
@@ -10,6 +10,8 @@ const urlTail = window.API.URL_TAIL.TOKEN_BY_IDS;
 let loadingOverlay;
 // The Image a token's cover names, fetched once: undefined until then, null if none.
 let coverImage;
+// Its picture, loaded only when the Image passes the deployer check.
+let picture;
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', async () => {
@@ -69,8 +71,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Display token details; the cover row follows once its Image is known.
     displayTokenDetails(tokenInstance);
     if (tokenInstance.cover) {
-        coverImage = await fetchImageById(tokenInstance.cover);
-        displayTokenDetails(tokenInstance);
+        coverImage = await fetchImageRecord(getUrlHead(), tokenInstance.cover);
+        if (coverImage && !coverImage.deleted && coverImage.publisher === tokenInstance.deployer) {
+            picture = new Picture(() => displayTokenDetails(tokenInstance));
+            displayTokenDetails(tokenInstance);
+            await picture.load(coverImage, getUrlHead());
+        } else {
+            displayTokenDetails(tokenInstance);
+        }
     }
 
     // Add language change listener
@@ -117,21 +125,6 @@ async function fetchTokenById(id) {
         return null;
     } catch (error) {
         console.error('Error fetching Token by ID:', error);
-        return null;
-    }
-}
-
-// The Image record a cover names, or null when there is none or the fetch fails.
-async function fetchImageById(id) {
-    if (!/^[0-9a-fA-F]{64}$/.test(id)) return null;
-    try {
-        const url = getUrlHead() + window.API.URL_TAIL.IMAGE_BY_IDS + `?ids=${id}`;
-        const response = await fetch(url, { method: 'GET', mode: 'cors', headers: { 'Accept': 'application/json' } });
-        if (!response.ok) return null;
-        const result = await response.json();
-        return result?.data?.[id] || null;
-    } catch (error) {
-        console.error('Error fetching cover Image:', error);
         return null;
     }
 }
@@ -197,7 +190,7 @@ function displayTokenDetails(tokenInstance) {
             // Until its Image is fetched the row waits rather than guessing.
             if (coverImage !== undefined) {
                 detailHTML += renderTokenCoverRow(fieldName.charAt(0).toUpperCase() + fieldName.slice(1),
-                    value, coverImage, tokenInstance.deployer);
+                    value, coverImage, tokenInstance.deployer, picture);
             }
             return;
         }
@@ -216,6 +209,8 @@ function displayTokenDetails(tokenInstance) {
 
     detailHTML += '</table>';
     detailContent.innerHTML = detailHTML;
+
+    picture?.bind(detailContent);
 
     // Add click handlers for copyable values
     document.querySelectorAll('.copyable').forEach(span => {

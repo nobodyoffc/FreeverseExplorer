@@ -1,13 +1,15 @@
 // Import Video class
 import Video from '../entity/Video.js?v=20261101c';
 import { getSearchConfig } from './search-config.js';
-import { renderLocasRow, renderCoverRow } from './locas.js?v=20261101c';
+import { renderLocasRow, renderCoverRow, Picture, fetchImageRecord } from './locas.js?v=20261105c';
 
 // Get the URL head from global API
 // Use a getter function to always get the current working server URL
 const getUrlHead = () => window.API.urlHead;
 const urlTail = window.API.URL_TAIL.VIDEO_BY_IDS;
 let loadingOverlay;
+// The cover Image, once its record is asked for.
+let picture;
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', async () => {
@@ -64,8 +66,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const pageTitle = window.strings[window.currentLanguage].fieldNames.videoDetail;
     document.title = `${headerTitle} - ${pageTitle}`;
 
-    // Display video details
+    // Display video details; the cover follows once its Image is fetched.
+    if (videoInstance.cover) picture = new Picture(() => displayVideoDetails(videoInstance));
     displayVideoDetails(videoInstance);
+    if (picture) picture.load(await fetchImageRecord(getUrlHead(), videoInstance.cover), getUrlHead());
 
     // Add language change listener
     window.addEventListener('languageChanged', (event) => {
@@ -179,7 +183,7 @@ function displayVideoDetails(videoInstance) {
             return;
         }
         if (field === 'cover') {
-            detailHTML += renderCoverRow(fieldName.charAt(0).toUpperCase() + fieldName.slice(1), value);
+            detailHTML += renderCoverRow(fieldName.charAt(0).toUpperCase() + fieldName.slice(1), value, picture);
             return;
         }
 
@@ -197,6 +201,7 @@ function displayVideoDetails(videoInstance) {
 
     detailHTML += '</table>';
     detailContent.innerHTML = detailHTML;
+    picture?.bind(detailContent);
 
     // Add click handlers for copyable values
     document.querySelectorAll('.copyable').forEach(span => {
