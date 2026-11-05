@@ -73,3 +73,30 @@ export function renderCoverRow(fieldName, cover) {
             </tr>
         `;
 }
+
+// One table row for a Token's `cover` (FEIP20): the record id of a FEIP24 Image
+// shown as its logo. A token can never be updated, so the logo is shown only
+// when the Image was published by the token's deployer; otherwise whoever owns
+// the Image could change another's logo, or a new token could borrow the logo
+// of an established one. `image` is the fetched Image record, or null.
+export function renderTokenCoverRow(fieldName, cover, image, deployer) {
+    if (typeof cover !== 'string' || !SID_PATTERN.test(cover)) return '';
+    const zh = (window.currentLanguage || 'en') === 'zh';
+    let cell;
+    if (image && !image.deleted && deployer && image.publisher === deployer) {
+        cell = `<a href="image-detail.html?id=${cover}" title="${cover}">${shortSid(cover)}</a>`;
+    } else {
+        const why = !image
+            ? (zh ? '未找到该图片' : 'no such Image')
+            : image.deleted
+                ? (zh ? '图片已删除' : 'the Image is deleted')
+                : (zh ? '图片不是部署者发布的' : 'the Image was not published by the deployer');
+        cell = `<span class="cover-rejected" title="${cover}">${escapeHtml(zh ? '不显示：' : 'Not shown: ')}${escapeHtml(why)}</span>`;
+    }
+    return `
+            <tr>
+                <th>${escapeHtml(fieldName)}</th>
+                <td>${cell}</td>
+            </tr>
+        `;
+}

@@ -45,6 +45,7 @@ class Token  {
         this.maxAmtPerIssue = null;
         this.minCddPerIssue = null;
         this.maxIssuesPerAddr = null;
+        this.cover = null;
         this.closed = null;
         this.deployer = null;
         this.circulating = null;
