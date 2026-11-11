@@ -15,27 +15,27 @@ export const SCHOOL = {
   "lists": [
     {
       "name": "DIDS.txt",
-      "size": 2595,
-      "sha256": "15807b66ab21ddad94fbb5a8f4096f5ba798a1be7c78a60cfd030fabb1edda8a",
-      "did": "0afa1d46c0dd846cecd1455a128f392dea3e9c0b33fbdfd24d84a2067bd63488"
+      "size": 2761,
+      "sha256": "c9f9a1a25b5967c40f7052bd00c11a57fb38bc05b33339fb01929aed00d783be",
+      "did": "b3e8ca55662f900f3be778b0f8fd2338d10043e3b5295b1e4cf887b85eacbf91"
     },
     {
       "name": "DIDS.sig.json",
-      "size": 2816,
-      "sha256": "b881bf80115decf0263666b2a4c02d0139e09d56497eee980fca1b825851e3b4",
-      "did": "a69eda96e90599d0109667dd99fa4bd950c2bfe096854471a0365e92c0a81a2c"
+      "size": 2986,
+      "sha256": "5c0fbdb9e1bf64c386a2372ebd0cc59e374c9ea2c8abd6c99b7b8483b47f1c6d",
+      "did": "ad73154b1ad4640f162e2082d5787c39a2a3432cfde74a306f71ef2b85b3a765"
     },
     {
       "name": "SHA256SUMS.txt",
-      "size": 2566,
-      "sha256": "ff8c18d71a0e780cecbf75895eca730b46fc1bd55ff8dffa2cf786b1f9c46688",
-      "did": "c59dd14cef60704dd06e34ad93faf21744b4b5abd8791573a1b3d6c5b1c56466"
+      "size": 2732,
+      "sha256": "05959569c1a0cd910a4c7117bc20e9db995d38386f3ac5308344a219295117b5",
+      "did": "14cedab2385b24c5bf55a10f77587a7fc4461cb96d1845287e5fd4952a89db51"
     },
     {
       "name": "SHA256SUMS.sig.json",
-      "size": 2786,
-      "sha256": "3681a1bef7db842af5bde2384ebb4964614b929ed660a768d9ff5da7780fb105",
-      "did": "d77a940877cb2997cee1fc0cfe479a05c180ef70909792c70a2ee1252610ce1e"
+      "size": 2956,
+      "sha256": "14f7e2ff44085a5fdaa923f1d6272d71386a71b93fa9b74b05da578c8e6ecff2",
+      "did": "d2daf4961012d2c7c9ecf1c2e8f61eeca73fed22b9cd9547a29d8b5b965b1be6"
     }
   ],
   "series": [
@@ -53,12 +53,12 @@ export const SCHOOL = {
         {
           "id": "U1-01",
           "title": "初识飞人",
-          "seconds": 209,
+          "seconds": 208,
           "video": {
             "name": "U1-01.mp4",
-            "size": 16721770,
-            "sha256": "28621a31b5438214f3310850e32a7c74d35681d9f94c878d85c31455907721f8",
-            "did": "ea802311b60cefa485490381a6e622c61f98021e6837c2e6397dec4eff8fce65"
+            "size": 16686077,
+            "sha256": "42e02481f684a7f14de01af16ccdf64a6e276008e0cd59cc195e9ae9515aab92",
+            "did": "e6840d7b180dee5d2eb14c440af89674325a8c2e25c50366b64bff4b2a26a24b"
           },
           "cover": {
             "name": "U1-01-cover.png",
@@ -287,12 +287,12 @@ export const SCHOOL = {
         {
           "id": "U2-01",
           "title": "更安全的私钥",
-          "seconds": 246,
+          "seconds": 257,
           "video": {
             "name": "U2-01.mp4",
-            "size": 18968065,
-            "sha256": "9016552f4c391448ca6bf760aae1bfc25f9d0219a33fead951626771f5c2dd2b",
-            "did": "710c43db427b476456527ffa88655f36f4f840982a3dfe51d0d121318cdf00e9"
+            "size": 19804884,
+            "sha256": "6b3aee61bd325fe2350a8cff2188f55e035142a150e0f1f463e98aab58e79e10",
+            "did": "42a0a62ac9bd89c15e3d96e64795eca88117488da818b2b435c0bf557f49de86"
           },
           "cover": {
             "name": "U2-01-cover.png",
@@ -443,9 +443,9 @@ export const SCHOOL = {
           "seconds": 283,
           "video": {
             "name": "U2-10.mp4",
-            "size": 21888695,
-            "sha256": "225756bd3afda5f20c07fe9a5e45356455222f01c67e08905e3c31b3ae3e8a61",
-            "did": "fed3e40dc0245935b143c1bfd1d6d56b7807ebe3ed5b0031c76ef8bef4ea8268"
+            "size": 21916075,
+            "sha256": "8cce6eebe3e22a00accf1ee6bc55cf1e497e506bbe1a69d8084581e11849f99c",
+            "did": "2ae0f42955eae2c33333f09a5d550ecd0e16afbf848df5c660300c422890558d"
           },
           "cover": {
             "name": "U2-10-cover.png",
@@ -511,9 +511,9 @@ export const SCHOOL = {
           "seconds": 247,
           "video": {
             "name": "U2-14.mp4",
-            "size": 22854023,
-            "sha256": "9f83c117d3a5f672a86bb4b37f5700ad2d3cb11d6da3f654ae9902c4ced12bf9",
-            "did": "f8882c8a5ae4e962a7f51afdff26ddc2ba1a262d5aef9cc0f26505380a82cccb"
+            "size": 22854113,
+            "sha256": "97f729502cf3276ebc59e5d401697b22c50c42c7b935004e6a059777e39120f3",
+            "did": "d0a268d237a30308d4c2689853b618885aebd84cc1f95e218ab7dc44b6e196a2"
           },
           "cover": {
             "name": "U2-14-cover.png",

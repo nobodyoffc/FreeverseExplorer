@@ -1,6 +1,6 @@
 // Download page - renders the release catalog from download-data.js
 import { GITHUB_OWNER, SIGNING, RELEASE_FAMILIES, OTHER_DOWNLOADS, GUIDE } from './download-data.js?v=20261101f';
-import { SCHOOL } from './school-data.js?v=20261105a';
+import { SCHOOL } from './school-data.js?v=20261111a';
 
 const FILTER_STORAGE_KEY = 'downloadPlatformFilter';
 const PLATFORMS = ['all', 'android', 'mac', 'server', 'video'];
